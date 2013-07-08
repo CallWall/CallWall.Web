@@ -39,7 +39,9 @@ The benefits of using a cloud service instead of having clients connect to the s
 
 ## Web implementation 
 The Web implementation is effectively the Web UI over the cloud services.
-By enabling cookies (Remember me) by simply hitting the browser with the querystring specifying the contact id (Phone number or email address etc)
+By enabling cookies (Remember me), when navigating the browser to CallWall.com with the querystring specifying the contact id (Phone number or email address etc), the Contact Dashboard can be displayed directly.
+This will then allow for very simple triggering systems on clients. For example a small service that accepts push messages (Bluetooth, WebSockets, ISDN, USB, WiDi) and then just open a browser to call wall for the contact.
+This will provide a broad reach of systems as simple implementations can just be the service that opens a browser.
 
 
 
@@ -47,7 +49,7 @@ Web host for the CallWall product. Hosts the Cloud client and any downloads
 
 
 
-#Context Glass
+###Context Glass
 
 ##A.A.A  
   * Authenticate clients with the server  
