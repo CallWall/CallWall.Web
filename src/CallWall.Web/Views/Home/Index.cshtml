@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+
+<hgroup>
+    <h2>@ViewBag.Title.</h2>
+    <h3>@ViewBag.Message</h3>
+</hgroup>
+<div class="row-fluid">
+    <div class="span12">
+        <p>Use this area to provide additional information.</p>
+    </div>
+</div>
+<dl id="ContactDefList"></dl>
+@Scripts.Render("~//bundles/jquery")
+@Scripts.Render("~/bundles/jquerycolor")
+@Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
+@Scripts.Render("~/signalR/hubs")
+@Scripts.Render("~/Scripts/Contacts.Observable..SignalR.js")
