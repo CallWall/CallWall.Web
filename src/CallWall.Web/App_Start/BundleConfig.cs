@@ -27,7 +27,8 @@ namespace CallWall.Web
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/Content/bootstrap.css",
+                //"~/Content/bootstrap.css",
+                "~/Content/bootstrap.metro.css",
                 "~/Content/site.css",
                 "~/Content/bootstrap-responsive.css"
                 ));

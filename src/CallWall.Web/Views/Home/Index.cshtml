@@ -1,19 +1,35 @@
 ﻿@{
-    ViewBag.Title = "About";
+    ViewBag.Title = "My Contacts";
 }
 
 <hgroup>
-    <h2>@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
+    <h2>@ViewBag.Title</h2>
+    <label for="q" style="display: inline">Search:</label>
+    <input id="q" name="q" type="search" autofocus="true" />
 </hgroup>
-<div class="row-fluid">
-    <div class="span12">
-        <p>Use this area to provide additional information.</p>
+
+<div id="ContactDefList" class="row">
+    <div style="display: inline-block; margin: 10px; width: 300px; height: 100px; overflow: hidden;">
+        <table style="display: inline-table; background: transparent;">
+            <tr>
+                <td rowspan="2" style="width: 100px; height: 100px; background: #808080">
+                    <img src="/content/ProfileAvatars/Me.jpg" style="max-height: 100px; max-width: 100px;" />
+                </td>
+                <td style="width: 200px; background: #808080">
+                    <h3 style="text-overflow:ellipsis; word-wrap:normal; max-width: 200px; overflow: hidden;">Lee Campbell</h3>
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #808080;">
+                    <span class="badge">Work</span>
+                    <span class="badge">Water polo</span>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
-<dl id="ContactDefList"></dl>
 @Scripts.Render("~//bundles/jquery")
 @Scripts.Render("~/bundles/jquerycolor")
 @Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
 @Scripts.Render("~/signalR/hubs")
-@Scripts.Render("~/Scripts/Contacts.Observable..SignalR.js")
+@Scripts.Render("~/Scripts/Contacts.Observable.SignalR.js")
