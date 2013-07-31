@@ -25,7 +25,7 @@ $(function () {
         + '<table style="display: inline-table; background:transparent;">'
             + '<tr>'
             + '<td rowspan="2" style="width: 100px; height: 100px;background: #808080"><img src="{PrimaryAvatar}" style="max-height: 100px; max-width: 100px;"/></td>'
-            + '<td style="width: 200px; background: #808080"><h3 style="text-overflow:ellipsis; max-width:200px; overflow: hidden;">{Title}</h3></td>'
+            + '<td style="width: 200px; background: #808080"><h3 title="{Title}" style="text-overflow:ellipsis; white-space: nowrap; max-width:200px; overflow: hidden;">{Title}</h3></td>'
             + '</tr><tr><td style="background: #808080;">';
         var output = '';
         
