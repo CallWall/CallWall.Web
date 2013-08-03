@@ -14,7 +14,8 @@ namespace CallWall.Web.Hubs
         public void RequestContactSummaryStream()
         {
             var profilePicPath = Path.Combine(HttpRuntime.AppDomainAppPath, "content/ProfileAvatars/");
-            var profilePics = Directory.EnumerateFiles(profilePicPath, "*.jpg");
+            //var profilePics = Directory.EnumerateFiles(profilePicPath, "*.jpg");
+            var profilePics = Directory.EnumerateFiles(profilePicPath);
             foreach (var profilePic in profilePics)
             {
                 var title = Path.GetFileNameWithoutExtension(profilePic);
