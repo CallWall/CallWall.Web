@@ -8,28 +8,35 @@
     <input id="q" name="q" type="search" autofocus="true" />
 </hgroup>
 
-<div id="ContactDefList" class="row">
-    <div style="display: inline-block; margin: 10px; width: 300px; height: 100px; overflow: hidden;">
-        <table style="display: inline-table; background: transparent;">
+<div id="ContactDefListBound" data-bind="template: { name: 'ContactDefTemplate', foreach: contacts }"></div>
+
+
+<script type="text/html" id="ContactDefTemplate">
+    <div style="display: inline-block; margin:10px; width:300px; height:100px; overflow: hidden;">
+        <table style="display: inline-table; background:transparent;">
             <tr>
-                <td rowspan="2" style="width: 100px; height: 100px; background: #808080">
-                    <img src="/content/ProfileAvatars/Me.jpg" style="max-height: 100px; max-width: 100px;" />
+                <td rowspan="2" style="width: 100px; height: 100px;background: #808080">
+                    <img data-bind="attr: { src: PrimaryAvatar }" style="max-height: 100px; max-width: 100px;"/>
                 </td>
                 <td style="width: 200px; background: #808080">
-                    <h3 style="text-overflow:ellipsis; word-wrap:normal; max-width: 200px; overflow: hidden;">Lee Campbell</h3>
+                    <h3 style="text-overflow:ellipsis; max-width:200px; overflow: hidden;" data-bind="text: Title"></h3>
                 </td>
             </tr>
             <tr>
                 <td style="background: #808080;">
-                    <span class="badge">Work</span>
-                    <span class="badge">Water polo</span>
+                    <!-- ko foreach: Tags -->
+                    <span class="badge" data-bind="text:$data"></span>
+                    <!-- /ko -->
                 </td>
             </tr>
         </table>
     </div>
-</div>
-@Scripts.Render("~//bundles/jquery")
-@Scripts.Render("~/bundles/jquerycolor")
-@Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
-@Scripts.Render("~/signalR/hubs")
-@Scripts.Render("~/Scripts/Contacts.Observable.SignalR.js")
+</script>
+@section scripts{
+    @Scripts.Render("~//bundles/jquery")
+    @Scripts.Render("~/bundles/jquerycolor")
+    @Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
+    @Scripts.Render("~/signalR/hubs")
+    @Scripts.Render("~/Scripts/Contacts.Observable.SignalR.js")
+    @Scripts.Render("~/Scripts/knockout-2.3.0.js")
+}
