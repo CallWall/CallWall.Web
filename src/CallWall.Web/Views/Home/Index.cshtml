@@ -8,9 +8,35 @@
     <input id="q" name="q" type="search" autofocus="true" />
 </hgroup>
 
-<div id="ContactDefList" class="row"></div>
-@Scripts.Render("~//bundles/jquery")
-@Scripts.Render("~/bundles/jquerycolor")
-@Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
-@Scripts.Render("~/signalR/hubs")
-@Scripts.Render("~/Scripts/Contacts.Observable.SignalR.js")
+<div id="ContactDefListBound" data-bind="template: { name: 'ContactDefTemplate', foreach: contacts }"></div>
+
+
+<script type="text/html" id="ContactDefTemplate">
+    <div class="contact-card">
+        <table>
+            <tr>
+                <td rowspan="2" class="avatar-cell">
+                    <img data-bind="attr: { src: PrimaryAvatar }" class="avatar-img" />
+                </td>
+                <td class="title">
+                    <h3 data-bind="text: Title"></h3>
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #808080;">
+                    <!-- ko foreach: Tags -->
+                    <span class="badge" data-bind="text: $data"></span>
+                    <!-- /ko -->
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
+@section scripts{
+    @Scripts.Render("~//bundles/jquery")
+    @Scripts.Render("~/bundles/jquerycolor")
+    @Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
+    @Scripts.Render("~/signalR/hubs")
+    @Scripts.Render("~/Scripts/Contacts.Observable.SignalR.js")
+    @Scripts.Render("~/Scripts/knockout-2.3.0.js")
+}
