@@ -7,12 +7,18 @@ namespace CallWall.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ISecurityProvider _securityProvider;
+
+        public HomeController(ISecurityProvider securityProvider)
+        {
+            _securityProvider = securityProvider;
+        }
+
         public ActionResult Index()
         {
             Request.Cookies.Clear();
             Response.Cookies.Clear();
-            var securityProvider = new SecurityProvider();
-            if (securityProvider.IsAuthenticated(this))
+            if (_securityProvider.IsAuthenticated(this))
             {
                 return View();
             }
@@ -54,8 +60,7 @@ namespace CallWall.Web.Controllers
             var auth = new GoogleAuthentication();
             var session = auth.CreateSession(code, state);
 
-            var securityProvider = new SecurityProvider();
-            securityProvider.AddSessionToUser(this, session, "google");
+            _securityProvider.AddSessionToUser(this, session, "google");
 
             return View("Index");
         }

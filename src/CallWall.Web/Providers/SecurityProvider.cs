@@ -10,7 +10,14 @@ using Microsoft.AspNet.SignalR.Hubs;
 
 namespace CallWall.Web.Providers
 {
-    public class SecurityProvider
+    public interface ISecurityProvider
+    {
+        bool IsAuthenticated(Controller controller);
+        void AddSessionToUser(Controller controller, ISession session, string key);
+        ISession GetSession(HubCallerContext context, string key);
+    }
+
+    public class SecurityProvider : ISecurityProvider
     {
         private const string AuthCookieKey = "Auth";
 
