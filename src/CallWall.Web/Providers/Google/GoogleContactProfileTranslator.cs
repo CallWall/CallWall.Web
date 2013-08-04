@@ -13,6 +13,8 @@ namespace CallWall.Web.Providers.Google
         private static readonly XmlNamespaceManager Ns;
         private const string AnonContactAvatar = "/Content/images/AnonContact.svg";
 
+        #region xml namespace resovers
+
         static GoogleContactProfileTranslator()
         {
             Ns = new XmlNamespaceManager(new NameTable());
@@ -22,6 +24,15 @@ namespace CallWall.Web.Providers.Google
             Ns.AddNamespace("batch", "http://schemas.google.com/gdata/batch");
             Ns.AddNamespace("gd", "http://schemas.google.com/g/2005");
         }
+
+        private static XName ToXName(string prefix, string name)
+        {
+            var xNamespace = Ns.LookupNamespace(prefix);
+            if (xNamespace == null)
+                throw new InvalidOperationException(prefix + " namespace prefix is not valid");
+            return XName.Get(name, xNamespace);
+        }
+
         private static class OpenSearch
         {
             static OpenSearch()
@@ -35,6 +46,7 @@ namespace CallWall.Web.Providers.Google
             public static XName ItemsPerPage { get; private set; }
             public static XName StartIndex { get; private set; }
         }
+
         private static class Atom
         {
             static Atom()
@@ -46,6 +58,7 @@ namespace CallWall.Web.Providers.Google
             public static XName Entry { get; private set; }
             public static XName Title { get; private set; }
         }
+
         private static class Gd
         {
             static Gd()
@@ -57,6 +70,8 @@ namespace CallWall.Web.Providers.Google
             public static XName ETag { get; private set; }
             public static XName Email { get; private set; }
         }
+
+        #endregion
 
         public int CalculateNextPageStartIndex(string response)
         {
@@ -92,16 +107,11 @@ namespace CallWall.Web.Providers.Google
                 if (xContactEntry == null)
                     return null;
 
-
-                var title = XPathString(xContactEntry, "x:title", Ns);
-                //var fullName = XPathString(xContactEntry, "gd:name/gd:fullName", Ns);
-                //var emails = GetEmailAddresses(xContactEntry);
-
+                var title = GetTitle(xContactEntry);
                 var avatar = GetAvatar(xContactEntry, accessToken);
+                var tags = GetTags(xContactEntry);
 
-
-                //var entry = string.Format("{0} ({1}) - {2}", title, fullName, string.Join(",", emails));
-                var contact = new ContactSummary(title, avatar, Enumerable.Empty<string>());
+                var contact = new ContactSummary(title, avatar, tags);
                 contacts.Add(contact);
             }
 
@@ -118,12 +128,27 @@ namespace CallWall.Web.Providers.Google
                 int.Parse(itemsPerPage.Value));
         }
 
-
+        private static string GetTitle(XElement xContactEntry)
+        {
+            var title = XPathString(xContactEntry, "x:title", Ns);
+            if(string.IsNullOrWhiteSpace(title))
+                title = XPathString(xContactEntry, "gd:name/gd:fullName", Ns);
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                var givenName = XPathString(xContactEntry, "gd:name/gd:givenName", Ns);
+                var familyName = XPathString(xContactEntry, "gd:name/gd:familyName", Ns);
+                title = string.Format("{0} {1}", givenName, familyName).Trim();
+            }
+            if (string.IsNullOrWhiteSpace(title))
+                title = GetEmailAddresses(xContactEntry).FirstOrDefault();
+            return title;
+        }
 
         private static IEnumerable<string> GetEmailAddresses(XElement xContactEntry)
         {
             //<gd:email rel='http://schemas.google.com/g/2005#home' address='danrowe1978@gmail.com' primary='true'/>
             var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", Ns)
+                         orderby (xElement.Attribute("primary")!=null) descending 
                          select xElement.Attribute("address").Value;
             return emails;
         }
@@ -146,41 +171,35 @@ namespace CallWall.Web.Providers.Google
             return googleAvatar;
         }
 
-        //public IGoogleContactProfile AddTags(IGoogleContactProfile contactProfile, string response)
-        //{
-        //    var xDoc = XDocument.Parse(response);
-        //    var xGroupFeed = xDoc.Root;
-        //    if (xGroupFeed == null)
-        //        return contactProfile;
-
-        //    var groups =
-        //        (
-        //            from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
-        //            let id = groupEntry.Element(ToXName("x", "id"))
-        //            let title = groupEntry.Element(ToXName("x", "title"))
-        //            where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
-        //            select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
-        //        ).ToDictionary(g => g.Id, g => g.Title);
-
-
-        //    foreach (var groupUri in contactProfile.GroupUris)
-        //    {
-        //        string tag;
-        //        if (groups.TryGetValue(groupUri.ToString(), out tag))
-        //        {
-        //            contactProfile.AddTag(tag);
-        //        }
-        //    }
-
-        //    return contactProfile;
-        //}
-
-        private static XName ToXName(string prefix, string name)
+        public IEnumerable<string> GetTags(XElement xContactEntry)
         {
-            var xNamespace = Ns.LookupNamespace(prefix);
-            if (xNamespace == null)
-                throw new InvalidOperationException(prefix + " namespace prefix is not valid");
-            return XName.Get(name, xNamespace);
+            return Enumerable.Empty<string>();
+
+            //var xDoc = XDocument.Parse(response);
+            //var xGroupFeed = xDoc.Root;
+            //if (xGroupFeed == null)
+            //    return Enumerable.Empty<string>();
+
+            //var groups =
+            //    (
+            //        from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
+            //        let id = groupEntry.Element(ToXName("x", "id"))
+            //        let title = groupEntry.Element(ToXName("x", "title"))
+            //        where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
+            //        select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
+            //    ).ToDictionary(g => g.Id, g => g.Title);
+
+
+            //foreach (var groupUri in contactProfile.GroupUris)
+            //{
+            //    string tag;
+            //    if (groups.TryGetValue(groupUri.ToString(), out tag))
+            //    {
+            //        contactProfile.AddTag(tag);
+            //    }
+            //}
+
+            //return contactProfile;
         }
 
         private static string XPathString(XNode source, string expression, IXmlNamespaceResolver ns)
