@@ -36,26 +36,7 @@ namespace CallWall.Web.Providers.Google
                 yield return batchPage;
             }
         }
-
-        //private BatchOperationPage<IContactSummary> GetContactPage(ISession session, int startIndex)
-        //{
-        //    var client = new HttpClient();
-
-        //    var request = new HttpRequestMessage(HttpMethod.Get, "https://www.google.com/m8/feeds/contacts/default/full?access_token=" + HttpUtility.UrlEncode(session.AccessToken) + "&start-index=" + startIndex);
-        //    request.Headers.Add("GData-Version", "3.0");
-
-        //    var response = await client.SendAsync(request);
-        //    if (!response.IsSuccessStatusCode)
-        //        throw new Exception();
-
-        //    var contactResponse = await response.Content.ReadAsStringAsync();
-
-        //    var translator = new GoogleContactProfileTranslator();
-        //    var contacts = translator.Translate(contactResponse, session.AccessToken);
-
-        //    return contacts;
-        //}
-        private BatchOperationPage<IContactSummary> GetContactPage(ISession session, int startIndex)
+private BatchOperationPage<IContactSummary> GetContactPage(ISession session, int startIndex)
         {
             var client = new HttpClient();
 

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using CallWall.Web.Providers;
 using CallWall.Web.Providers.Google;
 
@@ -42,12 +43,9 @@ namespace CallWall.Web.Controllers
 
         private string CreateCallBackUri()
         {
-            //var baseUri = Server.MapPath("~/home/oauth2callback");
-            //if (baseUri.StartsWith("http://"))
-            //    return baseUri.Replace("http://", "https://");
-            //return baseUri;
-            //return "https://localhost:49391/home/oauth2callback"; //TODO: Get from 
-            return "http://localhost:49391/home/oauth2callback"; //TODO: Get from 
+            var serverName = System.Web.HttpContext.Current.Request.Url;
+            var callbackUri = new UriBuilder(serverName.Scheme, serverName.Host, serverName.Port, "home/oauth2callback");
+            return callbackUri.ToString();
         }
 
         [AllowAnonymous]
