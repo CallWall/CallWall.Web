@@ -11,6 +11,7 @@ namespace CallWall.Web.Providers.Google
     public sealed class GoogleContactProfileTranslator
     {
         private static readonly XmlNamespaceManager Ns;
+        private const string AnonContactAvatar = "/Content/images/AnonContact.svg";
 
         static GoogleContactProfileTranslator()
         {
@@ -21,15 +22,53 @@ namespace CallWall.Web.Providers.Google
             Ns.AddNamespace("batch", "http://schemas.google.com/gdata/batch");
             Ns.AddNamespace("gd", "http://schemas.google.com/g/2005");
         }
+        private static class OpenSearch
+        {
+            static OpenSearch()
+            {
+                TotalResults = ToXName("openSearch", "totalResults");
+                StartIndex = ToXName("openSearch", "startIndex");
+                ItemsPerPage = ToXName("openSearch", "itemsPerPage");
+            }
+
+            public static XName TotalResults { get; private set; }
+            public static XName ItemsPerPage { get; private set; }
+            public static XName StartIndex { get; private set; }
+        }
+        private static class Atom
+        {
+            static Atom()
+            {
+                Entry = ToXName("x", "entry");
+                Title = ToXName("x", "title");
+            }
+
+            public static XName Entry { get; private set; }
+            public static XName Title { get; private set; }
+        }
+        private static class Gd
+        {
+            static Gd()
+            {
+                ETag = ToXName("gd", "etag");
+                Email = ToXName("gd", "email");
+            }
+
+            public static XName ETag { get; private set; }
+            public static XName Email { get; private set; }
+        }
 
         public int CalculateNextPageStartIndex(string response)
         {
             var xDoc = XDocument.Parse(response);
             if (xDoc.Root == null)
                 return 0;
-            var totalResults = xDoc.Root.Element(ToXName("openSearch", "totalResults"));
-            var startIndex = xDoc.Root.Element(ToXName("openSearch", "startIndex"));
-            var itemsPerPage = xDoc.Root.Element(ToXName("openSearch", "itemsPerPage"));
+            var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
+            var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
+            var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
+            //var totalResults = xDoc.Root.Element(ToXName("openSearch", "totalResults"));
+            //var startIndex = xDoc.Root.Element(ToXName("openSearch", "startIndex"));
+            //var itemsPerPage = xDoc.Root.Element(ToXName("openSearch", "itemsPerPage"));
             if (startIndex == null || itemsPerPage == null || totalResults == null)
                 return -1;
 
@@ -46,7 +85,7 @@ namespace CallWall.Web.Providers.Google
             if (xDoc.Root == null)
                 return null;
 
-            var entries = xDoc.Root.Elements(ToXName("x", "entry"));
+            var entries = xDoc.Root.Elements(Atom.Entry);
             var contacts = new List<IContactSummary>();
             foreach (var xContactEntry in entries)
             {
@@ -58,18 +97,18 @@ namespace CallWall.Web.Providers.Google
                 //var fullName = XPathString(xContactEntry, "gd:name/gd:fullName", Ns);
                 //var emails = GetEmailAddresses(xContactEntry);
 
-                var avatars = GetAvatars(xContactEntry, accessToken);
+                var avatar = GetAvatar(xContactEntry, accessToken);
 
 
                 //var entry = string.Format("{0} ({1}) - {2}", title, fullName, string.Join(",", emails));
-                var contact = new ContactSummary(title, avatars.FirstOrDefault(), Enumerable.Empty<string>());
+                var contact = new ContactSummary(title, avatar, Enumerable.Empty<string>());
                 contacts.Add(contact);
             }
 
 
-            var totalResults = xDoc.Root.Element(ToXName("openSearch", "totalResults"));
-            var startIndex = xDoc.Root.Element(ToXName("openSearch", "startIndex"));
-            var itemsPerPage = xDoc.Root.Element(ToXName("openSearch", "itemsPerPage"));
+            var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
+            var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
+            var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
             if (startIndex == null || itemsPerPage == null || totalResults == null)
                 return new BatchOperationPage<IContactSummary>(contacts, 0, 1, -1);
 
@@ -79,27 +118,32 @@ namespace CallWall.Web.Providers.Google
                 int.Parse(itemsPerPage.Value));
         }
 
-        
+
 
         private static IEnumerable<string> GetEmailAddresses(XElement xContactEntry)
         {
             //<gd:email rel='http://schemas.google.com/g/2005#home' address='danrowe1978@gmail.com' primary='true'/>
             var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", Ns)
-                select xElement.Attribute("address").Value;
+                         select xElement.Attribute("address").Value;
             return emails;
         }
 
-        private static IEnumerable<string> GetAvatars(XElement xContactEntry, string accessToken)
+        private static string GetAvatar(XElement xContactEntry, string accessToken)
         {
-            return xContactEntry.Elements(ToXName("x", "link"))
+            var googleAvatar = xContactEntry.Elements(ToXName("x", "link"))
                                 .Where(x => x.Attribute("rel") != null
                                             && x.Attribute("rel").Value == "http://schemas.google.com/contacts/2008/rel#photo"
                                             && x.Attribute("type") != null
                                             && x.Attribute("type").Value == "image/*"
-                                            && x.Attribute("href") != null)
+                                            && x.Attribute("href") != null
+                                            && x.Attribute(Gd.ETag) != null)    //The absence of an etag attribute means that there is no image content --https://groups.google.com/forum/#!topic/google-contacts-api/bbIf5tcvhU0
                                 .Select(x => x.Attribute("href"))
                                 .Where(att => att != null)
-                                .Select(att => att.Value + "?access_token=" + accessToken);
+                                .Select(att => att.Value + "?access_token=" + accessToken)
+                                .FirstOrDefault();
+            if (googleAvatar == null)
+                return AnonContactAvatar;
+            return googleAvatar;
         }
 
         //public IGoogleContactProfile AddTags(IGoogleContactProfile contactProfile, string response)
