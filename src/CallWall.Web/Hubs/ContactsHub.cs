@@ -1,5 +1,7 @@
-﻿using System.IdentityModel.Tokens;
+﻿using System;
+using System.IdentityModel.Tokens;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Security.Claims;
 using CallWall.Web.Providers;
 using CallWall.Web.Providers.Google;
@@ -11,6 +13,7 @@ namespace CallWall.Web.Hubs
     [HubName("contacts")]
     public class ContactsHub : Hub
     {
+        private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
         public void RequestContactSummaryStream()
         {
             var securityProvider = new SecurityProvider();
@@ -19,12 +22,21 @@ namespace CallWall.Web.Hubs
             if (session == null)
                 return;
             var gContactProvider = new GoogleContactsProvider();
-            var contacts = gContactProvider.GetContacts(session);
+            var subscription = gContactProvider.GetContacts(session)
+                                               .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact));
+            _contactsSummarySubsription.Disposable = subscription;
+        }
 
-            foreach (var contact in contacts)
-            {
-                Clients.Caller.ReceiveContactSummary(contact);
-            }
+        public override System.Threading.Tasks.Task OnDisconnected()
+        {
+            _contactsSummarySubsription.Disposable = Disposable.Empty;
+            return base.OnDisconnected();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _contactsSummarySubsription.Dispose();
+            base.Dispose(disposing);
         }
     }
 
