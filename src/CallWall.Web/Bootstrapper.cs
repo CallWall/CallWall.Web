@@ -31,6 +31,7 @@ namespace CallWall.Web
         public static void RegisterTypes(IUnityContainer container)
         {
             container.RegisterType<Providers.ISecurityProvider, Providers.SecurityProvider>();
+            container.RegisterType<Providers.Google.IGoogleAuthentication, Providers.Google.GoogleAuthentication>();
         }
     }
 }

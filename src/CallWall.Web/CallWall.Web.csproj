@@ -227,6 +227,7 @@
     <Compile Include="Providers\Google\GoogleContactsProvider.cs" />
     <Compile Include="Providers\Google\ISession.cs" />
     <Compile Include="Providers\Google\Session.cs" />
+    <Compile Include="Providers\ISecurityProvider.cs" />
     <Compile Include="Providers\SecurityProvider.cs" />
   </ItemGroup>
   <ItemGroup>

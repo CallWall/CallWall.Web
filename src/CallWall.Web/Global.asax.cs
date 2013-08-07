@@ -2,6 +2,8 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.Security;
+using CallWall.Web.Providers;
 
 namespace CallWall.Web
 {
@@ -21,6 +23,16 @@ namespace CallWall.Web
 
             Bootstrapper.Initialise();
 
+        }
+
+        protected void FormsAuthentication_OnAuthentication(object sender, FormsAuthenticationEventArgs args)
+        {
+            //HACK: How do I inject the security provider into the global asax?
+            //Perhaps this : http://www.hanselman.com/blog/IPrincipalUserModelBinderInASPNETMVCForEasierTesting.aspx 
+            var securityProvider = new SecurityProvider();
+            var principal = securityProvider.GetPrincipal(args.Context.Request);
+            if (principal != null)
+                args.Context.User = principal;
         }
     }
 }

@@ -10,7 +10,13 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.Providers.Google
 {
-    public class GoogleAuthentication
+    public interface IGoogleAuthentication
+    {
+        Uri AuthenticationUri(string redirectUri, IList<string> scopes);
+        ISession CreateSession(string code, string state);
+    }
+
+    public class GoogleAuthentication : IGoogleAuthentication
     {
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {

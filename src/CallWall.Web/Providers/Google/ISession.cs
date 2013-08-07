@@ -7,6 +7,7 @@ namespace CallWall.Web.Providers.Google
 {
     public interface ISession
     {
+        string Provider { get; }
         string AccessToken { get; }
         string RefreshToken { get; }
         DateTimeOffset Expires { get; }
@@ -30,8 +31,8 @@ namespace CallWall.Web.Providers.Google
             var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<Uri>>();
 
             return new Session(
-                (string) json["AccessToken"],
-                (string) json["RefreshToken"],
+                (string)json["AccessToken"],
+                (string)json["RefreshToken"],
                 (DateTimeOffset)json["Expires"],
                 authorizedResources);
         }

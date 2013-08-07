@@ -5,20 +5,22 @@ using CallWall.Web.Providers.Google;
 
 namespace CallWall.Web.Controllers
 {
+    //TODO Move google auth to a google controller!
     public class HomeController : Controller
     {
+        private readonly IGoogleAuthentication _googleAuthentication;
         private readonly ISecurityProvider _securityProvider;
 
-        public HomeController(ISecurityProvider securityProvider)
+        public HomeController(IGoogleAuthentication googleAuthentication, ISecurityProvider securityProvider)
         {
+            _googleAuthentication = googleAuthentication;
             _securityProvider = securityProvider;
         }
 
         public ActionResult Index()
         {
-            Request.Cookies.Clear();
-            Response.Cookies.Clear();
-            if (_securityProvider.IsAuthenticated(this))
+            //TODO: I think this can be done with Attributes? Is that what I want? Is that easy to test?
+            if(User.Identity.IsAuthenticated)
             {
                 return View();
             }
@@ -32,15 +34,15 @@ namespace CallWall.Web.Controllers
 
         public ActionResult Contact()
         {
+            Console.WriteLine(User.Identity);
             return View();
         }
 
 
         public void GoogleAuth()
         {
-            var gAuth = new GoogleAuthentication();
             var callBackUri = CreateCallBackUri();
-            var redirectUri = gAuth.AuthenticationUri(
+            var redirectUri = _googleAuthentication.AuthenticationUri(
                 callBackUri,
                 new[] { "https://mail.google.com", "https://www.google.com/m8/feeds/" });
 
@@ -55,49 +57,12 @@ namespace CallWall.Web.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Oauth2Callback(string code, string state)
+        public void Oauth2Callback(string code, string state)
         {
-            var auth = new GoogleAuthentication();
-            var session = auth.CreateSession(code, state);
+            var session = _googleAuthentication.CreateSession(code, state);
 
-            _securityProvider.AddSessionToUser(this, session, "google");
-
-            return View("Index");
+            _securityProvider.SetPrincipal(this, session);
+            Response.Redirect("~/");
         }
     }
-
-    //public class SessionSecurity
-    //{
-    //    public static void CreateSession()
-    //    {
-    //        string sess = CreateSessionKey();
-
-    //        var principal = new ClaimsPrincipal(new[]
-    //                {
-    //                    new ClaimsIdentity(new[]
-    //                        {
-    //                            new Claim(ClaimTypes.Name, "myusername"), 
-    //                            new Claim(ClaimTypes.Sid, sess),
-    //                            //new Claim("RefreshToken", "Myrefresh token", ClaimValueTypes.String,"CallWall","Google", new ClaimsIdentity(...))
-    //                        }, AuthenticationTypes.Password)
-    //                });
-
-
-    //        var token = FederatedAuthentication.SessionAuthenticationModule.CreateSessionSecurityToken(principal, "mycontext", DateTime.UtcNow, DateTime.UtcNow.AddDays(1), false);
-
-    //        FederatedAuthentication.SessionAuthenticationModule.WriteSessionTokenToCookie(token);
-    //    }
-
-    //    private static string CreateSessionKey()
-    //    {
-    //        var rng = System.Security.Cryptography.RNGCryptoServiceProvider.Create();
-    //        //var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
-
-    //        var bytes = new byte[32];
-
-    //        rng.GetNonZeroBytes(bytes);
-
-    //        return Convert.ToBase64String(bytes);
-    //    }
-    //}
 }

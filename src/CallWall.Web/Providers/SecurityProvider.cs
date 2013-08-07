@@ -1,76 +1,66 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using CallWall.Web.Providers.Google;
-using Microsoft.AspNet.SignalR.Hubs;
 
 namespace CallWall.Web.Providers
 {
-    public interface ISecurityProvider
-    {
-        bool IsAuthenticated(Controller controller);
-        void AddSessionToUser(Controller controller, ISession session, string key);
-        ISession GetSession(HubCallerContext context, string key);
-    }
-
     public class SecurityProvider : ISecurityProvider
     {
-        private const string AuthCookieKey = "Auth";
-
-        public bool IsAuthenticated(Controller controller)
+        public void SetPrincipal(Controller controller,ISession session)
         {
-            //return User.Identity.IsAuthenticated;
-            //return Session["GoogleSession"] != null;
-
-            var authCookie = controller.Request.Cookies[AuthCookieKey];
-            return authCookie != null 
-                && !string.IsNullOrEmpty(authCookie["google"]); //HACK: This should not know about the google key.
+            var authTicket = new FormsAuthenticationTicket(1, "userNameGoesHere", DateTime.UtcNow, DateTime.MaxValue, true, session.ToJson(), "CallWallAuth");
+            var encTicket = FormsAuthentication.Encrypt(authTicket);
+            var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+            controller.Response.Cookies.Add(faCookie);
         }
 
-        public void AddSessionToUser(Controller controller, ISession session, string key)
+        public void LogOff()
         {
-            var jsonSession = session.ToJson();
-            var base64Data = jsonSession.ToBase64String();
-            var authCookie = new HttpCookie(AuthCookieKey);
-            authCookie.Expires = DateTime.MaxValue;
-            authCookie.Values.Add(key, base64Data);
-            
-            controller.Response.Cookies.Add(authCookie);
+            FormsAuthentication.SignOut();
+        }
+        
+        
+        public IPrincipal GetPrincipal(HttpRequest request)
+        {
+            if (!FormsAuthentication.CookiesSupported) return null;
+            HttpCookie authCookie = request.Cookies[FormsAuthentication.FormsCookieName];
+
+            if (authCookie != null)
+            {
+                var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                if (authTicket == null) 
+                    return null;
+
+                var session = authTicket.UserData.FromJson();
+
+                return SessionToPrincipal(session);
+            }
+            return null;
         }
 
-        public ISession GetSession(HubCallerContext context, string key)
+        private static IPrincipal SessionToPrincipal(ISession session)
         {
-           
-            var authCookie = context.RequestCookies["Auth"];
-            if (authCookie == null || string.IsNullOrWhiteSpace(authCookie.Value))
-                return null;
-            var data = authCookie.Value;//Hmmm not way to index into the keys of a cookie....
+            var claims = session.AuthorizedResources
+                                .Select(r => new Claim("http://callwall.com/identity/Resource", r.ToString()))
+                                .ToList();
+            claims.AddRange(new[]
+                {
+                    new Claim("http://callwall.com/identity/AccessToken", session.Provider),
+                    new Claim("http://callwall.com/identity/AccessToken", session.AccessToken),
+                    new Claim("http://callwall.com/identity/AccessToken", session.RefreshToken),
+                    new Claim("http://callwall.com/identity/AccessToken", session.Expires.ToString("o"))
+                });
 
-            //HACK: Assumes only 1 value in cookie. Should move to Claims based model anyway.
-            var base64 = data.Substring((key+"=").Length);
-            var json = base64.FromBase64String();
-            var session = json.FromJson();
-            return session;
-        }
-    }
-
-    public static class StringExtensions
-    {
-        public static string ToBase64String(this string source)
-        {
-            var bytes = Encoding.UTF8.GetBytes(source);
-            var base64 = Convert.ToBase64String(bytes);
-            return base64;
-        }
-        public static string FromBase64String(this string source)
-        {
-            var bytes = Convert.FromBase64String(source);
-            var output = Encoding.UTF8.GetString(bytes);
-            return output;
+            var principal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(claims, AuthenticationTypes.Password)
+                });
+            return principal;
         }
     }
 }

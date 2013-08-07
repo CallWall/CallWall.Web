@@ -23,10 +23,9 @@ namespace CallWall.Web.Providers.Google
             _authorizedResources = new HashSet<Uri>(authorizedResources);
         }
 
+        public string Provider { get { return "Google"; } }
         public string AccessToken { get { return _accessToken; } }
-
         public string RefreshToken { get { return _refreshToken; } }
-
         public DateTimeOffset Expires { get { return _expires; } }
 
         public bool HasExpired()
