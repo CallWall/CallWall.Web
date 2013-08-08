@@ -1,10 +1,9 @@
-using System.Web;
 using System.Web.Routing;
-using Microsoft.AspNet.SignalR;
+using CallWall.Web;
 
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(SignalR.StockTicker.RegisterHubs), "Start")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RegisterHubs), "Start")]
 
-namespace SignalR.StockTicker
+namespace CallWall.Web
 {
     public static class RegisterHubs
     {

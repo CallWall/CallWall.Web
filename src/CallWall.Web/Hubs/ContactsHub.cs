@@ -53,47 +53,4 @@ namespace CallWall.Web.Hubs
             base.Dispose(disposing);
         }
     }
-
-    //public class SessionSecurityTokenHandler : SecurityTokenHandler
-    //{
-    //    public override string[] GetTokenTypeIdentifiers()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public override Type TokenType
-    //    {
-    //        get { throw new NotImplementedException(); }
-    //    }
-
-    //    public override System.Collections.ObjectModel.ReadOnlyCollection<System.Security.Claims.ClaimsIdentity> ValidateToken(SecurityToken token)
-    //    {
-    //        return base.ValidateToken(token);
-    //    }
-    //}
-    //public class CustomSessionSecurityTokenHandler : SessionSecurityTokenHandler
-    //{
-    //    protected override void ValidateSession(SessionSecurityToken securityToken)
-    //    {
-
-
-    //        base.ValidateSession(securityToken);
-
-    //        var ident = securityToken.ClaimsPrincipal.Identity as ClaimsIdentity;
-
-    //        if (ident == null)
-    //            throw new SecurityTokenException();
-
-    //        var isa = ident.Claims.First().ValueType == ClaimTypes.Sid;
-    //        var sessionClaim = ident.Claims.FirstOrDefault(c => c.ValueType == ClaimTypes.Sid);
-
-    //        if (sessionClaim == null)
-    //            throw new SecurityTokenExpiredException();
-
-    //        //if (!NotificationHub.IsSessionValid(sessionClaim.Value))
-    //        //{
-    //        //    throw new SecurityTokenExpiredException();
-    //        //}
-    //    }
-    //}
 }
