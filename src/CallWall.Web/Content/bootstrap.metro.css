@@ -6206,9 +6206,9 @@ li {
   padding-top: 10px;
   color: #999999;
 }
-.navbar .nav .active > a,
+.navbar .nav > li > a.active,
 .navbar .nav > li > a:hover {
-  color: #333333;
+  /*color: #333333; --Removed by Lee Campbell for CallWall*/
   text-decoration: none;
 }
 .navbar .nav > .active > a,
