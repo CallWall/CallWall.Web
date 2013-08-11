@@ -20,7 +20,7 @@ namespace CallWall.Web.Controllers
         public ActionResult Index()
         {
             //TODO: I think this can be done with Attributes? Is that what I want? Is that easy to test?
-            if(User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated)
             {
                 return View();
             }
@@ -35,6 +35,11 @@ namespace CallWall.Web.Controllers
         public ActionResult Contact()
         {
             Console.WriteLine(User.Identity);
+            return View();
+        }
+
+        public ActionResult Download()
+        {
             return View();
         }
 

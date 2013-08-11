@@ -214,6 +214,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\ContactsHub.cs" />
+    <Compile Include="MenuHelperExtensions.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\ContactSummary.cs" />
     <Compile Include="Models\IContactAssociation.cs" />
@@ -238,8 +239,12 @@
     <Content Include="Content\bootstrap.default.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\AnonContact.svg" />
+    <Content Include="Content\images\Browser.svg" />
+    <Content Include="Content\images\Desktop.svg" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
+    <Content Include="Content\images\Laptop.svg" />
+    <Content Include="Content\images\Smartphone.svg" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -369,6 +374,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
+    <Content Include="Views\Home\Download.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
