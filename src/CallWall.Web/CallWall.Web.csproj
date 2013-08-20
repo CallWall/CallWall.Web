@@ -217,20 +217,22 @@
     <Compile Include="MenuHelperExtensions.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\ContactSummary.cs" />
-    <Compile Include="Models\IContactAssociation.cs" />
-    <Compile Include="Models\IContactProfile.cs" />
-    <Compile Include="Models\IContactSummary.cs" />
-    <Compile Include="Models\IPersonalIdentifier.cs" />
-    <Compile Include="Models\IProviderDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\Google\BatchOperationPage.cs" />
+    <Compile Include="Providers\Google\AccountConfiguration.cs" />
     <Compile Include="Providers\Google\GoogleAuthentication.cs" />
     <Compile Include="Providers\Google\GoogleContactProfileTranslator.cs" />
     <Compile Include="Providers\Google\GoogleContactsProvider.cs" />
+    <Compile Include="Providers\Google\ResourceScope.cs" />
     <Compile Include="Providers\Google\ISession.cs" />
     <Compile Include="Providers\Google\Session.cs" />
+    <Compile Include="Providers\IContactsProvider.cs" />
     <Compile Include="Providers\ISecurityProvider.cs" />
     <Compile Include="Providers\SecurityProvider.cs" />
+    <Compile Include="Unity\EnumerableResolutionStrategy.cs" />
+    <Compile Include="Unity\GenericSupportExtension.cs" />
+    <Compile Include="Unity\LazyResolveBuildPlanPolicy.cs" />
+    <Compile Include="Unity\UnityContainerExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -243,6 +245,9 @@
     <Content Include="Content\images\Desktop.svg" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
+    <Content Include="Content\images\Google\Contacts_48x48.png" />
+    <Content Include="Content\images\Google\Email_48x48.png" />
+    <Content Include="Content\images\Google\GoogleIcon.svg" />
     <Content Include="Content\images\Laptop.svg" />
     <Content Include="Content\images\Smartphone.svg" />
     <Content Include="Content\images\Tablet.svg" />
@@ -376,6 +381,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Home\Download.cshtml" />
+    <Content Include="Views\Account\_OAuthAccountListPartial.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\AccountConfiguration.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ResourceScope.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -383,9 +391,24 @@
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CallWall.Core\CallWall.Core.csproj">
+      <Project>{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}</Project>
+      <Name>CallWall.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug %28With Fakes%29|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAKE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

@@ -1,13 +1,6 @@
-﻿@model CallWall.Web.Models.LoginModel
-
-@{
+﻿@{
     ViewBag.Title = "Log in";
 }
-
-<hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-</hgroup>
-
 <!--
     Offer just simple links to the providers to login via their homepage (like stackoverflow)
     Suggest that if you are new, then it is best to register (or do we just bounce them back to the empty Account/Manage view)
@@ -16,7 +9,7 @@
 
 <section class="social" id="socialLoginForm">
     <h2>Log in via one of your CallWall associated social media accounts.</h2>
-    @Html.Action("ExternalLoginsList", new { ReturnUrl = ViewBag.ReturnUrl })
+    @Html.Action("OAuthProviderList", new { ReturnUrl = ViewBag.ReturnUrl })
 </section>
 
 @section Scripts {

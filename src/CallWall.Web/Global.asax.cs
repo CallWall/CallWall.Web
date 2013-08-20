@@ -22,15 +22,14 @@ namespace CallWall.Web
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             Bootstrapper.Initialise();
-
         }
 
         protected void FormsAuthentication_OnAuthentication(object sender, FormsAuthenticationEventArgs args)
         {
             //HACK: How do I inject the security provider into the global asax?
             //Perhaps this : http://www.hanselman.com/blog/IPrincipalUserModelBinderInASPNETMVCForEasierTesting.aspx 
-            var securityProvider = new SecurityProvider();
-            var principal = securityProvider.GetPrincipal(args.Context.Request);
+            //var securityProvider = new SecurityProvider();
+            var principal = SecurityProvider.GetPrincipal(args.Context.Request);
             if (principal != null)
                 args.Context.User = principal;
         }

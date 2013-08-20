@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CallWall.Web.Models
+namespace CallWall
 {
     public interface IContactSummary
     {

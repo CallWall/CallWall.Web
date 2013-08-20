@@ -5,16 +5,6 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.Providers.Google
 {
-    public interface ISession
-    {
-        string Provider { get; }
-        string AccessToken { get; }
-        string RefreshToken { get; }
-        DateTimeOffset Expires { get; }
-        bool HasExpired();
-        ISet<Uri> AuthorizedResources { get; }
-    }
-
     public static class SessionExtensions
     {
         public static string ToJson(this ISession session)

@@ -29,6 +29,5 @@ namespace CallWall.Web
 
             return new MvcHtmlString(string.Format("<li{0}>{1}</li>", listClass, link));
         }
-
     }
 }

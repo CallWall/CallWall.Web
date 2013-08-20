@@ -1,8 +1,8 @@
-﻿namespace CallWall.Web.Models
+﻿namespace CallWall
 {
     public interface IPersonalIdentifier
     {
-        IProviderDescription Provider { get; }
+        IAccountConfiguration Account { get; }
         string IdentifierType { get; }
         string Value { get; }
     }

@@ -6,11 +6,10 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using CallWall.Web.Models;
 
 namespace CallWall.Web.Providers.Google
 {
-    public class GoogleContactsProvider
+    public class GoogleContactsProvider : IContactsProvider
     {
         public IObservable<IContactSummary> GetContacts(ISession session)
         {
@@ -36,13 +35,14 @@ namespace CallWall.Web.Providers.Google
                 yield return batchPage;
             }
         }
-private BatchOperationPage<IContactSummary> GetContactPage(ISession session, int startIndex)
+        private BatchOperationPage<IContactSummary> GetContactPage(ISession session, int startIndex)
         {
             var client = new HttpClient();
 
             var request = new HttpRequestMessage(HttpMethod.Get, "https://www.google.com/m8/feeds/contacts/default/full?access_token=" + HttpUtility.UrlEncode(session.AccessToken) + "&start-index=" + startIndex);
             request.Headers.Add("GData-Version", "3.0");
 
+            //TODO: Add error handling (not just exceptions but also non 200 responses -LC
             var response = client.SendAsync(request);
             var contactResponse = response.ContinueWith(r => r.Result.Content.ReadAsStringAsync()).Unwrap().Result;
 

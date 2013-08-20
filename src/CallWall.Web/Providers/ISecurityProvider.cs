@@ -1,14 +1,15 @@
-﻿using System.Security.Principal;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using CallWall.Web.Providers.Google;
 
 namespace CallWall.Web.Providers
 {
     public interface ISecurityProvider
     {
-        IPrincipal GetPrincipal(HttpRequest request);
+        //IPrincipal GetPrincipal(HttpRequest request);
         void SetPrincipal(Controller controller, ISession session);
         void LogOff();
+
+        IAccountAuthentication GetAuthenticationProvider(string account);
+        IEnumerable<IAccountConfiguration> GetAccountConfigurations();
     }
 }

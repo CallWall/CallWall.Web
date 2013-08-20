@@ -10,14 +10,10 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.Providers.Google
 {
-    public interface IGoogleAuthentication
+    public class GoogleAuthentication : IAccountAuthentication
     {
-        Uri AuthenticationUri(string redirectUri, IList<string> scopes);
-        ISession CreateSession(string code, string state);
-    }
+        public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
 
-    public class GoogleAuthentication : IGoogleAuthentication
-    {
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
             var uriBuilder = new StringBuilder();
@@ -25,7 +21,7 @@ namespace CallWall.Web.Providers.Google
             uriBuilder.Append("?scope=");
             var scopeSsv = string.Join(" ", scopes);
             uriBuilder.Append(HttpUtility.UrlEncode(scopeSsv));
-            
+
             uriBuilder.Append("&redirect_uri=");
             uriBuilder.Append(HttpUtility.UrlEncode(redirectUri));
 
@@ -48,8 +44,8 @@ namespace CallWall.Web.Providers.Google
             var accessTokenResponse = response.Result.Content.ReadAsStringAsync();
             var json = JObject.Parse(accessTokenResponse.Result);
             var resources = authState.Scopes.Select(s => new Uri(s));
-            
-            if(json["error"]!=null)
+
+            if (json["error"] != null)
                 throw new AuthenticationException((string)json["error"]);
 
             return new Session(
@@ -82,6 +78,8 @@ namespace CallWall.Web.Providers.Google
             {
                 return JsonConvert.DeserializeObject<AuthState>(state);
             }
+
+            public string Account { get { return "Google"; } }
 
             public string RedirectUri { get; set; }
 

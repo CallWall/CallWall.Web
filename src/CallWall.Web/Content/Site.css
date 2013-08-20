@@ -63,3 +63,17 @@ div.contact-card td.title h3 {
     max-width: 200px; 
     overflow: hidden;
 }
+
+img.account-icon {
+    height: 40px;
+    max-height: 40px;
+}
+
+img.resource-scope-icon {
+    max-height: 48px;
+    max-width: 48px;
+    margin-right: 10px;
+}
+input[type=checkbox] {
+    vertical-align: baseline;
+}

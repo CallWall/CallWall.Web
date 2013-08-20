@@ -14,32 +14,28 @@ namespace CallWall.Web.Hubs
     [HubName("contacts")]
     public class ContactsHub : Hub
     {
+        private readonly IContactsProvider _contactsProvider;
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
-        public ContactsHub()
+        public ContactsHub(IContactsProvider contactsProvider)
         {
-            
+            _contactsProvider = contactsProvider;
         }
 
-        //public void RequestContactSummaryStream()
-        //{
-        //    var securityProvider = new SecurityProvider();
-        //    var session = securityProvider.GetSession(Context, "google");
-
-        //    if (session == null)
-        //        return;
-        //    var gContactProvider = new GoogleContactsProvider();
-        //    var subscription = gContactProvider.GetContacts(session)
-        //                                       .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact));
-        //    _contactsSummarySubsription.Disposable = subscription;
-        //}
         public void RequestContactSummaryStream()
         {
-            if (this.Context.User.Identity.IsAuthenticated)
-            {
-                Clients.Caller.ReceiveContactSummary(new ContactSummary("Fake", null, new[] {"Fake", "Test"}));
-            }
+            var session = Context.User.ToSession();
+            var subscription = _contactsProvider.GetContacts(session)
+                                               .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact));
+            _contactsSummarySubsription.Disposable = subscription;
         }
+        //public void RequestContactSummaryStream()
+        //{
+        //    if (this.Context.User.Identity.IsAuthenticated)
+        //    {
+        //        Clients.Caller.ReceiveContactSummary(new ContactSummary("Fake", null, new[] { "Fake", "Test" }));
+        //    }
+        //}
 
         public override System.Threading.Tasks.Task OnDisconnected()
         {

@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace CallWall.Web.Models
+namespace CallWall
 {
-    public interface IProviderDescription
+    public interface IResourceScope
     {
         string Name { get; }
+        Uri Resource { get; }
         Uri Image { get; }
     }
 }

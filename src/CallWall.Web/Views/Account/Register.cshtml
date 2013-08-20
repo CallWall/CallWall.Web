@@ -1,11 +1,9 @@
-﻿@model CallWall.Web.Models.RegisterModel
-@{
+﻿@{
     ViewBag.Title = "Register";
 }
 
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-    <h2>Create a new account.</h2>
+    <h2>Register via your social media accounts.</h2>
 </hgroup>
 
 <!--
@@ -15,31 +13,9 @@
     There may be mandatory resources for a provider, and some resources may have dependencies on other resources.
     -->
 
-
-
-    @using (Html.BeginForm()) {
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
-
-    <fieldset>
-        <legend>Registration Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.UserName)
-                @Html.TextBoxFor(m => m.UserName)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword)
-            </li>
-        </ol>
-        <input type="submit" value="Register" />
-    </fieldset>
-}
+<section class="social" id="socialLoginForm">
+    @Html.Action("OAuthProviderList", new { ReturnUrl = ViewBag.ReturnUrl })
+</section>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

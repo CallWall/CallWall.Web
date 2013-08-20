@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -11,7 +13,19 @@ namespace CallWall.Web.Providers
 {
     public class SecurityProvider : ISecurityProvider
     {
-        public void SetPrincipal(Controller controller,ISession session)
+        private readonly IEnumerable<IAccountAuthentication> _authenticationProviders;
+        internal const string ProviderTypeKey = "http://callwall.com/identity/Provider";
+        internal const string AccessTokenTypeKey = "http://callwall.com/identity/AccessToken";
+        internal const string RefreshTokenTypeKey = "http://callwall.com/identity/RefreshToken";
+        internal const string ExpiryTypeKey = "http://callwall.com/identity/Expires";
+        internal const string ResourceTypeKey = "http://callwall.com/identity/Resource";
+
+        public SecurityProvider(IEnumerable<IAccountAuthentication> authenticationProviders)
+        {
+            _authenticationProviders = authenticationProviders;
+        }
+        
+        public void SetPrincipal(Controller controller, ISession session)
         {
             var authTicket = new FormsAuthenticationTicket(1, "userNameGoesHere", DateTime.UtcNow, DateTime.MaxValue, true, session.ToJson(), "CallWallAuth");
             var encTicket = FormsAuthentication.Encrypt(authTicket);
@@ -23,9 +37,19 @@ namespace CallWall.Web.Providers
         {
             FormsAuthentication.SignOut();
         }
-        
-        
-        public IPrincipal GetPrincipal(HttpRequest request)
+
+        public IAccountAuthentication GetAuthenticationProvider(string account)
+        {
+            return _authenticationProviders.Single(ap => string.Equals(ap.Configuration.Name, account, StringComparison.Ordinal));
+        }
+
+        public IEnumerable<IAccountConfiguration> GetAccountConfigurations()
+        {
+            return _authenticationProviders.Select(ap => ap.Configuration);
+        }
+
+
+        public static IPrincipal GetPrincipal(HttpRequest request)
         {
             if (!FormsAuthentication.CookiesSupported) return null;
             HttpCookie authCookie = request.Cookies[FormsAuthentication.FormsCookieName];
@@ -33,7 +57,7 @@ namespace CallWall.Web.Providers
             if (authCookie != null)
             {
                 var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
-                if (authTicket == null) 
+                if (authTicket == null)
                     return null;
 
                 var session = authTicket.UserData.FromJson();
@@ -46,14 +70,14 @@ namespace CallWall.Web.Providers
         private static IPrincipal SessionToPrincipal(ISession session)
         {
             var claims = session.AuthorizedResources
-                                .Select(r => new Claim("http://callwall.com/identity/Resource", r.ToString()))
+                                .Select(r => new Claim(ResourceTypeKey, r.ToString()))
                                 .ToList();
             claims.AddRange(new[]
                 {
-                    new Claim("http://callwall.com/identity/AccessToken", session.Provider),
-                    new Claim("http://callwall.com/identity/AccessToken", session.AccessToken),
-                    new Claim("http://callwall.com/identity/AccessToken", session.RefreshToken),
-                    new Claim("http://callwall.com/identity/AccessToken", session.Expires.ToString("o"))
+                    new Claim(ProviderTypeKey, session.Provider),
+                    new Claim(AccessTokenTypeKey, session.AccessToken),
+                    new Claim(RefreshTokenTypeKey, session.RefreshToken),
+                    new Claim(ExpiryTypeKey, session.Expires.ToString("o"))
                 });
 
             var principal = new ClaimsPrincipal(new[]
@@ -61,6 +85,38 @@ namespace CallWall.Web.Providers
                     new ClaimsIdentity(claims, AuthenticationTypes.Password)
                 });
             return principal;
+        }
+    }
+
+    public static class SecurityExtensions
+    {
+        //public static ISession ToSession(this IPrincipal user)
+        //{
+        //    var principal = user as ClaimsPrincipal;
+        //    if (principal == null) return null;
+
+        //    string provider = principal.FindFirst(SecurityProvider.ProviderTypeKey).Value;
+        //    string accessToken = principal.FindFirst(SecurityProvider.AccessTokenTypeKey).Value;
+        //    string refreshToken = principal.FindFirst(SecurityProvider.RefreshTokenTypeKey).Value;
+        //    string strExpiry = principal.FindFirst(SecurityProvider.ExpiryTypeKey).Value;
+        //    var expiry = DateTimeOffset.ParseExact(strExpiry, "o", CultureInfo.InvariantCulture);
+        //    var resources = principal.FindAll(SecurityProvider.ResourceTypeKey)
+        //                             .Select(c => new Uri(c.Value));
+        //    var session = new Session(accessToken, refreshToken, expiry, resources);
+
+        //    return session;
+        //}
+        public static ISession ToSession(this IPrincipal user)
+        {
+            FormsIdentity ident = user.Identity as FormsIdentity;
+            if (ident != null)
+            {
+                FormsAuthenticationTicket ticket = ident.Ticket;
+                string userDataString = ticket.UserData;
+                var session = userDataString.FromJson();
+                return session;
+            }
+            return null;
         }
     }
 }
