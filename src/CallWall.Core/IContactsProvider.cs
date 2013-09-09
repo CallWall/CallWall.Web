@@ -1,8 +1,6 @@
 ﻿using System;
-using CallWall.Web.Models;
-using CallWall.Web.Providers.Google;
 
-namespace CallWall.Web.Providers
+namespace CallWall.Web
 {
     public interface IContactsProvider
     {

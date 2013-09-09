@@ -226,7 +226,6 @@
     <Compile Include="Providers\Google\ResourceScope.cs" />
     <Compile Include="Providers\Google\ISession.cs" />
     <Compile Include="Providers\Google\Session.cs" />
-    <Compile Include="Providers\IContactsProvider.cs" />
     <Compile Include="Providers\ISecurityProvider.cs" />
     <Compile Include="Providers\SecurityProvider.cs" />
     <Compile Include="Unity\EnumerableResolutionStrategy.cs" />
@@ -392,9 +391,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CallWall.Core\CallWall.Core.csproj">
-      <Project>{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}</Project>
-      <Name>CallWall.Core</Name>
+    <ProjectReference Include="..\CallWall.Core\CallWall.Web.Core.csproj">
+      <Project>{c7ce45a6-b602-4287-a3d8-ef91c0701dc9}</Project>
+      <Name>CallWall.Web.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

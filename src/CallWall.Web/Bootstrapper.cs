@@ -38,14 +38,14 @@ namespace CallWall.Web
         public static void RegisterTypes(IUnityContainer container)
         {
             container.RegisterType<Providers.ISecurityProvider, Providers.SecurityProvider>();
-            container.RegisterType<Providers.IContactsProvider, Providers.Google.GoogleContactsProvider>();
+            container.RegisterType<IContactsProvider, Providers.Google.GoogleContactsProvider>();
             container.RegisterType<IAccountAuthentication, Providers.Google.GoogleAuthentication>("GoogleAuthentication");
             container.RegisterType<ContactsHub>(new InjectionFactory(CreateContactsHub));
         }
 
         private static object CreateContactsHub(IUnityContainer arg)
         {
-            var hub = new ContactsHub(arg.Resolve<Providers.IContactsProvider>());
+            var hub = new ContactsHub(arg.Resolve<IContactsProvider>());
             return hub;
         }
     }

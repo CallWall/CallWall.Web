@@ -7,8 +7,8 @@
     <ProjectGuid>{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CallWall</RootNamespace>
-    <AssemblyName>CallWall.Core</AssemblyName>
+    <RootNamespace>CallWall.Web</RootNamespace>
+    <AssemblyName>CallWall.Web.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="IAccountAuthentication.cs" />
     <Compile Include="IAccountConfiguration.cs" />
+    <Compile Include="IContactsProvider.cs" />
     <Compile Include="IContactSummary.cs" />
     <Compile Include="IPersonalIdentifier.cs" />
     <Compile Include="IResourceScope.cs" />
