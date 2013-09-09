@@ -391,7 +391,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CallWall.Core\CallWall.Web.Core.csproj">
+    <ProjectReference Include="..\CallWall.Web.Core\CallWall.Web.Core.csproj">
       <Project>{c7ce45a6-b602-4287-a3d8-ef91c0701dc9}</Project>
       <Name>CallWall.Web.Core</Name>
     </ProjectReference>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CallWall
+namespace CallWall.Web
 {
     public interface ISession
     {

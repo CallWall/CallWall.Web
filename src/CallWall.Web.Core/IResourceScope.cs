@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CallWall
+namespace CallWall.Web
 {
     public interface IResourceScope
     {

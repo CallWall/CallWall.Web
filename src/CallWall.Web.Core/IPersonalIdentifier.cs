@@ -1,4 +1,4 @@
-﻿namespace CallWall
+﻿namespace CallWall.Web
 {
     public interface IPersonalIdentifier
     {
