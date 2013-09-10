@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CallWall.Web.Models
+namespace CallWall.Web.GoogleProvider
 {
     public class ContactSummary : IContactSummary
     {

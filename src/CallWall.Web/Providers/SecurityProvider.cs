@@ -7,7 +7,6 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using CallWall.Web.Providers.Google;
 
 namespace CallWall.Web.Providers
 {
@@ -24,10 +23,22 @@ namespace CallWall.Web.Providers
         {
             _authenticationProviders = authenticationProviders;
         }
-        
+
+        public ISession GetSession(IPrincipal user)
+        {
+            FormsIdentity ident = user.Identity as FormsIdentity;
+            if (ident != null)
+            {
+                return GetSession(ident.Ticket);
+            }
+            return null;
+        }
+
+
         public void SetPrincipal(Controller controller, ISession session)
         {
-            var authTicket = new FormsAuthenticationTicket(1, "userNameGoesHere", DateTime.UtcNow, DateTime.MaxValue, true, session.ToJson(), "CallWallAuth");
+            var state = session.Serialize();
+            var authTicket = new FormsAuthenticationTicket(1, "userNameGoesHere", DateTime.UtcNow, DateTime.MaxValue, true, state, "CallWallAuth");
             var encTicket = FormsAuthentication.Encrypt(authTicket);
             var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
             controller.Response.Cookies.Add(faCookie);
@@ -49,7 +60,7 @@ namespace CallWall.Web.Providers
         }
 
 
-        public static IPrincipal GetPrincipal(HttpRequest request)
+        public IPrincipal GetPrincipal(HttpRequest request)
         {
             if (!FormsAuthentication.CookiesSupported) return null;
             HttpCookie authCookie = request.Cookies[FormsAuthentication.FormsCookieName];
@@ -60,9 +71,11 @@ namespace CallWall.Web.Providers
                 if (authTicket == null)
                     return null;
 
-                var session = authTicket.UserData.FromJson();
-
-                return SessionToPrincipal(session);
+                var session = GetSession(authTicket);
+                if (session != null)
+                {
+                    return SessionToPrincipal(session);
+                }
             }
             return null;
         }
@@ -86,6 +99,20 @@ namespace CallWall.Web.Providers
                 });
             return principal;
         }
+
+        private ISession GetSession(FormsAuthenticationTicket ticket)
+        {
+            var sessionPayload = ticket.UserData;
+            foreach (var authenticationProvider in _authenticationProviders)
+            {
+                ISession session = null;
+                if (authenticationProvider.TryDeserialiseSession(sessionPayload, out session))
+                {
+                    return session;
+                }
+            }
+            return null;
+        }
     }
 
     public static class SecurityExtensions
@@ -106,17 +133,5 @@ namespace CallWall.Web.Providers
 
         //    return session;
         //}
-        public static ISession ToSession(this IPrincipal user)
-        {
-            FormsIdentity ident = user.Identity as FormsIdentity;
-            if (ident != null)
-            {
-                FormsAuthenticationTicket ticket = ident.Ticket;
-                string userDataString = ticket.UserData;
-                var session = userDataString.FromJson();
-                return session;
-            }
-            return null;
-        }
     }
 }

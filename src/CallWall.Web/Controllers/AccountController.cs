@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using CallWall.Web.Providers;
-using CallWall.Web.Providers.Google;
 
 namespace CallWall.Web.Controllers
 {

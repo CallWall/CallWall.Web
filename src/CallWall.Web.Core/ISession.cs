@@ -11,5 +11,6 @@ namespace CallWall.Web
         DateTimeOffset Expires { get; }
         bool HasExpired();
         ISet<Uri> AuthorizedResources { get; }
+        string Serialize();
     }
 }

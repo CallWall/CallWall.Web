@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.Providers.Google
 {
@@ -36,6 +38,13 @@ namespace CallWall.Web.Providers.Google
         public ISet<Uri> AuthorizedResources
         {
             get { return _authorizedResources; }
+        }
+
+        public string Serialize()
+        {
+            var jObject = JObject.FromObject(this);
+            var json = jObject.ToString(Formatting.None);
+            return json;
         }
 
         public override string ToString()

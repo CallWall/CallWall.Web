@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using CallWall.Web.Models;
+using CallWall.Web.GoogleProvider;
 
 namespace CallWall.Web.Providers.Google
 {

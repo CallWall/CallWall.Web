@@ -56,6 +56,29 @@ namespace CallWall.Web.Providers.Google
                 resources);
         }
 
+        public bool TryDeserialiseSession(string payload, out ISession session)
+        {
+            session = null;
+            try
+            {
+                var json = JObject.Parse(payload);
+
+                var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<Uri>>();
+
+                session = new Session(
+                    (string)json["AccessToken"],
+                    (string)json["RefreshToken"],
+                    (DateTimeOffset)json["Expires"],
+                    authorizedResources);
+                return true;
+            }
+            catch (Exception)
+            {
+                //TODO: Log this failure as Trace/Debug
+                return false;
+            }
+        }
+
         private HttpRequestMessage CreateTokenRequest(string code, string redirectUri)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, @"https://accounts.google.com/o/oauth2/token");

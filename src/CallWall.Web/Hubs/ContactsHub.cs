@@ -1,11 +1,6 @@
 ﻿using System;
-using System.IdentityModel.Tokens;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Security.Claims;
-using CallWall.Web.Models;
 using CallWall.Web.Providers;
-using CallWall.Web.Providers.Google;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
@@ -15,18 +10,20 @@ namespace CallWall.Web.Hubs
     public class ContactsHub : Hub
     {
         private readonly IContactsProvider _contactsProvider;
+        private readonly ISecurityProvider _securityProvider;
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
-        public ContactsHub(IContactsProvider contactsProvider)
+        public ContactsHub(IContactsProvider contactsProvider, ISecurityProvider securityProvider)
         {
             _contactsProvider = contactsProvider;
+            _securityProvider = securityProvider;
         }
 
         public void RequestContactSummaryStream()
         {
-            var session = Context.User.ToSession();
+            var session = _securityProvider.GetSession(Context.User);
             var subscription = _contactsProvider.GetContacts(session)
-                                               .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact));
+                                                .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact));
             _contactsSummarySubsription.Disposable = subscription;
         }
         //public void RequestContactSummaryStream()
