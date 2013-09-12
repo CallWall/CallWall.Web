@@ -46,6 +46,7 @@
     <Compile Include="IAccountConfiguration.cs" />
     <Compile Include="IContactsProvider.cs" />
     <Compile Include="IContactSummary.cs" />
+    <Compile Include="IModule.cs" />
     <Compile Include="IPersonalIdentifier.cs" />
     <Compile Include="IResourceScope.cs" />
     <Compile Include="ISession.cs" />
