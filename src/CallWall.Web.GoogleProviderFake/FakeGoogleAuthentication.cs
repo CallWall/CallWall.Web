@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.GoogleProviderFake
 {
@@ -9,17 +13,73 @@ namespace CallWall.Web.GoogleProviderFake
 
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
-            throw new NotImplementedException();
+            var uriBuilder = new StringBuilder();
+            uriBuilder.Append(redirectUri);
+            
+            uriBuilder.Append("?code=FakeCode&");
+
+            var state = new AuthState { Scopes = scopes };
+            uriBuilder.Append("&state=");
+            uriBuilder.Append(state.ToUrlEncoded());
+
+            return new Uri(uriBuilder.ToString());
+        }
+
+        public bool CanCreateSessionFromState(string code, string state)
+        {
+            return AuthState.IsValidOAuthState(state);
         }
 
         public ISession CreateSession(string code, string state)
         {
-            throw new NotImplementedException();
+            var authState = AuthState.Deserialize(state);
+            return new FakeSession(authState.Scopes);
         }
 
         public bool TryDeserialiseSession(string payload, out ISession session)
         {
-            throw new NotImplementedException();
+            if (AuthState.IsValidOAuthState(payload))
+            {
+                var authState = AuthState.Deserialize(payload);
+                session = new FakeSession(authState.Scopes);
+                return true;
+            }
+            session = null;
+            return false;
+        }
+
+        private class AuthState
+        {
+            public static bool IsValidOAuthState(string state)
+            {
+                var json = JObject.Parse(state);
+
+                JToken account;
+                if (json.TryGetValue("Account", out account))
+                {
+                    if (account.ToString() == "GoogleFake")
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            public static AuthState Deserialize(string state)
+            {
+                return JsonConvert.DeserializeObject<AuthState>(state);
+            }
+
+            public string Account { get { return "GoogleFake"; } }
+
+            public IEnumerable<string> Scopes { get; set; }
+
+            public string ToUrlEncoded()
+            {
+                var data = JsonConvert.SerializeObject(this);
+                return HttpUtility.UrlEncode(data);
+            }
         }
     }
+
+    
 }

@@ -59,6 +59,19 @@ namespace CallWall.Web.Providers
             return _authenticationProviders.Select(ap => ap.Configuration);
         }
 
+        public Uri AuthenticationUri(string account, string callBackUri, string[] resources)
+        {
+            var ap = GetAuthenticationProvider(account);
+            return ap.AuthenticationUri(callBackUri, resources);
+        }
+
+        public ISession CreateSession(string code, string state)
+        {
+            var authProvider = _authenticationProviders.Single(ap =>ap.CanCreateSessionFromState(code, state));
+            var session = authProvider.CreateSession(code, state);
+            return session;
+        }
+
 
         public IPrincipal GetPrincipal(HttpRequest request)
         {

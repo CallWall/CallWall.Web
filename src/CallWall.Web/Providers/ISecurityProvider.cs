@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 
 namespace CallWall.Web.Providers
 {
+    //TODO: Validate that all methods are still used. -LC
     public interface ISecurityProvider
     {
         IPrincipal GetPrincipal(HttpRequest request);
@@ -14,5 +16,7 @@ namespace CallWall.Web.Providers
 
         IAccountAuthentication GetAuthenticationProvider(string account);
         IEnumerable<IAccountConfiguration> GetAccountConfigurations();
+        Uri AuthenticationUri(string account, string callBackUri, string[] resource);
+        ISession CreateSession(string code, string state);
     }
 }

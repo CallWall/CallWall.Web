@@ -9,9 +9,18 @@ $(function () {
         contactsHub.client.ReceiveContactSummary = function (contact) {
             self.contacts.push(contact);
         };
+        contactsHub.client.ReceiveError = function (error) {
+            //console.log(error);
+        };
+        contactsHub.client.ReceiveComplete = function () {
+            //contactsHub.server.Disconnect();
+            //contactsHub.hub.stop();
+            //contactsHub.server.stop();
+            $.connection.hub.stop();
+        };
         self.StartHub = function () {
             $.connection.hub.start().done(function () {
-                console.log('Started');
+                //console.log('Started');
                 contactsHub.server.requestContactSummaryStream();
             });
         };

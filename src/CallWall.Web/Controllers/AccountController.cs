@@ -49,8 +49,10 @@ namespace CallWall.Web.Controllers
         public ActionResult Authenticate(string account, string[] resource)
         {
             var callBackUri = CreateCallBackUri();
-            var authenticator = _securityProvider.GetAuthenticationProvider(account);
-            var redirectUri = authenticator.AuthenticationUri(
+
+            //TODO: Change to _securityProvider.AuthenticationUri(account,callBackUri,resource);
+            //var authenticator = _securityProvider.GetAuthenticationProvider(account);
+            var redirectUri = _securityProvider.AuthenticationUri(account,
                 callBackUri,
                 resource);
 
@@ -67,10 +69,7 @@ namespace CallWall.Web.Controllers
         [AllowAnonymous]
         public void Oauth2Callback(string code, string state)
         {
-            //TODO: _securityProvider should understand which provider to use based on the state. i.e. Google is the Account.
-            var ap = _securityProvider.GetAuthenticationProvider("Google");
-
-            var session = ap.CreateSession(code, state);
+            var session = _securityProvider.CreateSession(code, state);
 
             _securityProvider.SetPrincipal(this, session);
             Response.Redirect("~/");

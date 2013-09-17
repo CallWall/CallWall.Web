@@ -9,9 +9,11 @@ namespace CallWall.Web
 
         Uri AuthenticationUri(string redirectUri, IList<string> scopes);
 
+        bool CanCreateSessionFromState(string code, string state);
         ISession CreateSession(string code, string state);
 
         
         bool TryDeserialiseSession(string payload, out ISession session);
+        
     }
 }

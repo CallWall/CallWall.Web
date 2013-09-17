@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -22,28 +23,19 @@ namespace CallWall.Web.Hubs
         public void RequestContactSummaryStream()
         {
             var session = _securityProvider.GetSession(Context.User);
+            //TODO: Return a header object that specifies the expected row count for a progress bar (will this work with composite streams?) -LC
             var subscription = _contactsProvider.GetContacts(session)
-                                                .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact));
+                                                .Subscribe(
+                                                    contact => Clients.Caller.ReceiveContactSummary(contact),
+                                                    ex => Clients.Caller.ReceiveError(ex),  //TODO: Return an error string and log the exception.
+                                                    ()=>Clients.Caller.ReceiveComplete());
             _contactsSummarySubsription.Disposable = subscription;
         }
-        //public void RequestContactSummaryStream()
-        //{
-        //    if (this.Context.User.Identity.IsAuthenticated)
-        //    {
-        //        Clients.Caller.ReceiveContactSummary(new ContactSummary("Fake", null, new[] { "Fake", "Test" }));
-        //    }
-        //}
-
-        public override System.Threading.Tasks.Task OnDisconnected()
-        {
-            _contactsSummarySubsription.Disposable = Disposable.Empty;
-            return base.OnDisconnected();
-        }
-
-        protected override void Dispose(bool disposing)
+        
+        public override Task OnDisconnected()
         {
             _contactsSummarySubsription.Dispose();
-            base.Dispose(disposing);
+            return base.OnDisconnected();
         }
     }
 }
