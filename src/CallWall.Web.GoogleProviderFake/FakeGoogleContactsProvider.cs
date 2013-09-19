@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive.Linq;
 
 namespace CallWall.Web.GoogleProviderFake
@@ -17,7 +18,8 @@ namespace CallWall.Web.GoogleProviderFake
                 };
 
             return Observable.Interval(TimeSpan.FromSeconds(1))
-                             .Zip(contacts.ToObservable(), (_, c) => c);
+                             .Zip(contacts.ToObservable(), (_, c) => c)
+                             .Concat(Observable.Throw<IContactSummary>(new IOException("Fake error")));
         }
     }
 

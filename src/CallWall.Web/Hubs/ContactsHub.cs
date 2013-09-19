@@ -27,7 +27,11 @@ namespace CallWall.Web.Hubs
             var subscription = _contactsProvider.GetContacts(session)
                                                 .Subscribe(
                                                     contact => Clients.Caller.ReceiveContactSummary(contact),
-                                                    ex => Clients.Caller.ReceiveError(ex),  //TODO: Return an error string and log the exception.
+                                                    ex =>
+                                                        {
+                                                            //TODO: _logger.Error(ex);
+                                                            Clients.Caller.ReceiveError("Error receiving contacts");
+                                                        }, 
                                                     ()=>Clients.Caller.ReceiveComplete());
             _contactsSummarySubsription.Disposable = subscription;
         }

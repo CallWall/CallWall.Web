@@ -8,8 +8,8 @@
     <input id="q" name="q" type="search" autofocus="true" />
 </hgroup>
 
+<div id="progressbar" data-bind="progress: progress"></div>
 <div id="ContactDefListBound" data-bind="template: { name: 'ContactDefTemplate', foreach: contacts }"></div>
-
 
 <script type="text/html" id="ContactDefTemplate">
     <div class="contact-card">
@@ -32,11 +32,14 @@
         </table>
     </div>
 </script>
+
 @section scripts{
-    @Scripts.Render("~//bundles/jquery")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jquerycolor")
     @Scripts.Render("~/Scripts/jquery.signalR-1.1.2.js")
     @Scripts.Render("~/signalR/hubs")
     @Scripts.Render("~/Scripts/Contacts.Observable.SignalR.js")
     @Scripts.Render("~/Scripts/knockout-2.3.0.js")
 }
+@Styles.Render("~/Content/themes/base/css")
