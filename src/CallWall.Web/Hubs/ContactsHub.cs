@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
@@ -23,16 +24,18 @@ namespace CallWall.Web.Hubs
         public void RequestContactSummaryStream()
         {
             var session = _securityProvider.GetSession(Context.User);
-            //TODO: Return a header object that specifies the expected row count for a progress bar (will this work with composite streams?) -LC
-            var subscription = _contactsProvider.GetContacts(session)
-                                                .Subscribe(
-                                                    contact => Clients.Caller.ReceiveContactSummary(contact),
-                                                    ex =>
-                                                        {
-                                                            //TODO: _logger.Error(ex);
-                                                            Clients.Caller.ReceiveError("Error receiving contacts");
-                                                        }, 
-                                                    ()=>Clients.Caller.ReceiveComplete());
+
+            var subscription = _contactsProvider.GetContactsFeed(session)
+                            .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
+                            .SelectMany(feed=>feed.Values)
+                            .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
+                                       ex =>
+                                       {
+                                            //TODO: _logger.Error(ex);
+                                            Clients.Caller.ReceiveError("Error receiving contacts");
+                                       }, 
+                                       ()=>Clients.Caller.ReceiveComplete());
+            
             _contactsSummarySubsription.Disposable = subscription;
         }
         

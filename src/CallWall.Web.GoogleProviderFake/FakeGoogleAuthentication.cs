@@ -50,6 +50,8 @@ namespace CallWall.Web.GoogleProviderFake
 
         private class AuthState
         {
+            private const string _account = "GoogleFake";
+
             public static bool IsValidOAuthState(string state)
             {
                 var json = JObject.Parse(state);
@@ -57,7 +59,7 @@ namespace CallWall.Web.GoogleProviderFake
                 JToken account;
                 if (json.TryGetValue("Account", out account))
                 {
-                    if (account.ToString() == "GoogleFake")
+                    if (account.ToString() == _account)
                     {
                         return true;
                     }
@@ -69,7 +71,7 @@ namespace CallWall.Web.GoogleProviderFake
                 return JsonConvert.DeserializeObject<AuthState>(state);
             }
 
-            public string Account { get { return "GoogleFake"; } }
+            public string Account { get { return _account; } }
 
             public IEnumerable<string> Scopes { get; set; }
 

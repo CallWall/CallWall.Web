@@ -24,13 +24,25 @@ $(function () {
     var contactDefViewModel = function () {
         var self = this, contactsHub = $.connection.contacts; // the generated client-side hub proxy
         self.contacts = ko.observableArray();
-        self.progress = ko.observable(0);
+        self.totalResults = ko.observable(0);
+        self.receivedResults = ko.observable(0);
+        self.progress = ko.computed(function () {
+            console.log('returning computed value..');
+            return 100 * self.receivedResults() / self.totalResults();
+        });
+
+        contactsHub.client.ReceivedExpectedCount = function(count) {
+            console.log('count = ' + count);
+            self.totalResults(count);
+        };
+        
         contactsHub.client.ReceiveContactSummary = function (contact) {
             console.log('OnNext');
             self.contacts.push(contact);
-            var i = self.progress();
-            i += 10;
-            self.progress(i);
+            var i = self.receivedResults();
+            console.log(i);
+            i += 1;
+            self.receivedResults(i);
         };
         contactsHub.client.ReceiveError = function (error) {
             console.log(error);
