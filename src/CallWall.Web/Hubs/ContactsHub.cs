@@ -24,7 +24,6 @@ namespace CallWall.Web.Hubs
         public void RequestContactSummaryStream()
         {
             var session = _securityProvider.GetSession(Context.User);
-
             var subscription = _contactsProvider.GetContactsFeed(session)
                             .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
                             .SelectMany(feed=>feed.Values)
