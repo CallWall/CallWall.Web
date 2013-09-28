@@ -26,27 +26,35 @@ function createCustomBindings() {
 var contactViewModel = function (contact) {
     var self = this;
     self.title = contact.Title;
+    self.titleUpperCase = self.title.toUpperCase();
     self.primaryAvatar = contact.PrimaryAvatar;
     self.tags = contact.Tags;
     self.isVisible = ko.observable(true);
+    self.filter = function (prefixTest) {
+        var isVisible = (self.titleUpperCase.toUpperCase().lastIndexOf(prefixTest, 0) === 0);
+        self.isVisible(isVisible);
+    };
 };
 var anyContactGroup = function (header) {
     var self = this;
     self.header = header;
     self.contacts = ko.observableArray();
-    self.isVisible = ko.observable(true);
+    self.isVisible = ko.computed(function () {
+        return self.contacts().length > 0;
+    });
     self.isValid = function (contact) { return true; };
     self.addContact = function (contact) {
         var vm = new contactViewModel(contact);
+        vm.filter(self.filterText);
         self.contacts.push(vm);
     };
+    self.filterText = '';
     self.filter = function (filterText) {
-        var prefixTest = filterText.toUpperCase();
+        self.filterText = filterText.toUpperCase();
         var contacts = self.contacts();
         for (var i = 0; i < contacts.length; i++) {
             var contact = contacts[i];
-            var isVisible = (contact.title.toUpperCase().lastIndexOf(prefixTest, 0) === 0);
-            contact.isVisible(isVisible);
+            contact.filter(self.filterText);
         }
     };
 };
@@ -54,21 +62,24 @@ var alphaContactGroup = function (startsWith) {
     var self = this;
     self.header = startsWith;
     self.contacts = ko.observableArray();
-    self.isVisible = ko.observable(true);
+    self.isVisible = ko.computed(function () {
+        return self.contacts().length > 0;
+    });
     self.isValid = function (contact) {
         return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
     };
     self.addContact = function (contact) {
         var vm = new contactViewModel(contact);
+        vm.filter(self.filterText);
         self.contacts.push(vm);
     };
-    self.filter = function(filterText) {
-        var prefixTest = filterText.toUpperCase();
+    self.filterText = '';
+    self.filter = function (filterText) {
+        self.filterText = filterText.toUpperCase();
         var contacts = self.contacts();
         for (var i = 0; i < contacts.length; i++) {
             var contact = contacts[i];
-            var isVisible = (contact.title.toUpperCase().lastIndexOf(prefixTest, 0) === 0);
-            contact.isVisible(isVisible);
+            contact.filter(self.filterText);
         }
     };
 };

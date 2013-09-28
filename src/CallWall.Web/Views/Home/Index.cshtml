@@ -12,7 +12,7 @@
 <div id="ContactGroupDefListBound" data-bind="template: { name: 'ContactGroupDefTemplate', foreach: contactGroups }"></div>
 
 <script type="text/html" id="ContactGroupDefTemplate">
-    <div class="contact-group">
+    <div class="contact-group" data-bind="visible: isVisible">
         <h3 data-bind="text: header"></h3>
         <div id="ContactDefListBound" data-bind="template: { name: 'ContactDefTemplate', foreach: contacts }"></div>
     </div>
