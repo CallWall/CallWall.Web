@@ -13,8 +13,8 @@ namespace CallWall.Web.Hubs
     {
         private readonly IContactsProvider _contactsProvider;
         private readonly ISecurityProvider _securityProvider;
+        private readonly ILogger _logger; 
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
-        private ILogger _logger;
 
         public ContactsHub(IContactsProvider contactsProvider, ISecurityProvider securityProvider, ILoggerFactory loggerFactory)
         {
@@ -27,15 +27,11 @@ namespace CallWall.Web.Hubs
         {
             var session = _securityProvider.GetSession(Context.User);
             var subscription = _contactsProvider.GetContactsFeed(session)
-                            .Log(_logger, "GetContactsFeed_1000ms")
                             .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
                             .SelectMany(feed=>feed.Values)
+                            .Log(_logger, "GetContactsFeed")
                             .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
-                                       ex =>
-                                       {
-                                            //TODO: _logger.Error(ex);
-                                            Clients.Caller.ReceiveError("Error receiving contacts");
-                                       }, 
+                                       ex => Clients.Caller.ReceiveError("Error receiving contacts"), 
                                        ()=>Clients.Caller.ReceiveComplete());
             
             _contactsSummarySubsription.Disposable = subscription;
