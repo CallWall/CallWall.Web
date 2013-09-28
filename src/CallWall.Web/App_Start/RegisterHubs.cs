@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Routing;
-using CallWall.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Practices.Unity;
-
-//[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RegisterHubs), "Start")]
 
 namespace CallWall.Web
 {
@@ -15,8 +12,6 @@ namespace CallWall.Web
         public static void Start(IUnityContainer container)
         {
             // Register the default hubs route: ~/signalr
-            //var container = Container.Create();
-
             var config = new HubConfiguration
                 {
                     Resolver = new UnitySignalRDependencyResolver(container)
