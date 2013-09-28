@@ -1,6 +1,6 @@
 ﻿/// <reference path="../scripts/jquery-1.9.1.js" />
 /// <reference path="../scripts/jquery.signalR-1.1.2.js" />
-/// <reference path="../scripts/knockout-2.2.0.debug.js" />
+/// <reference path="../scripts/knockout-2.3.0.debug.js" />
 
 //TODO: provide internal group sorting
 //TODO: provide search/filter while contacts still being loaded
@@ -23,7 +23,7 @@ function createCustomBindings() {
     };
 }
 
-var contactViewModel = function (contact) {
+var ContactViewModel = function (contact) {
     var self = this;
     self.title = contact.Title;
     self.titleUpperCase = self.title.toUpperCase();
@@ -35,16 +35,24 @@ var contactViewModel = function (contact) {
         self.isVisible(isVisible);
     };
 };
-var anyContactGroup = function (header) {
+var AnyContactGroup = function (header) {
     var self = this;
     self.header = header;
     self.contacts = ko.observableArray();
+    self.visibleContacts = ko.computed(function () {
+        // Represents a filtered list of planets
+        // i.e., only those contacts that are visible
+        return ko.utils.arrayFilter(self.contacts(), function (contactVm) {
+            return contactVm.isVisible();
+        });
+    }, this);
+
     self.isVisible = ko.computed(function () {
-        return self.contacts().length > 0;
+        return self.visibleContacts().length > 0;
     });
     self.isValid = function (contact) { return true; };
     self.addContact = function (contact) {
-        var vm = new contactViewModel(contact);
+        var vm = new ContactViewModel(contact);
         vm.filter(self.filterText);
         self.contacts.push(vm);
     };
@@ -53,23 +61,30 @@ var anyContactGroup = function (header) {
         self.filterText = filterText.toUpperCase();
         var contacts = self.contacts();
         for (var i = 0; i < contacts.length; i++) {
-            var contact = contacts[i];
-            contact.filter(self.filterText);
+            var contactVm = contacts[i];
+            contactVm.filter(self.filterText);
         }
     };
 };
-var alphaContactGroup = function (startsWith) {
+var AlphaContactGroup = function (startsWith) {
     var self = this;
     self.header = startsWith;
     self.contacts = ko.observableArray();
+    self.visibleContacts = ko.computed(function () {
+        // Represents a filtered list of planets
+        // i.e., only those contacts that are visible
+        return ko.utils.arrayFilter(self.contacts(), function (contactVm) {
+            return contactVm.isVisible();
+        });
+    }, this);
     self.isVisible = ko.computed(function () {
-        return self.contacts().length > 0;
+        return self.visibleContacts().length > 0;
     });
     self.isValid = function (contact) {
         return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
     };
     self.addContact = function (contact) {
-        var vm = new contactViewModel(contact);
+        var vm = new ContactViewModel(contact);
         vm.filter(self.filterText);
         self.contacts.push(vm);
     };
@@ -78,14 +93,14 @@ var alphaContactGroup = function (startsWith) {
         self.filterText = filterText.toUpperCase();
         var contacts = self.contacts();
         for (var i = 0; i < contacts.length; i++) {
-            var contact = contacts[i];
-            contact.filter(self.filterText);
+            var contactVm = contacts[i];
+            contactVm.filter(self.filterText);
         }
     };
 };
 
 
-var contactDefViewModel = function (contactsHub) {
+var ContactDefViewModel = function (contactsHub) {
     var self = this;
     self.filterText = ko.observable('');
     self.contactGroups = ko.observableArray();
@@ -108,10 +123,10 @@ var contactDefViewModel = function (contactsHub) {
         for (var i = 0; i < charList.length; i++) {
             var h = charList[i];
             console.log('loading ' + h);
-            self.contactGroups.push(new alphaContactGroup(charList[i]));
+            self.contactGroups.push(new AlphaContactGroup(charList[i]));
         }
 
-        self.contactGroups.push(new anyContactGroup('123'));
+        self.contactGroups.push(new AnyContactGroup('123'));
     };
 
     self.addContact = function (contact) {
@@ -159,7 +174,7 @@ var contactDefViewModel = function (contactsHub) {
 
 $(function () {
     // $.connection.contacts =  the generated client-side hub proxy
-    model = new contactDefViewModel($.connection.contacts);
+    model = new ContactDefViewModel($.connection.contacts);
     model.LoadContactGroups();
     createCustomBindings();
     ko.applyBindings(model);
