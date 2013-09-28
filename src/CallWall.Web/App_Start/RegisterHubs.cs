@@ -1,23 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
 using System.Web.Routing;
 using CallWall.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Practices.Unity;
-using Unity.Mvc4;
 
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RegisterHubs), "Start")]
+//[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(RegisterHubs), "Start")]
 
 namespace CallWall.Web
 {
     public static class RegisterHubs
     {
-        public static void Start()
+        public static void Start(IUnityContainer container)
         {
             // Register the default hubs route: ~/signalr
-            var container = Container.Create();
+            //var container = Container.Create();
 
             var config = new HubConfiguration
                 {

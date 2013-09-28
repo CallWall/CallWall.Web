@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 using CallWall.Web.Hubs;
+using CallWall.Web.Logging;
 using CallWall.Web.Providers;
 using CallWall.Web.Unity;
 using Microsoft.Practices.Unity;
@@ -62,6 +63,8 @@ namespace CallWall.Web
 
         public static void RegisterTypes(IUnityContainer container)
         {
+            new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
+            container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<Providers.ISecurityProvider, Providers.SecurityProvider>();
             container.RegisterType<ContactsHub>(new InjectionFactory(CreateContactsHub));
 
@@ -105,7 +108,7 @@ namespace CallWall.Web
 
         private static object CreateContactsHub(IUnityContainer arg)
         {
-            var hub = new ContactsHub(arg.Resolve<IContactsProvider>(), arg.Resolve<ISecurityProvider>());
+            var hub = new ContactsHub(arg.Resolve<IContactsProvider>(), arg.Resolve<ISecurityProvider>(), arg.Resolve<ILoggerFactory>());
             return hub;
         }
     }

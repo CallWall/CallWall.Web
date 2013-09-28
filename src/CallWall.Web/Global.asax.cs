@@ -17,6 +17,9 @@ namespace CallWall.Web
 
         protected void Application_Start()
         {
+            _container = Bootstrapper.Initialise();
+            RegisterHubs.Start(_container);
+
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);
@@ -24,7 +27,7 @@ namespace CallWall.Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            _container =  Bootstrapper.Initialise();
+            
         }
 
         protected void FormsAuthentication_OnAuthentication(object sender, FormsAuthenticationEventArgs args)

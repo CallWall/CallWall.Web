@@ -14,17 +14,20 @@ namespace CallWall.Web.Hubs
         private readonly IContactsProvider _contactsProvider;
         private readonly ISecurityProvider _securityProvider;
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
+        private ILogger _logger;
 
-        public ContactsHub(IContactsProvider contactsProvider, ISecurityProvider securityProvider)
+        public ContactsHub(IContactsProvider contactsProvider, ISecurityProvider securityProvider, ILoggerFactory loggerFactory)
         {
             _contactsProvider = contactsProvider;
             _securityProvider = securityProvider;
+            _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public void RequestContactSummaryStream()
         {
             var session = _securityProvider.GetSession(Context.User);
             var subscription = _contactsProvider.GetContactsFeed(session)
+                            .Log(_logger, "GetContactsFeed_1000ms")
                             .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
                             .SelectMany(feed=>feed.Values)
                             .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
