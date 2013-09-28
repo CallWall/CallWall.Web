@@ -4,8 +4,8 @@
 
 <hgroup>
     <h2>@ViewBag.Title</h2>
-    <label for="q" style="display: inline">Search:</label>
-    <input id="q" name="q" type="search" autofocus="true" />
+    <label for="q" style="display: inline">Filter:</label>
+    <input id="q" name="q" type="search" autofocus="true" data-bind="value: filterText, valueUpdate: 'afterkeydown'"  />
 </hgroup>
 
 <div id="progressbar" data-bind="progress: progress"></div>
@@ -19,19 +19,19 @@
 </script>
 
 <script type="text/html" id="ContactDefTemplate">
-    <div class="contact-card">
+    <div class="contact-card" data-bind="visible: isVisible">
         <table>
             <tr>
                 <td rowspan="2" class="avatar-cell">
-                    <img data-bind="attr: { src: PrimaryAvatar, alt: Title }" class="avatar-img" />
+                    <img data-bind="attr: { src: primaryAvatar, alt: title }" class="avatar-img" />
                 </td>
                 <td class="title">
-                    <h3 data-bind="text: Title"></h3>
+                    <h3 data-bind="text: title"></h3>
                 </td>
             </tr>
             <tr>
                 <td style="background: #808080;">
-                    <!-- ko foreach: Tags -->
+                    <!-- ko foreach: tags -->
                     <span class="badge" data-bind="text: $data"></span>
                     <!-- /ko -->
                 </td>

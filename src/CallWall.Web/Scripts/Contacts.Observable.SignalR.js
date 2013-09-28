@@ -3,7 +3,7 @@
 /// <reference path="../scripts/knockout-2.2.0.debug.js" />
 
 //TODO: provide internal group sorting
-//TODO: provide search/filter
+//TODO: provide search/filter while contacts still being loaded
 
 function createCustomBindings() {
     //Custom binding to allow ko to update JqueryUI progressbar
@@ -23,34 +23,72 @@ function createCustomBindings() {
     };
 }
 
+var contactViewModel = function (contact) {
+    var self = this;
+    self.title = contact.Title;
+    self.primaryAvatar = contact.PrimaryAvatar;
+    self.tags = contact.Tags;
+    self.isVisible = ko.observable(true);
+};
 var anyContactGroup = function (header) {
     var self = this;
     self.header = header;
     self.contacts = ko.observableArray();
+    self.isVisible = ko.observable(true);
     self.isValid = function (contact) { return true; };
     self.addContact = function (contact) {
-        self.contacts.push(contact);
+        var vm = new contactViewModel(contact);
+        self.contacts.push(vm);
+    };
+    self.filter = function (filterText) {
+        var prefixTest = filterText.toUpperCase();
+        var contacts = self.contacts();
+        for (var i = 0; i < contacts.length; i++) {
+            var contact = contacts[i];
+            var isVisible = (contact.title.toUpperCase().lastIndexOf(prefixTest, 0) === 0);
+            contact.isVisible(isVisible);
+        }
     };
 };
 var alphaContactGroup = function (startsWith) {
     var self = this;
     self.header = startsWith;
     self.contacts = ko.observableArray();
+    self.isVisible = ko.observable(true);
     self.isValid = function (contact) {
         return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
     };
     self.addContact = function (contact) {
-        self.contacts.push(contact);
+        var vm = new contactViewModel(contact);
+        self.contacts.push(vm);
+    };
+    self.filter = function(filterText) {
+        var prefixTest = filterText.toUpperCase();
+        var contacts = self.contacts();
+        for (var i = 0; i < contacts.length; i++) {
+            var contact = contacts[i];
+            var isVisible = (contact.title.toUpperCase().lastIndexOf(prefixTest, 0) === 0);
+            contact.isVisible(isVisible);
+        }
     };
 };
 
+
 var contactDefViewModel = function (contactsHub) {
     var self = this;
+    self.filterText = ko.observable('');
     self.contactGroups = ko.observableArray();
     self.totalResults = ko.observable(0);
     self.receivedResults = ko.observable(0);
     self.progress = ko.computed(function () {
         return 100 * self.receivedResults() / self.totalResults();
+    });
+
+    var filterTextChangeSubscription = self.filterText.subscribe(function (newFilterText) {
+        var cgs = self.contactGroups();
+        for (var i = 0; i < cgs.length; i++) {
+            cgs[i].filter(newFilterText);
+        }
     });
 
     self.LoadContactGroups = function () {
