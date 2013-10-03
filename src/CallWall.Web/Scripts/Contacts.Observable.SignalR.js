@@ -27,7 +27,12 @@ var ContactViewModel = function (contact) {
     var self = this;
     self.title = contact.Title;
     self.titleUpperCase = self.title.toUpperCase();
-    self.primaryAvatar = contact.PrimaryAvatar;
+    if (contact.PrimaryAvatar == null) {
+        self.primaryAvatar = '/Content/images/AnonContact.svg';
+    } else {
+        self.primaryAvatar = contact.PrimaryAvatar;
+    }
+    
     self.tags = contact.Tags;
     self.isVisible = ko.observable(true);
     self.filter = function (prefixTest) {
@@ -40,8 +45,6 @@ var AnyContactGroup = function (header) {
     self.header = header;
     self.contacts = ko.observableArray();
     self.visibleContacts = ko.computed(function () {
-        // Represents a filtered list of planets
-        // i.e., only those contacts that are visible
         return ko.utils.arrayFilter(self.contacts(), function (contactVm) {
             return contactVm.isVisible();
         });
@@ -109,6 +112,7 @@ var ContactDefViewModel = function (contactsHub) {
     self.progress = ko.computed(function () {
         return 100 * self.receivedResults() / self.totalResults();
     });
+    self.isProcessing = ko.observable(true);
 
     var filterTextChangeSubscription = self.filterText.subscribe(function (newFilterText) {
         var cgs = self.contactGroups();
@@ -165,9 +169,11 @@ var ContactDefViewModel = function (contactsHub) {
     };
     contactsHub.client.ReceiveError = function (error) {
         console.log(error);
+        self.isProcessing(false);
     };
     contactsHub.client.ReceiveComplete = function () {
         console.log('OnComplete');
+        self.isProcessing(false);
         $.connection.hub.stop();
     };
 };

@@ -17,6 +17,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProvider
 		{99018229-EAA3-406F-BF5B-0EB28E4B30F0} = {99018229-EAA3-406F-BF5B-0EB28E4B30F0}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E66FC3B3-CF48-47EA-B023-A372300D352A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (With Fakes)|Any CPU = Debug (With Fakes)|Any CPU
