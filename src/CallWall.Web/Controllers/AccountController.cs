@@ -17,10 +17,7 @@ namespace CallWall.Web.Controllers
         {
             return View();
         }
-
-        //TODO: put the RegisterOAuth method here and rip the logic out of the home controller
-
-
+        
         public ActionResult LogIn()
         {
             return View();
@@ -30,7 +27,6 @@ namespace CallWall.Web.Controllers
         {
             return View();
         }
-
 
         public ActionResult LogOff()
         {
@@ -50,8 +46,6 @@ namespace CallWall.Web.Controllers
         {
             var callBackUri = CreateCallBackUri();
 
-            //TODO: Change to _securityProvider.AuthenticationUri(account,callBackUri,resource);
-            //var authenticator = _securityProvider.GetAuthenticationProvider(account);
             var redirectUri = _securityProvider.AuthenticationUri(account,
                 callBackUri,
                 resource);

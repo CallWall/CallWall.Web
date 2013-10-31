@@ -215,6 +215,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -384,6 +385,7 @@
     <Content Include="Views\Account\_OAuthAccountListPartial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\AccountConfiguration.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ResourceScope.cshtml" />
+    <Content Include="Views\Contact\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
