@@ -1,32 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Routing;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Practices.Unity;
 
 namespace CallWall.Web
 {
-    //public static class RegisterHubs
-    //{
-    //    public static void Start(IUnityContainer container)
-    //    {
-    //        // Register the default hubs route: ~/signalr
-    //        var config = new HubConfiguration
-    //            {
-    //                Resolver = new UnitySignalRDependencyResolver(container)
-    //            };
-
-    //        RouteTable.Routes.MapHubs(config);
-    //    }
-    //}
-
     internal class UnitySignalRDependencyResolver : DefaultDependencyResolver
     {
         private readonly IUnityContainer _container;
         public UnitySignalRDependencyResolver(IUnityContainer container)
         {
-            if(container==null) throw new ArgumentNullException("container");
+            if (container == null) throw new ArgumentNullException("container");
             _container = container;
         }
 
@@ -34,10 +19,10 @@ namespace CallWall.Web
         {
             var isRegistered = _container.IsRegistered(serviceType);
             object result = null;
-            if (isRegistered) 
+            if (isRegistered)
                 result = _container.Resolve(serviceType);
-            else 
-                result =  base.GetService(serviceType);
+            else
+                result = base.GetService(serviceType);
 
             return result;
         }

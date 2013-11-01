@@ -201,7 +201,6 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\RegisterHubs.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Bootstrapper.cs" />
@@ -220,6 +219,7 @@
     <Compile Include="Providers\ISecurityProvider.cs" />
     <Compile Include="Providers\SecurityProvider.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="UnitySignalRDependencyResolver.cs" />
     <Compile Include="Unity\EnumerableResolutionStrategy.cs" />
     <Compile Include="Unity\GenericSupportExtension.cs" />
     <Compile Include="Unity\LazyResolveBuildPlanPolicy.cs" />
