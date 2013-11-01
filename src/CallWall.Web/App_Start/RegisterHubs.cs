@@ -7,19 +7,19 @@ using Microsoft.Practices.Unity;
 
 namespace CallWall.Web
 {
-    public static class RegisterHubs
-    {
-        public static void Start(IUnityContainer container)
-        {
-            // Register the default hubs route: ~/signalr
-            var config = new HubConfiguration
-                {
-                    Resolver = new UnitySignalRDependencyResolver(container)
-                };
+    //public static class RegisterHubs
+    //{
+    //    public static void Start(IUnityContainer container)
+    //    {
+    //        // Register the default hubs route: ~/signalr
+    //        var config = new HubConfiguration
+    //            {
+    //                Resolver = new UnitySignalRDependencyResolver(container)
+    //            };
 
-            RouteTable.Routes.MapHubs(config);
-        }
-    }
+    //        RouteTable.Routes.MapHubs(config);
+    //    }
+    //}
 
     internal class UnitySignalRDependencyResolver : DefaultDependencyResolver
     {

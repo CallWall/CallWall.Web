@@ -106,9 +106,10 @@ namespace CallWall.Web
                    && moduleType.IsAssignableFrom(type);
         }
 
-        private static object CreateContactsHub(IUnityContainer arg)
+        private static object CreateContactsHub(IUnityContainer container)
         {
-            var hub = new ContactsHub(arg.Resolve<IContactsProvider>(), arg.Resolve<ISecurityProvider>(), arg.Resolve<ILoggerFactory>());
+            //TODO: Can this just become container.Resolve<ContactsHub>();
+            var hub = new ContactsHub(container.Resolve<IContactsProvider>(), container.Resolve<ISecurityProvider>(), container.Resolve<ILoggerFactory>());
             return hub;
         }
     }

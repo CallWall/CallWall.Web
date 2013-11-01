@@ -15,7 +15,6 @@ namespace CallWall.Web
     public class MvcApplication : System.Web.HttpApplication
     {
         private readonly ILogger _logger;
-        private IUnityContainer _container;
 
         public MvcApplication()
         {
@@ -25,13 +24,7 @@ namespace CallWall.Web
         protected void Application_Start()
         {
             _logger.Info("Starting Application...");
-            _container = Bootstrapper.Initialise();
-            RegisterHubs.Start(_container);
-            AreaRegistration.RegisterAllAreas();
-            WebApiConfig.Register(GlobalConfiguration.Configuration);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            // The Startup class now does most of the work to play nicely with OWIN.
             _logger.Info("Application started.");
         }
 
@@ -40,7 +33,7 @@ namespace CallWall.Web
             _logger.Info("Authentication user...");
             //HACK: How do I inject the security provider into the global asax?
             //Perhaps this : http://www.hanselman.com/blog/IPrincipalUserModelBinderInASPNETMVCForEasierTesting.aspx 
-            var securityProvider = _container.Resolve<ISecurityProvider>();
+            var securityProvider = Startup.Container.Resolve<ISecurityProvider>();
 
             var principal = securityProvider.GetPrincipal(args.Context.Request);
             if (principal != null)
@@ -57,9 +50,6 @@ namespace CallWall.Web
         public override void Dispose()
         {
             _logger.Info("Application being disposed.");
-            using (_container)
-            {}
-
             base.Dispose();
         }
     }
