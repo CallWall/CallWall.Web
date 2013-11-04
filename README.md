@@ -1,8 +1,10 @@
-CallWall.Web
-============
+<img align="right" src="http://leecampbell.github.io/CallWall.Web/images/icons/CallWall.Web.png" />
+# CallWall.Web
+<br clear="both"/>
 
 The CallWall.Web project represents the Website for CallWall.
 The website will need to cater for the following:
+
  1. Marketing site.
  2. ClickOnce downloads (Windows)
  3. Web implementation of CallWall
@@ -16,7 +18,8 @@ It will provide links to download the app for the appropriate installer for the 
 
 ## Downloads 
 User will be able to download the application via the download section on the marketing website.
-We will prompt a default download link for the user's current platform. IF the user is viewing on a mobile device, then take them to the appropriate app store.
+We will prompt a default download link for the user's current platform. 
+If the user is viewing on a mobile device, then take them to the appropriate app store.
 
 ## User settings
 Users are able to login to CallWall with any of their accounts and manage their settings for the application.
@@ -28,6 +31,7 @@ Once logged in, they are able to link accounts e.g. Twitter, Google, FaceBook, M
 CallWall will provide a hub for users to aggregate their social media contacts together.
 The cloud services will provide a common data model for CallWall clients to consume data aggreated across various accounts.
 The benefits of using a cloud service instead of having clients connect to the social media service directly include:
+
  1. Single point of upgrade when 3rd party services change
  2. Allow access to users that would otherwise be blocked by firewalls to access social media data. i.e. Most banks block gmail, Hotmail, FB etc.
  3. Less data for clients to download. As the server can pre filter the data (like large emails & photos) and send the client a compressed feed.
