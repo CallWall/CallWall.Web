@@ -9,7 +9,8 @@ The website will need to cater for the following:
  2. ClickOnce downloads (Windows)
  3. Web implementation of CallWall
  4. Settings
- 4. Cloud services
+ 5. Cloud services
+ 6. Financing
 
 
 ## Marketing website 
@@ -21,9 +22,17 @@ User will be able to download the application via the download section on the ma
 We will prompt a default download link for the user's current platform. 
 If the user is viewing on a mobile device, then take them to the appropriate app store.
 
+## Web dashboard
+users will be able to user the website as the dashboard if they dont want to install the WIndowsDesktop or Windows App version.
+This will provide a broader reach i.e. to OSX, Android and other platforms.
+Other Platforms may still require a small java service to be installed to launch the Web dashboard in full screen mode.
+
+The Web implementation can also serve as the Web Api for installed applications.
+This will allow users behind corporate firewalls to still get readonly access to their social meida contacts.
+
 ## User settings
 Users are able to login to CallWall with any of their accounts and manage their settings for the application.
-User can register for CallWall by simply loging-in in with OAuth.
+User can register for CallWall by simply logging-in in with OAuth.
 When registering they get to choose the resources they will allow CallWall to access for each account.
 Once logged in, they are able to link accounts e.g. Twitter, Google, FaceBook, Microsoft etc...
 
@@ -39,7 +48,21 @@ The benefits of using a cloud service instead of having clients connect to the s
  5. Single code base for social media integration (instead of reproduced in WPF, WinRT, Web, OSX)
  6. Provides a single base for user's to store their settings
 
+## Financing
+For the platform to be successful it will need two key features built in to it from day one : 
 
+ 1. it must be viral by nature
+ 2. it must be profitable on day one
+
+This creates a difficult balance between enticing users into previewing the application with out the need to pay up front or disclosing credit card details.
+This can be avoided by looking to other successful pricing plans like Candy Crush or WhatsApp.
+By allowing the user to use the platform for free for one year, the user is allowed to adopt the platform as a daily tool.
+The user is made aware that the first year is free, however after that, the user must either allow the platform to broadcast their usage of the tool, or be changed per Provider/Module per unit of time (Year?).
+
+This would either bring in a constant stream of cash-flow, or provide free advertising.
+
+Another option is to provide free access in exchange for successful referrals.
+This helps encourage the viral nature of the application.
 
 ## Web implementation 
 The Web implementation is effectively the Web UI over the cloud services.

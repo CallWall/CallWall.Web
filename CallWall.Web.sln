@@ -3,19 +3,60 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web", "src\CallWall.Web\CallWall.Web.csproj", "{99018229-EAA3-406F-BF5B-0EB28E4B30F0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.Core", "src\CallWall.Web.Core\CallWall.Web.Core.csproj", "{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProvider", "src\CallWall.Web.GoogleProvider\CallWall.Web.GoogleProvider.csproj", "{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}"
+	ProjectSection(ProjectDependencies) = postProject
+		{99018229-EAA3-406F-BF5B-0EB28E4B30F0} = {99018229-EAA3-406F-BF5B-0EB28E4B30F0}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProviderFake", "src\CallWall.Web.GoogleProviderFake\CallWall.Web.GoogleProviderFake.csproj", "{A09E0B89-5FA8-4493-938F-35C180D5FDEC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{99018229-EAA3-406F-BF5B-0EB28E4B30F0} = {99018229-EAA3-406F-BF5B-0EB28E4B30F0}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E66FC3B3-CF48-47EA-B023-A372300D352A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (With Fakes)|Any CPU = Debug (With Fakes)|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{99018229-EAA3-406F-BF5B-0EB28E4B30F0}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug (With Fakes)|Any CPU
+		{99018229-EAA3-406F-BF5B-0EB28E4B30F0}.Debug (With Fakes)|Any CPU.Build.0 = Debug (With Fakes)|Any CPU
 		{99018229-EAA3-406F-BF5B-0EB28E4B30F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99018229-EAA3-406F-BF5B-0EB28E4B30F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99018229-EAA3-406F-BF5B-0EB28E4B30F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99018229-EAA3-406F-BF5B-0EB28E4B30F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug (With Fakes)|Any CPU
+		{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}.Debug (With Fakes)|Any CPU.Build.0 = Debug (With Fakes)|Any CPU
+		{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug (With Fakes)|Any CPU
+		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug (With Fakes)|Any CPU
+		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug (With Fakes)|Any CPU.Build.0 = Debug (With Fakes)|Any CPU
+		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
+		{A09E0B89-5FA8-4493-938F-35C180D5FDEC} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35

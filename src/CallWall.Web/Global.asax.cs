@@ -3,7 +3,9 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
+using CallWall.Web.Logging;
 using CallWall.Web.Providers;
+using Microsoft.Practices.Unity;
 
 namespace CallWall.Web
 {
@@ -12,27 +14,43 @@ namespace CallWall.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
+        private readonly ILogger _logger;
+
+        public MvcApplication()
+        {
+            _logger =new Log4NetLogger(GetType());
+        }
+
         protected void Application_Start()
         {
-            AreaRegistration.RegisterAllAreas();
-
-            WebApiConfig.Register(GlobalConfiguration.Configuration);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            Bootstrapper.Initialise();
-
+            _logger.Info("Starting Application...");
+            // The Startup class now does most of the work to play nicely with OWIN.
+            _logger.Info("Application started.");
         }
 
         protected void FormsAuthentication_OnAuthentication(object sender, FormsAuthenticationEventArgs args)
         {
+            _logger.Info("Authentication user...");
             //HACK: How do I inject the security provider into the global asax?
             //Perhaps this : http://www.hanselman.com/blog/IPrincipalUserModelBinderInASPNETMVCForEasierTesting.aspx 
-            var securityProvider = new SecurityProvider();
+            var securityProvider = Startup.Container.Resolve<ISecurityProvider>();
+
             var principal = securityProvider.GetPrincipal(args.Context.Request);
             if (principal != null)
+            {
                 args.Context.User = principal;
+                _logger.Info("User authenticated.");
+            }
+            else
+            {
+                _logger.Info("User is anonymous.");
+            }
+        }
+
+        public override void Dispose()
+        {
+            _logger.Info("Application being disposed.");
+            base.Dispose();
         }
     }
 }
