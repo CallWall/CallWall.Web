@@ -222,9 +222,6 @@
     <Content Include="Content\images\AnonContact.svg" />
     <Content Include="Content\images\Browser.svg" />
     <Content Include="Content\images\Desktop.svg" />
-    <Content Include="Content\images\Google\Contacts_48x48.png" />
-    <Content Include="Content\images\Google\Email_48x48.png" />
-    <Content Include="Content\images\Google\GoogleIcon.svg" />
     <Content Include="Content\images\Laptop.svg" />
     <Content Include="Content\images\Smartphone.svg" />
     <Content Include="Content\images\Tablet.svg" />
@@ -322,7 +319,9 @@
     <Content Include="Scripts\knockout-3.0.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Unity.Mvc4.README.txt" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

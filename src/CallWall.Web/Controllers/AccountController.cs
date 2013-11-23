@@ -30,6 +30,7 @@ namespace CallWall.Web.Controllers
 
         public ActionResult LogOff()
         {
+            _securityProvider.LogOff();
             return new RedirectResult("/");
         }
 
