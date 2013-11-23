@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build"  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- User defined properties-->
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>.\</MSBuildCommunityTasksPath>
+    <BuildVersion Condition="'$(BuildVersion)'==''">0.0.0.1</BuildVersion>
+    <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Projects Include=".\src\CallWall.Web\CallWall.Web.csproj"/>
+    <Projects Include=".\src\CallWall.Web.Core\CallWall.Web.Core.csproj"/>
+  </ItemGroup>
+  
+  <Import Project=".\tools\MSBuild.Community.Tasks.Targets" />
+
+  <PropertyGroup>
+    <OutputDirectory>.\bin\$(Configuration)</OutputDirectory>
+    <Configuration>Release</Configuration>
+  </PropertyGroup>
+  
+  
+  <!-- User targets -->
+  <Target Name="Clean">
+  </Target>
+  
+  <Target Name="Version">
+    <AssemblyInfo CodeLanguage="CS"
+                  OutputFile=".\src\SharedAssemblyInfo.cs"
+                  AssemblyVersion="$(BuildVersion)"
+                  AssemblyFileVersion="$(BuildVersion)"
+                  AssemblyCompany="CallWall Operations Ltd"
+                  AssemblyProduct="CallWall Web"
+                  AssemblyCopyright="Copyright © CallWall Operations Ltd 2013"
+                />
+  </Target>
+  
+  <Target Name="Compile" DependsOnTargets="Clean; Version">
+    <MSBuild Projects="@(Projects)"
+             Properties="Configuration=$(Configuration)" >
+    </MSBuild>
+  </Target>
+  
+  <Target Name="Package" DependsOnTargets="Compile">
+	<Exec WorkingDirectory=".\src\CallWall.Web.Core\" 
+          Command="..\..\.nuget\nuget pack CallWall.Web.Core.csproj -IncludeReferencedProjects -Prop Configuration=$(Configuration)" />
+  </Target>
+  
+  <Target Name="Build" DependsOnTargets="Package">
+  </Target>
+  
+</Project>
