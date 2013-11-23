@@ -4,7 +4,7 @@
   <!-- User defined properties-->
   <PropertyGroup>
     <MSBuildCommunityTasksPath>.\</MSBuildCommunityTasksPath>
-    <BuildVersion Condition="'$(BuildVersion)'==''">0.0.0.1</BuildVersion>
+    <BUILD_NUMBER Condition="'$(BUILD_NUMBER)'==''">0.0.0.1</BUILD_NUMBER>
     <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
   </PropertyGroup>
 
@@ -28,8 +28,8 @@
   <Target Name="Version">
     <AssemblyInfo CodeLanguage="CS"
                   OutputFile=".\src\SharedAssemblyInfo.cs"
-                  AssemblyVersion="$(BuildVersion)"
-                  AssemblyFileVersion="$(BuildVersion)"
+                  AssemblyVersion="$(BUILD_NUMBER)"
+                  AssemblyFileVersion="$(BUILD_NUMBER)"
                   AssemblyCompany="CallWall Operations Ltd"
                   AssemblyProduct="CallWall Web"
                   AssemblyCopyright="Copyright © CallWall Operations Ltd 2013"
