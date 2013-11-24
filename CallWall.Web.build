@@ -45,6 +45,12 @@
   <Target Name="Package" DependsOnTargets="Compile">
 	<Exec WorkingDirectory=".\src\CallWall.Web.Core\" 
           Command="..\..\.nuget\nuget pack CallWall.Web.Core.csproj -IncludeReferencedProjects -Prop Configuration=$(Configuration)" />
+		  
+	<!-- <xmlpoke file="$(SolutionDir)src\CallWall.Web.Template\CallWall.Web.Template.nuspec"
+			 xpath="/package/metadata/dependencies/dependency[@id='CallWall.Web.Core']/@version"
+			 value="$(BUILD_NUMBER)" /> -->
+    <Exec WorkingDirectory=".\src\CallWall.Web.Template\" 
+          Command='..\..\.nuget\nuget pack CallWall.Web.Template.nuspec -p "CallWallVersion=$(BUILD_NUMBER)"' />
   </Target>
   
 </Project>
