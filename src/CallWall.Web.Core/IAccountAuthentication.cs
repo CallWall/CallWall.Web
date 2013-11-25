@@ -12,8 +12,6 @@ namespace CallWall.Web
         bool CanCreateSessionFromState(string code, string state);
         ISession CreateSession(string code, string state);
 
-        
-        bool TryDeserialiseSession(string payload, out ISession session);
-        
+        bool TryDeserialiseSession(string payload, out ISession session);   
     }
 }

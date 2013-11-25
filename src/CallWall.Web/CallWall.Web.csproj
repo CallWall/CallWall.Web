@@ -379,6 +379,10 @@
       <Project>{c7ce45a6-b602-4287-a3d8-ef91c0701dc9}</Project>
       <Name>CallWall.Web.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CallWall.Web.GoogleProvider\CallWall.Web.GoogleProvider.csproj">
+      <Project>{be00be07-f1c7-4998-b801-7fe1ab4d6b99}</Project>
+      <Name>CallWall.Web.GoogleProvider</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

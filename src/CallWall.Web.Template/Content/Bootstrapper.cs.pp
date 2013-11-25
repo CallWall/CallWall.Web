@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Web.Mvc;
 using $rootnamespace$.Hubs;
 using $rootnamespace$.Logging;
@@ -65,8 +63,8 @@ namespace $rootnamespace$
         {
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
-            container.RegisterType<Providers.ISecurityProvider, Providers.SecurityProvider>();
-            container.RegisterType<ContactsHub>(new InjectionFactory(CreateContactsHub));
+            container.RegisterType<ISecurityProvider, SecurityProvider>();
+            container.RegisterType<ContactsHub>();
 
             InitialiseModules(container);
         }
@@ -74,43 +72,23 @@ namespace $rootnamespace$
         private static void InitialiseModules(IUnityContainer container)
         {
             var typeRegistry = new TypeRegistry(container);
+            
+            var moduleConfig = CallWallModuleSection.GetConfig();
+            var modules = from moduleType in moduleConfig.Modules.Cast<ModuleElement>().Select(m => m.Type)
+                          select (IModule)Activator.CreateInstance(moduleType);
 
-            var providersPath = GetProvidersPath();
-
-            //Look for implementations of IModule in each assembly from providers folder
-            var modules = from file in Directory.EnumerateFiles(providersPath)
-                    where file.EndsWith(".dll")
-                    let assembly = Assembly.LoadFile(file)
-                    from type in assembly.GetTypes()
-                    where IsModule(type)
-                              select (IModule)Activator.CreateInstance(type);
-                    
             foreach (var module in modules)
             {
                 module.Initialise(typeRegistry);
             }
         }
 
-        private static string GetProvidersPath()
-        {
-            var webRoot = System.AppDomain.CurrentDomain.BaseDirectory;
-            var providersPath = Path.Combine(webRoot, @"bin\Providers");
-            return providersPath;
-        }
-
         public static bool IsModule(Type type)
         {
-            var moduleType = typeof (IModule);
+            var moduleType = typeof(IModule);
             return type.IsPublic
                    && !type.IsAbstract
                    && moduleType.IsAssignableFrom(type);
-        }
-
-        private static object CreateContactsHub(IUnityContainer container)
-        {
-            //TODO: Can this just become container.Resolve<ContactsHub>();
-            var hub = new ContactsHub(container.Resolve<IContactsProvider>(), container.Resolve<ISecurityProvider>(), container.Resolve<ILoggerFactory>());
-            return hub;
         }
     }
 }

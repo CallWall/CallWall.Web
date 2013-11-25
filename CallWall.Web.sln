@@ -8,14 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.Core", "src\CallWall.Web.Core\CallWall.Web.Core.csproj", "{C7CE45A6-B602-4287-A3D8-EF91C0701DC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProvider", "src\CallWall.Web.GoogleProvider\CallWall.Web.GoogleProvider.csproj", "{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}"
-	ProjectSection(ProjectDependencies) = postProject
-		{99018229-EAA3-406F-BF5B-0EB28E4B30F0} = {99018229-EAA3-406F-BF5B-0EB28E4B30F0}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProviderFake", "src\CallWall.Web.GoogleProviderFake\CallWall.Web.GoogleProviderFake.csproj", "{A09E0B89-5FA8-4493-938F-35C180D5FDEC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{99018229-EAA3-406F-BF5B-0EB28E4B30F0} = {99018229-EAA3-406F-BF5B-0EB28E4B30F0}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E66FC3B3-CF48-47EA-B023-A372300D352A}"
 	ProjectSection(SolutionItems) = preProject

@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CallWall.Web.GoogleProviderFake</RootNamespace>
     <AssemblyName>CallWall.Web.GoogleProviderFake</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <RestorePackages>true</RestorePackages>
@@ -36,7 +37,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug %28With Fakes%29|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\CallWall.Web\bin\Providers\</OutputPath>
+    <OutputPath>bin\Debug %28With Fakes%29\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
