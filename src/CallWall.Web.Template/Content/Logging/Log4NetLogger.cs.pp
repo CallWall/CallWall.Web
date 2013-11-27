@@ -8,7 +8,7 @@ namespace $rootnamespace$.Logging
     /// <summary>
     /// Implementation of the CallWall <see cref="ILogger"/> interface.
     /// </summary>
-    public sealed class Log4NetLogger : ILogger
+    public sealed class Log4NetLogger : CallWall.Web.ILogger
     {
         private readonly ILog _log;
 
