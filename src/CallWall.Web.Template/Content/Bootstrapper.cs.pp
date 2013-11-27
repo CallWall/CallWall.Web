@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using CallWall.Web;
 using $rootnamespace$.Hubs;
 using $rootnamespace$.Logging;
 using $rootnamespace$.Providers;

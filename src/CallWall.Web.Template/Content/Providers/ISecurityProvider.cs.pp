@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
+using CallWall.Web;
 
 namespace $rootnamespace$.Providers
 {

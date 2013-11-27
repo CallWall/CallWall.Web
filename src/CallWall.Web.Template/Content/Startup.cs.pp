@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using CallWall.Web;
 using $rootnamespace$.Logging;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
