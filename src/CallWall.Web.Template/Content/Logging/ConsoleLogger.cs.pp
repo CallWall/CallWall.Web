@@ -1,4 +1,5 @@
 ﻿using System;
+using CallWall.Web;
 
 namespace $rootnamespace$.Logging
 {
@@ -22,7 +23,6 @@ namespace $rootnamespace$.Logging
                 Console.WriteLine("{0} - {1}", level, message);
                 Console.WriteLine(exception);
             }
-
         }
     }
 }

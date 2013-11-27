@@ -1,4 +1,5 @@
 ﻿using System;
+using CallWall.Web;
 
 namespace $rootnamespace$.Logging
 {
