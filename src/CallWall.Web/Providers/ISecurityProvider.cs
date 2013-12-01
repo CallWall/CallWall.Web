@@ -7,16 +7,30 @@ using System.Web.Mvc;
 namespace CallWall.Web.Providers
 {
     //TODO: Validate that all methods are still used. -LC
-    public interface ISecurityProvider
+    public interface ISecurityProvider : IAuthenticationAccountProvider, ISessionProvider, IManagePrincipal
+    {
+      
+    }
+
+    public interface IManagePrincipal
     {
         IPrincipal GetPrincipal(HttpRequest request);
-        ISession GetSession(IPrincipal user);
         void SetPrincipal(Controller controller, ISession session);
         void LogOff();
+    }
 
-        IAccountAuthentication GetAuthenticationProvider(string account);
-        IEnumerable<IAccountConfiguration> GetAccountConfigurations();
+    public interface ISessionProvider
+    {
         Uri AuthenticationUri(string account, string callBackUri, string[] resource);
         ISession CreateSession(string code, string state);
+        ISession GetSession(IPrincipal user);
+
+
+    }
+    public interface IAuthenticationAccountProvider
+    {
+        IAccountAuthentication GetAuthenticationProvider(string account);
+        IEnumerable<IAccountConfiguration> GetAccountConfigurations();
+
     }
 }
