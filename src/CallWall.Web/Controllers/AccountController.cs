@@ -7,10 +7,12 @@ namespace CallWall.Web.Controllers
     public class AccountController : Controller
     {
         private readonly ISecurityProvider _securityProvider;
+        private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
 
-        public AccountController(ISecurityProvider securityProvider)
+        public AccountController(ISecurityProvider securityProvider, IAuthenticationProviderGateway authenticationProviderGateway)
         {
             _securityProvider = securityProvider;
+            _authenticationProviderGateway = authenticationProviderGateway;
         }
 
         public ActionResult Register()
@@ -38,7 +40,7 @@ namespace CallWall.Web.Controllers
         [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            var accountProviders = _securityProvider.GetAccountConfigurations();
+            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations();
             return PartialView("_OAuthAccountListPartial", accountProviders);
         }
 
@@ -47,7 +49,7 @@ namespace CallWall.Web.Controllers
         {
             var callBackUri = CreateCallBackUri();
 
-            var redirectUri = _securityProvider.AuthenticationUri(account,
+            var redirectUri = _authenticationProviderGateway.AuthenticationUri(account,
                 callBackUri,
                 resource);
 

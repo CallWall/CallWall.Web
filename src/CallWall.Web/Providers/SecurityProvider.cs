@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -49,22 +48,7 @@ namespace CallWall.Web.Providers
             FormsAuthentication.SignOut();
         }
 
-        public IAccountAuthentication GetAuthenticationProvider(string account)
-        {
-            return _authenticationProviders.Single(ap => string.Equals(ap.Configuration.Name, account, StringComparison.Ordinal));
-        }
-
-        public IEnumerable<IAccountConfiguration> GetAccountConfigurations()
-        {
-            return _authenticationProviders.Select(ap => ap.Configuration);
-        }
-
-        public Uri AuthenticationUri(string account, string callBackUri, string[] resources)
-        {
-            var ap = GetAuthenticationProvider(account);
-            return ap.AuthenticationUri(callBackUri, resources);
-        }
-
+       
         public ISession CreateSession(string code, string state)
         {
             var authProvider = _authenticationProviders.Single(ap =>ap.CanCreateSessionFromState(code, state));
@@ -118,7 +102,7 @@ namespace CallWall.Web.Providers
             var sessionPayload = ticket.UserData;
             foreach (var authenticationProvider in _authenticationProviders)
             {
-                ISession session = null;
+                ISession session;
                 if (authenticationProvider.TryDeserialiseSession(sessionPayload, out session))
                 {
                     return session;
