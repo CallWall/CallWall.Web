@@ -6,13 +6,17 @@ namespace CallWall.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ISecurityProvider _securityProvider;
+        private readonly IManagePrincipal _principalManger;
         private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
+        private readonly ISessionProvider _sessionProvider;
 
-        public AccountController(ISecurityProvider securityProvider, IAuthenticationProviderGateway authenticationProviderGateway)
+        public AccountController(IManagePrincipal principalManger, 
+                                 IAuthenticationProviderGateway authenticationProviderGateway, 
+                                 ISessionProvider sessionProvider)
         {
-            _securityProvider = securityProvider;
+            _principalManger = principalManger;
             _authenticationProviderGateway = authenticationProviderGateway;
+            _sessionProvider = sessionProvider;
         }
 
         public ActionResult Register()
@@ -32,7 +36,7 @@ namespace CallWall.Web.Controllers
 
         public ActionResult LogOff()
         {
-            _securityProvider.LogOff();
+            _principalManger.LogOff();
             return new RedirectResult("/");
         }
 
@@ -56,7 +60,7 @@ namespace CallWall.Web.Controllers
             return new RedirectResult(redirectUri.ToString());
         }
 
-        private string CreateCallBackUri()
+        private static string CreateCallBackUri()
         {
             var serverName = System.Web.HttpContext.Current.Request.Url;
             var callbackUri = new UriBuilder(serverName.Scheme, serverName.Host, serverName.Port, "Account/oauth2callback");
@@ -66,9 +70,9 @@ namespace CallWall.Web.Controllers
         [AllowAnonymous]
         public void Oauth2Callback(string code, string state)
         {
-            var session = _securityProvider.CreateSession(code, state);
+            var session = _sessionProvider.CreateSession(code, state);
 
-            _securityProvider.SetPrincipal(this, session);
+            _principalManger.SetPrincipal(this, session);
             Response.Redirect("~/");
         }
     }
