@@ -1,8 +1,4 @@
-﻿using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
-using System.Web.Security;
+﻿using System.Web.Security;
 using CallWall.Web.Logging;
 using CallWall.Web.Providers;
 using Microsoft.Practices.Unity;
@@ -33,7 +29,7 @@ namespace CallWall.Web
             _logger.Info("Authentication user...");
             //HACK: How do I inject the security provider into the global asax?
             //Perhaps this : http://www.hanselman.com/blog/IPrincipalUserModelBinderInASPNETMVCForEasierTesting.aspx 
-            var securityProvider = Startup.Container.Resolve<ISecurityProvider>();
+            var securityProvider = Startup.Container.Resolve<IManagePrincipal>();
 
             var principal = securityProvider.GetPrincipal(args.Context.Request);
             if (principal != null)

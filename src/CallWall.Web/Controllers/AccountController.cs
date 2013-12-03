@@ -6,11 +6,17 @@ namespace CallWall.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ISecurityProvider _securityProvider;
+        private readonly IManagePrincipal _principalManger;
+        private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
+        private readonly ISessionProvider _sessionProvider;
 
-        public AccountController(ISecurityProvider securityProvider)
+        public AccountController(IManagePrincipal principalManger, 
+                                 IAuthenticationProviderGateway authenticationProviderGateway, 
+                                 ISessionProvider sessionProvider)
         {
-            _securityProvider = securityProvider;
+            _principalManger = principalManger;
+            _authenticationProviderGateway = authenticationProviderGateway;
+            _sessionProvider = sessionProvider;
         }
 
         public ActionResult Register()
@@ -30,7 +36,7 @@ namespace CallWall.Web.Controllers
 
         public ActionResult LogOff()
         {
-            _securityProvider.LogOff();
+            _principalManger.LogOff();
             return new RedirectResult("/");
         }
 
@@ -38,7 +44,7 @@ namespace CallWall.Web.Controllers
         [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            var accountProviders = _securityProvider.GetAccountConfigurations();
+            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations();
             return PartialView("_OAuthAccountListPartial", accountProviders);
         }
 
@@ -47,14 +53,14 @@ namespace CallWall.Web.Controllers
         {
             var callBackUri = CreateCallBackUri();
 
-            var redirectUri = _securityProvider.AuthenticationUri(account,
+            var redirectUri = _authenticationProviderGateway.AuthenticationUri(account,
                 callBackUri,
                 resource);
 
             return new RedirectResult(redirectUri.ToString());
         }
 
-        private string CreateCallBackUri()
+        private static string CreateCallBackUri()
         {
             var serverName = System.Web.HttpContext.Current.Request.Url;
             var callbackUri = new UriBuilder(serverName.Scheme, serverName.Host, serverName.Port, "Account/oauth2callback");
@@ -64,9 +70,9 @@ namespace CallWall.Web.Controllers
         [AllowAnonymous]
         public void Oauth2Callback(string code, string state)
         {
-            var session = _securityProvider.CreateSession(code, state);
+            var session = _sessionProvider.CreateSession(code, state);
 
-            _securityProvider.SetPrincipal(this, session);
+            _principalManger.SetPrincipal(this, session);
             Response.Redirect("~/");
         }
     }

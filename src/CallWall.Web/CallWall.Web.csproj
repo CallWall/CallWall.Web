@@ -205,8 +205,13 @@
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="MenuHelperExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\ISecurityProvider.cs" />
-    <Compile Include="Providers\SecurityProvider.cs" />
+    <Compile Include="Providers\AuthenticationProviderGateway.cs" />
+    <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
+    <Compile Include="Providers\IManagePrincipal.cs" />
+    <Compile Include="Providers\ISessionProvider.cs" />
+    <Compile Include="Providers\PrincipalManager.cs" />
+    <Compile Include="Providers\SecurityExtensions.cs" />
+    <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UnitySignalRDependencyResolver.cs" />
     <Compile Include="Unity\EnumerableResolutionStrategy.cs" />

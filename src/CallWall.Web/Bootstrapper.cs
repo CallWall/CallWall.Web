@@ -63,7 +63,9 @@ namespace CallWall.Web
         {
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
-            container.RegisterType<ISecurityProvider, SecurityProvider>();
+            container.RegisterType<ISessionProvider, SessionProvider>();
+            container.RegisterType<IManagePrincipal, PrincipalManager>();
+            container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             container.RegisterType<ContactsHub>();
 
             InitialiseModules(container);
