@@ -206,19 +206,8 @@
     <Compile Include="MenuHelperExtensions.cs" />
     <Compile Include="Models\OAuthAccountListItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\AuthenticationProviderGateway.cs" />
-    <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
-    <Compile Include="Providers\IManagePrincipal.cs" />
-    <Compile Include="Providers\ISessionProvider.cs" />
-    <Compile Include="Providers\PrincipalManager.cs" />
-    <Compile Include="Providers\SecurityExtensions.cs" />
-    <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UnitySignalRDependencyResolver.cs" />
-    <Compile Include="Unity\EnumerableResolutionStrategy.cs" />
-    <Compile Include="Unity\GenericSupportExtension.cs" />
-    <Compile Include="Unity\LazyResolveBuildPlanPolicy.cs" />
-    <Compile Include="Unity\UnityContainerExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -338,19 +327,6 @@
     </Content>
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Images\accent.png" />
-    <Content Include="Images\bullet.png" />
-    <Content Include="Images\heroAccent.png" />
-    <Content Include="Images\orderedList0.png" />
-    <Content Include="Images\orderedList1.png" />
-    <Content Include="Images\orderedList2.png" />
-    <Content Include="Images\orderedList3.png" />
-    <Content Include="Images\orderedList4.png" />
-    <Content Include="Images\orderedList5.png" />
-    <Content Include="Images\orderedList6.png" />
-    <Content Include="Images\orderedList7.png" />
-    <Content Include="Images\orderedList8.png" />
-    <Content Include="Images\orderedList9.png" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
