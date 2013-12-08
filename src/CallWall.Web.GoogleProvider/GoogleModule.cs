@@ -4,7 +4,7 @@
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, GoogleContactsProvider>();
+            registry.RegisterType<IContactsProvider, GoogleContactsProvider>("GoogleContactsProvider");
             registry.RegisterType<IAccountAuthentication, GoogleAuthentication>("GoogleAuthentication");
         }
     }

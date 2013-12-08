@@ -1,10 +1,11 @@
-﻿using System.Security.Principal;
+﻿using System.Collections.Generic;
+using System.Security.Principal;
 
 namespace CallWall.Web.Providers
 {
     public interface ISessionProvider
     {
         ISession CreateSession(string code, string state);
-        ISession GetSession(IPrincipal user);
+        IEnumerable<ISession> GetSessions(IPrincipal user);
     }
 }

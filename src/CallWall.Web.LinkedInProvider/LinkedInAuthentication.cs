@@ -76,8 +76,8 @@ namespace CallWall.Web.LinkedInProvider
             session = null;
             try
             {
-                var json = JObject.Parse(payload);
-
+                var jsonContainer = JObject.Parse(payload);
+                var json = jsonContainer["LinkedIn"];
                 var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<string>>();
 
                 session = new Session(

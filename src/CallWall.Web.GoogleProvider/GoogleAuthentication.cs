@@ -67,8 +67,9 @@ namespace CallWall.Web.GoogleProvider
             session = null;
             try
             {
-                var json = JObject.Parse(payload);
-
+                var jsonContainer = JObject.Parse(payload);
+                var json = jsonContainer["Google"];
+               
                 var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<string>>();
 
                 session = new Session(

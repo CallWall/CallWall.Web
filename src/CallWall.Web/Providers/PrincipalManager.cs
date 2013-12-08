@@ -6,6 +6,8 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.Providers
 {
@@ -26,28 +28,35 @@ namespace CallWall.Web.Providers
 
         public IPrincipal GetPrincipal(HttpRequest request)
         {
+            return GetPrincipal(request.Cookies);
+        }
+        private IPrincipal GetPrincipal(HttpCookieCollection cookies)
+        {
+            var session = GetSessions(cookies).ToArray();
+            return !session.Any() ? SessionToPrincipal(session) : null;
+        }
+        public IEnumerable<ISession> GetSessions(HttpCookieCollection cookies)
+        {
             if (!FormsAuthentication.CookiesSupported) return null;
-            HttpCookie authCookie = request.Cookies[FormsAuthentication.FormsCookieName];
+            var authCookie = cookies[FormsAuthentication.FormsCookieName];
 
             if (authCookie != null)
             {
                 var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
-                if (authTicket == null)
-                    return null;
-
-                var session = GetSession(authTicket);
-                if (session != null)
-                {
-                    return SessionToPrincipal(session);
-                }
+                return authTicket == null ? 
+                    Enumerable.Empty<ISession>() 
+                    : GetSessions(authTicket);
             }
-            return null;
+            return Enumerable.Empty<ISession>();
         }
 
         public void SetPrincipal(Controller controller, ISession session)
         {
-            var state = session.Serialize();
-            var authTicket = new FormsAuthenticationTicket(1, "userNameGoesHere", DateTime.UtcNow, DateTime.MaxValue, true, state, "CallWallAuth");
+            var sessions = GetSessions(controller.Request.Cookies).ToDictionary(x => x.Provider);
+            sessions.Add(session.Provider, session);
+            var jObject = JObject.FromObject(sessions);
+            var json = jObject.ToString(Formatting.None);
+            var authTicket = new FormsAuthenticationTicket(1, "userNameGoesHere", DateTime.UtcNow, DateTime.MaxValue, true, json, "CallWallAuth");
             var encTicket = FormsAuthentication.Encrypt(authTicket);
             var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
             controller.Response.Cookies.Add(faCookie);
@@ -57,10 +66,16 @@ namespace CallWall.Web.Providers
         {
             FormsAuthentication.SignOut();
         }
-        private static IPrincipal SessionToPrincipal(ISession session)
+        private static IPrincipal SessionToPrincipal(IEnumerable<ISession> sessions)
+        {
+            var sessionGroups = sessions.Select(GetClaims);
+            return new ClaimsPrincipal(sessionGroups.Select(c => new ClaimsIdentity(c, AuthenticationTypes.Password)));
+        }
+
+        private static List<Claim> GetClaims(ISession session)
         {
             var claims = session.AuthorizedResources
-                                .Select(r => new Claim(ResourceTypeKey, r.ToString()))
+                                .Select(resource => new Claim(ResourceTypeKey, resource))
                                 .ToList();
             claims.AddRange(new[]
                 {
@@ -69,15 +84,10 @@ namespace CallWall.Web.Providers
                     new Claim(RefreshTokenTypeKey, session.RefreshToken),
                     new Claim(ExpiryTypeKey, session.Expires.ToString("o"))
                 });
-
-            var principal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(claims, AuthenticationTypes.Password)
-                });
-            return principal;
+            return claims;
         }
 
-        private ISession GetSession(FormsAuthenticationTicket ticket)
+        private IEnumerable<ISession> GetSessions(FormsAuthenticationTicket ticket)
         {
             var sessionPayload = ticket.UserData;
             foreach (var authenticationProvider in _authenticationProviders)
@@ -85,11 +95,9 @@ namespace CallWall.Web.Providers
                 ISession session;
                 if (authenticationProvider.TryDeserialiseSession(sessionPayload, out session))
                 {
-                    return session;
+                    yield return session;
                 }
             }
-            return null;
         }
-
     }
 }
