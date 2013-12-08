@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
@@ -61,9 +60,7 @@ namespace CallWall.Web.GoogleProvider
                 (string)json["refresh_token"],
                 TimeSpan.FromSeconds((int)json["expires_in"]),
                 DateTimeOffset.Now,
-                resources);
-                authState.Scopes);
-                resources,
+                authState.Scopes,
                 account);
             return session;
         }

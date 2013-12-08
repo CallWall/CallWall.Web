@@ -10,18 +10,20 @@ namespace CallWall.Web.GoogleProvider
         private readonly string _accessToken;
         private readonly string _refreshToken;
         private readonly DateTimeOffset _expires;
+        private readonly IAccount _account;
         private readonly ISet<string> _authorizedResources;
 
-        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<Uri> authorizedResources, IAccount account)
+        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources, IAccount account)
             : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources, account)
         {
         }
 
-        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<Uri> authorizedResources, IAccount account)
+        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources, IAccount account)
         {
             _accessToken = accessToken;
             _refreshToken = refreshToken;
             _expires = expires;
+            _account = account;
             _authorizedResources = new HashSet<string>(authorizedResources);
         }
 
@@ -37,7 +39,6 @@ namespace CallWall.Web.GoogleProvider
 
         public IAccount AccountDetails { get { return _account; } }
 
-        public ISet<Uri> AuthorizedResources
         public ISet<string> AuthorizedResources
         {
             get { return _authorizedResources; }

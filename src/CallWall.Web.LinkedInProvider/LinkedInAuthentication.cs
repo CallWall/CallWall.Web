@@ -62,13 +62,16 @@ namespace CallWall.Web.LinkedInProvider
                     throw new AuthenticationException(string.Format("{0} : {1}", json["error"], json["error_description"]));
                 throw new AuthenticationException((string)json["error"]);
             }
+            //TODO: Add linkedin account details here i.e. get the user's name and linkedin account id (which may just be an email address)
+            IAccount account = new Account("LinkedIn ID goes here", "TODO");
 
             return new Session(
                 (string)json["access_token"],
                 (string)json["refresh_token"],
                 TimeSpan.FromSeconds((int)json["expires_in"]),
                 DateTimeOffset.Now,
-                authState.Scopes);
+                authState.Scopes,
+                account);
         }
 
         public bool TryDeserialiseSession(string payload, out ISession session)
@@ -84,7 +87,8 @@ namespace CallWall.Web.LinkedInProvider
                     (string)json["AccessToken"],
                     (string)json["RefreshToken"],
                     (DateTimeOffset)json["Expires"],
-                    authorizedResources);
+                    authorizedResources,
+                    new Account(null, null));       //TODO: Serialize the user's account details too. -LC
                 return true;
             }
             catch (Exception)

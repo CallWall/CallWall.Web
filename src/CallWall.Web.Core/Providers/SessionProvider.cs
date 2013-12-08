@@ -20,7 +20,7 @@ namespace CallWall.Web.Providers
         public IEnumerable<ISession> GetSessions(IPrincipal user)
         {
             var ident = user.Identity as FormsIdentity;
-            return ident != null ? GetSession(ident.Ticket) : Enumerable.Empty<ISession>();
+            return ident != null ? GetSessions(ident.Ticket) : Enumerable.Empty<ISession>();
         }
 
         public ISession CreateSession(string code, string state)
@@ -44,8 +44,7 @@ namespace CallWall.Web.Providers
             FormsAuthentication.SignOut();
         }
 
-        private ISession GetSession(FormsAuthenticationTicket ticket)
-        private ISession GetSession(FormsAuthenticationTicket ticket)
+        private IEnumerable<ISession> GetSessions(FormsAuthenticationTicket ticket)
         {
             var sessionPayload = ticket.UserData;
             foreach (var authenticationProvider in _authenticationProviders)
