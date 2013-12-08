@@ -5,19 +5,19 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.GoogleProvider
 {
-    public sealed class Session : ISession
+    internal sealed class Session : ISession
     {
         private readonly string _accessToken;
         private readonly string _refreshToken;
         private readonly DateTimeOffset _expires;
         private readonly ISet<string> _authorizedResources;
 
-        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources)
-            : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources)
+        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<Uri> authorizedResources, IAccount account)
+            : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources, account)
         {
         }
 
-        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources)
+        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<Uri> authorizedResources, IAccount account)
         {
             _accessToken = accessToken;
             _refreshToken = refreshToken;
@@ -35,6 +35,9 @@ namespace CallWall.Web.GoogleProvider
             return DateTimeOffset.Now > _expires;
         }
 
+        public IAccount AccountDetails { get { return _account; } }
+
+        public ISet<Uri> AuthorizedResources
         public ISet<string> AuthorizedResources
         {
             get { return _authorizedResources; }
@@ -49,7 +52,7 @@ namespace CallWall.Web.GoogleProvider
 
         public override string ToString()
         {
-            return string.Format("Session {{ AccessToken : '{0}', RefreshToken : '{1}', Expires : '{2:o}', AuthorizedResources : '{3}'}}", AccessToken, RefreshToken, Expires, string.Join(";", AuthorizedResources));
+            return string.Format("Session {{ AccessToken : '{0}', RefreshToken : '{1}', Expires : '{2:o}', AuthorizedResources : '{3}', AccountDetails : '{4}' }}", AccessToken, RefreshToken, Expires, string.Join(";", AuthorizedResources), AccountDetails);
         }
     }
 }

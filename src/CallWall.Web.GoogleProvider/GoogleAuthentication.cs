@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.GoogleProvider
 {
-    public class GoogleAuthentication : IAccountAuthentication
+    internal sealed class GoogleAuthentication : IAccountAuthentication
     {
         public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
 
@@ -54,12 +54,18 @@ namespace CallWall.Web.GoogleProvider
             if (json["error"] != null)
                 throw new AuthenticationException((string)json["error"]);
 
-            return new Session(
+            IAccount account = new Account("unknown@gmail.com", "TODO");
+
+            var session = new Session(
                 (string)json["access_token"],
                 (string)json["refresh_token"],
                 TimeSpan.FromSeconds((int)json["expires_in"]),
                 DateTimeOffset.Now,
+                resources);
                 authState.Scopes);
+                resources,
+                account);
+            return session;
         }
 
         public bool TryDeserialiseSession(string payload, out ISession session)
@@ -72,11 +78,15 @@ namespace CallWall.Web.GoogleProvider
                
                 var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<string>>();
 
+                //TODO: Implement a safe (and working) de-serialization of the Account details. (It may be missing from early pre-alpha version of the data). -LC
+                var account = new Account((string) json["AccountDetails"]["Username"],
+                                          (string) json["AccountDetails"]["DisplayName"]);
                 session = new Session(
                     (string)json["AccessToken"],
                     (string)json["RefreshToken"],
                     (DateTimeOffset)json["Expires"],
-                    authorizedResources);
+                    authorizedResources,
+                    account);
                 return true;
             }
             catch (Exception)

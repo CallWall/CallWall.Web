@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace CallWall.Web.GoogleProvider
 {
-    public sealed class ResourceScope : IResourceScope
+    internal sealed class ResourceScope : IResourceScope
     {
         public static readonly ResourceScope Contacts;
         public static readonly ResourceScope Gmail;

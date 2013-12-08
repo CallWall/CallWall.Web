@@ -6,15 +6,12 @@ namespace CallWall.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IManagePrincipal _principalManger;
         private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
         private readonly ISessionProvider _sessionProvider;
 
-        public AccountController(IManagePrincipal principalManger, 
-                                 IAuthenticationProviderGateway authenticationProviderGateway, 
+        public AccountController(IAuthenticationProviderGateway authenticationProviderGateway, 
                                  ISessionProvider sessionProvider)
         {
-            _principalManger = principalManger;
             _authenticationProviderGateway = authenticationProviderGateway;
             _sessionProvider = sessionProvider;
         }
@@ -36,7 +33,7 @@ namespace CallWall.Web.Controllers
 
         public ActionResult LogOff()
         {
-            _principalManger.LogOff();
+            _sessionProvider.LogOff();
             return new RedirectResult("/");
         }
 
@@ -72,7 +69,7 @@ namespace CallWall.Web.Controllers
         {
             var session = _sessionProvider.CreateSession(code, state);
 
-            _principalManger.SetPrincipal(this, session);
+            _sessionProvider.SetPrincipal(this, session);
             Response.Redirect("~/");
         }
     }

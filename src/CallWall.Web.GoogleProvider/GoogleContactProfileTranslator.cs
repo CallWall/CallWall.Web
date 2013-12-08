@@ -7,7 +7,7 @@ using System.Xml.XPath;
 
 namespace CallWall.Web.GoogleProvider
 {
-    public sealed class GoogleContactProfileTranslator
+    internal sealed class GoogleContactProfileTranslator
     {
         private static readonly XmlNamespaceManager Ns;
         private const string AnonContactAvatar = "/Content/images/AnonContact.svg";
