@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
@@ -9,16 +8,20 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CallWall.Web.GoogleProvider
+namespace CallWall.Web.LinkedInProvider
 {
-    public class GoogleAuthentication : IAccountAuthentication
+    public class LinkedInAuthentication : IAccountAuthentication
     {
+        private const string RequestTokenAccessBaseUri = "https://www.linkedin.com/uas/oauth2/accessToken";
+        private const string ClientId = "751tu6va8d937l";//APIKEY - extract this (call wall test under rhys account)
+        private const string ClientSecret = "MHOnHig0JXIwCd49";//secret - extract and hide this
+
         public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
 
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
             var uriBuilder = new StringBuilder();
-            uriBuilder.Append("https://accounts.google.com/o/oauth2/auth");
+            uriBuilder.Append("https://www.linkedin.com/uas/oauth2/authorization");
             uriBuilder.Append("?scope=");
             var scopeSsv = string.Join(" ", scopes);
             uriBuilder.Append(HttpUtility.UrlEncode(scopeSsv));
@@ -27,7 +30,9 @@ namespace CallWall.Web.GoogleProvider
             uriBuilder.Append(HttpUtility.UrlEncode(redirectUri));
 
             uriBuilder.Append("&response_type=code");
-            uriBuilder.Append("&client_id=410654176090-8fk01hicm60blfbmjfrfruvpabnvat6s.apps.googleusercontent.com");
+
+            uriBuilder.Append("&client_id=");
+            uriBuilder.Append(ClientId);
 
             var state = new AuthState { RedirectUri = redirectUri, Scopes = scopes };
             uriBuilder.Append("&state=");
@@ -52,7 +57,11 @@ namespace CallWall.Web.GoogleProvider
             var json = JObject.Parse(accessTokenResponse.Result);
 
             if (json["error"] != null)
+            {
+                if (json["error_description"] != null)
+                    throw new AuthenticationException(string.Format("{0} : {1}", json["error"], json["error_description"]));
                 throw new AuthenticationException((string)json["error"]);
+            }
 
             return new Session(
                 (string)json["access_token"],
@@ -85,25 +94,33 @@ namespace CallWall.Web.GoogleProvider
             }
         }
 
-        private HttpRequestMessage CreateTokenRequest(string code, string redirectUri)
+        private static HttpRequestMessage CreateTokenRequest(string code, string redirectUri)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, @"https://accounts.google.com/o/oauth2/token");
-            var postParameters = new Dictionary<string, string>
-            {
-                {"code", code},
-                {"client_id", "410654176090-8fk01hicm60blfbmjfrfruvpabnvat6s.apps.googleusercontent.com"},
-                {"redirect_uri", redirectUri},
-                {"client_secret", "cl6V2rzrB0uit3mHDB2jAmnG"},
-                {"grant_type", "authorization_code"}
-            };
+            var uriBuilder = new StringBuilder();
+            uriBuilder.Append(RequestTokenAccessBaseUri);
+            uriBuilder.Append("?grant_type=authorization_code");
 
-            request.Content = new FormUrlEncodedContent(postParameters);
+            uriBuilder.Append("&code=");
+            uriBuilder.Append(code);
+
+            uriBuilder.Append("&redirect_uri=");
+            uriBuilder.Append(HttpUtility.UrlEncode(redirectUri));
+
+            uriBuilder.Append("&client_id=");
+            uriBuilder.Append(ClientId);
+           
+            uriBuilder.Append("&client_secret=");
+            uriBuilder.Append(ClientSecret);
+            
+            var url = new Uri(uriBuilder.ToString());
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
             return request;
         }
 
         private class AuthState
         {
-            private const string _account = "Google";
+            private const string _account = "LinkedIn";
 
             public static bool IsValidOAuthState(string state)
             {
@@ -125,7 +142,7 @@ namespace CallWall.Web.GoogleProvider
                 return JsonConvert.DeserializeObject<AuthState>(state);
             }
 
-            [UsedImplicitly]
+            [UsedImplicitly]//used for serialisation
             public string Account
             {
                 get { return _account; }
