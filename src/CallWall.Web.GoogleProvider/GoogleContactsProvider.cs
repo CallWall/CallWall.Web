@@ -12,8 +12,11 @@ namespace CallWall.Web.GoogleProvider
 {
     public class GoogleContactsProvider : IContactsProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session)
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions)
         {
+            var session = sessions.SingleOrDefault(s => s.Provider == "Google");
+            if(session == null)
+                return Observable.Empty<ContactFeed>();
             return Observable.Create<ContactFeed>(o =>
             {
                 try
@@ -63,7 +66,7 @@ namespace CallWall.Web.GoogleProvider
                 {
                     //HACK:Google doesn't like being DOS'ed.
                     //Thread.Sleep(1000);  //HACK:Google doesn't like being DOS'ed.
-                    Thread.Sleep(500);  
+                    Thread.Sleep(500);
                     //Thread.Sleep(250);  
                     batchPage = GetContactPage(session, batchPage.NextPageStartIndex);
                     yield return batchPage;
@@ -78,13 +81,25 @@ namespace CallWall.Web.GoogleProvider
                 request.Headers.Add("GData-Version", "3.0");
 
                 //TODO: Add error handling (not just exceptions but also non 200 responses -LC
-                var response = client.SendAsync(request);
-                var contactResponse = response.ContinueWith(r => r.Result.Content.ReadAsStringAsync()).Unwrap().Result;
+                try
+                {
+                    var response = client.SendAsync(request);
+                    var contactResponse = response.ContinueWith(r =>
+                        {
+                            r.Result.EnsureSuccessStatusCode();
+                            return r.Result.Content.ReadAsStringAsync();
+                        }).Unwrap().Result;
 
-                var translator = new GoogleContactProfileTranslator();
-                var contacts = translator.Translate(contactResponse, session.AccessToken);
+                    var translator = new GoogleContactProfileTranslator();
+                    var contacts = translator.Translate(contactResponse, session.AccessToken);
 
-                return contacts;
+                    return contacts;
+                }
+                catch (Exception exception)
+                {
+                    //TODO logging? do we want a logging factory?
+                    return BatchOperationPage<IContactSummary>.Empty();
+                }
             }
         }
     }

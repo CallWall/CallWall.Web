@@ -4,7 +4,7 @@
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, LinkedInContactsProvider>();
+            registry.RegisterType<IContactsProvider, LinkedInContactsProvider>("LinkedInContactsProvider");
             registry.RegisterType<IAccountAuthentication, LinkedInAuthentication>("LinkedInAuthentication");
         }
     }

@@ -14,10 +14,10 @@ namespace CallWall.Web.Providers
             _authenticationProviders = authenticationProviders;
         }
 
-        public ISession GetSession(IPrincipal user)
+        public IEnumerable<ISession> GetSessions(IPrincipal user)
         {
             var ident = user.Identity as FormsIdentity;
-            return ident != null ? GetSession(ident.Ticket) : null;
+            return ident != null ? GetSession(ident.Ticket) : Enumerable.Empty<ISession>();
         }
 
         public ISession CreateSession(string code, string state)
@@ -27,7 +27,7 @@ namespace CallWall.Web.Providers
             return session;
         }
 
-        private ISession GetSession(FormsAuthenticationTicket ticket)
+        private IEnumerable<ISession> GetSession(FormsAuthenticationTicket ticket)
         {
             var sessionPayload = ticket.UserData;
             foreach (var authenticationProvider in _authenticationProviders)
@@ -35,10 +35,9 @@ namespace CallWall.Web.Providers
                 ISession session;
                 if (authenticationProvider.TryDeserialiseSession(sessionPayload, out session))
                 {
-                    return session;
+                    yield return session;
                 }
             }
-            return null;
         }
     }
 }

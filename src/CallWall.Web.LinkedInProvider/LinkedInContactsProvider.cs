@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
@@ -10,8 +11,11 @@ namespace CallWall.Web.LinkedInProvider
 {
     public class LinkedInContactsProvider : IContactsProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session)
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions)
         {
+            var session = sessions.SingleOrDefault(s => s.Provider == "LinkedIn");
+            if (session == null)
+                return Observable.Empty<ContactFeed>();
             return Observable.Create<ContactFeed>(o =>
             {
                 try
