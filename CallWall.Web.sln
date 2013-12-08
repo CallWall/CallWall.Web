@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CF7072
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.LinkedInProvider", "src\CallWall.Web.LinkedInProvider\CallWall.Web.LinkedInProvider.csproj", "{00269FFF-9346-4A9C-BEF7-113E311313CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (With Fakes)|Any CPU = Debug (With Fakes)|Any CPU
@@ -52,6 +54,12 @@ Global
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug (With Fakes)|Any CPU.Build.0 = Debug (With Fakes)|Any CPU
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug (With Fakes)|Any CPU.Build.0 = Debug|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +67,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
+		{00269FFF-9346-4A9C-BEF7-113E311313CC} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35

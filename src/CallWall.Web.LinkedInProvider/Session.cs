@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CallWall.Web.GoogleProvider
+namespace CallWall.Web.LinkedInProvider
 {
     public sealed class Session : ISession
     {
+        //NOTE : other than Provider this is athe same as the google session and is really just seems to be a description of OAuth 2
         private readonly string _accessToken;
         private readonly string _refreshToken;
         private readonly DateTimeOffset _expires;
@@ -25,7 +26,7 @@ namespace CallWall.Web.GoogleProvider
             _authorizedResources = new HashSet<string>(authorizedResources);
         }
 
-        public string Provider { get { return "Google"; } }
+        public string Provider { get { return "LinkedIn"; } }
         public string AccessToken { get { return _accessToken; } }
         public string RefreshToken { get { return _refreshToken; } }
         public DateTimeOffset Expires { get { return _expires; } }

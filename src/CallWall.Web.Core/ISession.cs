@@ -10,7 +10,7 @@ namespace CallWall.Web
         string RefreshToken { get; }
         DateTimeOffset Expires { get; }
         bool HasExpired();
-        ISet<Uri> AuthorizedResources { get; }
+        ISet<string> AuthorizedResources { get; }
         string Serialize();
     }
 }
