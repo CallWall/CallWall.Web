@@ -65,6 +65,9 @@
   <ItemGroup>
     <Compile Include="Auth\AccountConfiguration.cs" />
     <Compile Include="Contacts\ContactSummary.cs" />
+    <Compile Include="Account.cs" />
+    <Compile Include="AccountConfiguration.cs" />
+    <Compile Include="ContactSummary.cs" />
     <Compile Include="LinkedInModule.cs" />
     <Compile Include="Contacts\LinkedInContactsProvider.cs" />
     <Compile Include="Auth\LinkedInAuthentication.cs" />

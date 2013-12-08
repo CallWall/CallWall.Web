@@ -7,23 +7,26 @@ namespace CallWall.Web.OAuth2Implementation
 {
     public sealed class Session : ISession
     {
+        //NOTE : other than Provider this is athe same as the google session and is really just seems to be a description of OAuth 2
         private readonly string _accessToken;
         private readonly string _refreshToken;
         private readonly DateTimeOffset _expires;
         private readonly ISet<string> _authorizedResources;
         private readonly string _provider;
+        private readonly IAccount _accountDetails;
 
-        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources)
-            : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources)
+        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources, IAccount accountDetails)
+            : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources, accountDetails)
         {
         }
 
-        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources)
+        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources, IAccount accountDetails)
         {
             _accessToken = accessToken;
             _refreshToken = refreshToken;
             _expires = expires;
             _provider = provider;
+            _accountDetails = accountDetails;
             _authorizedResources = new HashSet<string>(authorizedResources);
         }
 
