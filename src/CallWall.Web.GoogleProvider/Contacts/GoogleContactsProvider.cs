@@ -9,7 +9,7 @@ using System.Web;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
-    public class GoogleContactsProvider : IContactsProvider
+    internal sealed class GoogleContactsProvider : IContactsProvider
     {
         public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions)
         {

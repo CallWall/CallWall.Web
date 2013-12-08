@@ -114,12 +114,10 @@
     <Compile Include="OAuth2Implementation\AuthState.cs" />
     <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
     <Compile Include="OAuth2Implementation\Outh2Session.cs" />
+    <Compile Include="IAccount.cs" />
     <Compile Include="Providers\AuthenticationProviderGateway.cs" />
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
-    <Compile Include="Providers\IManagePrincipal.cs" />
     <Compile Include="Providers\ISessionProvider.cs" />
-    <Compile Include="Providers\PrincipalManager.cs" />
-    <Compile Include="Providers\SecurityExtensions.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="ResharperAnnotations.cs" />
     <Compile Include="IAccountAuthentication.cs" />

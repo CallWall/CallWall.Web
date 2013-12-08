@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
+using System.Web;
+using System.Web.Mvc;
 using System.Web.Security;
 
 namespace CallWall.Web.Providers
@@ -27,7 +30,22 @@ namespace CallWall.Web.Providers
             return session;
         }
 
-        private IEnumerable<ISession> GetSession(FormsAuthenticationTicket ticket)
+        public void SetPrincipal(Controller controller, ISession session)
+        {
+            var state = session.Serialize();
+            var authTicket = new FormsAuthenticationTicket(1, session.AccountDetails.DisplayName, DateTime.UtcNow, DateTime.MaxValue, true, state, "CallWallAuth");
+            var encTicket = FormsAuthentication.Encrypt(authTicket);
+            var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+            controller.Response.Cookies.Add(faCookie);
+        }
+
+        public void LogOff()
+        {
+            FormsAuthentication.SignOut();
+        }
+
+        private ISession GetSession(FormsAuthenticationTicket ticket)
+        private ISession GetSession(FormsAuthenticationTicket ticket)
         {
             var sessionPayload = ticket.UserData;
             foreach (var authenticationProvider in _authenticationProviders)

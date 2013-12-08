@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.OAuth2Implementation
 {
-    public sealed class Outh2Session : ISession
+    public sealed class Session : ISession
     {
         private readonly string _accessToken;
         private readonly string _refreshToken;
@@ -13,11 +13,12 @@ namespace CallWall.Web.OAuth2Implementation
         private readonly ISet<string> _authorizedResources;
         private readonly string _provider;
 
-        public Outh2Session(string provider, string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources)
-            : this(provider, accessToken, refreshToken, requested + accessPeriod, authorizedResources)
-        {}
+        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources)
+            : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources)
+        {
+        }
 
-        public Outh2Session(string provider, string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources)
+        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources)
         {
             _accessToken = accessToken;
             _refreshToken = refreshToken;
@@ -36,6 +37,9 @@ namespace CallWall.Web.OAuth2Implementation
             return DateTimeOffset.Now > _expires;
         }
 
+        public IAccount AccountDetails { get { return _account; } }
+
+        public ISet<Uri> AuthorizedResources
         public ISet<string> AuthorizedResources
         {
             get { return _authorizedResources; }
@@ -50,7 +54,7 @@ namespace CallWall.Web.OAuth2Implementation
 
         public override string ToString()
         {
-            return string.Format("Session {{ Provider : '{0}', AccessToken : '{1}', RefreshToken : '{2}', Expires : '{3:o}', AuthorizedResources : '{4}'}}",Provider, AccessToken, RefreshToken, Expires, string.Join(";", AuthorizedResources));
+            return string.Format("Session {{ AccessToken : '{0}', RefreshToken : '{1}', Expires : '{2:o}', AuthorizedResources : '{3}', AccountDetails : '{4}' }}", AccessToken, RefreshToken, Expires, string.Join(";", AuthorizedResources), AccountDetails);
         }
     }
 }
