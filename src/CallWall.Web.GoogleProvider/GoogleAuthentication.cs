@@ -49,8 +49,7 @@ namespace CallWall.Web.GoogleProvider
             var response = client.SendAsync(request);
             var accessTokenResponse = response.Result.Content.ReadAsStringAsync();
             var json = JObject.Parse(accessTokenResponse.Result);
-            var resources = authState.Scopes.Select(s => new Uri(s));
-
+            
             if (json["error"] != null)
                 throw new AuthenticationException((string)json["error"]);
 
@@ -59,7 +58,7 @@ namespace CallWall.Web.GoogleProvider
                 (string)json["refresh_token"],
                 TimeSpan.FromSeconds((int)json["expires_in"]),
                 DateTimeOffset.Now,
-                resources);
+                authState.Scopes);
         }
 
         public bool TryDeserialiseSession(string payload, out ISession session)
@@ -69,7 +68,7 @@ namespace CallWall.Web.GoogleProvider
             {
                 var json = JObject.Parse(payload);
 
-                var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<Uri>>();
+                var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<string>>();
 
                 session = new Session(
                     (string)json["AccessToken"],
