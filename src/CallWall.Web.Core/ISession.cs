@@ -12,6 +12,6 @@ namespace CallWall.Web
         bool HasExpired();
         ISet<string> AuthorizedResources { get; }
         IAccount AccountDetails { get; }
-        string Serialize();
+        string Serialize();      
     }
 }

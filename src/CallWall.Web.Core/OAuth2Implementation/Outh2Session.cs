@@ -5,9 +5,8 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.OAuth2Implementation
 {
-    public sealed class Session : ISession
+    public sealed class OAuthSession : ISession
     {
-        //NOTE : other than Provider this is athe same as the google session and is really just seems to be a description of OAuth 2
         private readonly string _accessToken;
         private readonly string _refreshToken;
         private readonly DateTimeOffset _expires;
@@ -15,12 +14,12 @@ namespace CallWall.Web.OAuth2Implementation
         private readonly string _provider;
         private readonly IAccount _accountDetails;
 
-        public Session(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, IEnumerable<string> authorizedResources, IAccount accountDetails)
-            : this(accessToken, refreshToken, requested + accessPeriod, authorizedResources, accountDetails)
+        public OAuthSession(string accessToken, string refreshToken, TimeSpan accessPeriod, DateTimeOffset requested, string provider, IAccount accountDetails, IEnumerable<string> authorizedResources)
+            : this(accessToken, refreshToken, requested + accessPeriod, provider, accountDetails, authorizedResources)
         {
         }
 
-        public Session(string accessToken, string refreshToken, DateTimeOffset expires, IEnumerable<string> authorizedResources, IAccount accountDetails)
+        public OAuthSession(string accessToken, string refreshToken, DateTimeOffset expires, string provider, IAccount accountDetails, IEnumerable<string> authorizedResources)
         {
             _accessToken = accessToken;
             _refreshToken = refreshToken;
@@ -40,9 +39,8 @@ namespace CallWall.Web.OAuth2Implementation
             return DateTimeOffset.Now > _expires;
         }
 
-        public IAccount AccountDetails { get { return _account; } }
+        public IAccount AccountDetails { get { return _accountDetails; } }
 
-        public ISet<Uri> AuthorizedResources
         public ISet<string> AuthorizedResources
         {
             get { return _authorizedResources; }
@@ -57,7 +55,7 @@ namespace CallWall.Web.OAuth2Implementation
 
         public override string ToString()
         {
-            return string.Format("Session {{ AccessToken : '{0}', RefreshToken : '{1}', Expires : '{2:o}', AuthorizedResources : '{3}', AccountDetails : '{4}' }}", AccessToken, RefreshToken, Expires, string.Join(";", AuthorizedResources), AccountDetails);
+            return string.Format("OAuthSession {{ AccessToken : '{0}', RefreshToken : '{1}', Expires : '{2:o}', AuthorizedResources : '{3}', AccountDetails : '{4}' }}", AccessToken, RefreshToken, Expires, string.Join(";", AuthorizedResources), AccountDetails);
         }
     }
 }
