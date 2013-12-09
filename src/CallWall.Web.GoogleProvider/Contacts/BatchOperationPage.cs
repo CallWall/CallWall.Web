@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
-    public sealed class BatchOperationPage<T>
+    internal sealed class BatchOperationPage<T>
     {
         private readonly IList<T> _items;
         private readonly int _totalResults;

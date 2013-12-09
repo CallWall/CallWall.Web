@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using CallWall.Web.Hubs;
@@ -65,7 +64,6 @@ namespace CallWall.Web
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<ISessionProvider, SessionProvider>();
-            container.RegisterType<IManagePrincipal, PrincipalManager>();
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             container.RegisterType<ContactsHub>();
 

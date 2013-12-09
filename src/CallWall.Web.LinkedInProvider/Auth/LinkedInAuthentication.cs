@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.LinkedInProvider.Auth
 {
-   public class LinkedInAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
+    public class LinkedInAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
         public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
 
@@ -30,9 +30,14 @@ namespace CallWall.Web.LinkedInProvider.Auth
             get { return "LinkedIn"; }
         }
 
+        protected override IAccount CreateAccount()
+        {
+            return new Account("TODO userName", "TODO displayName");
+        }
+
         protected override void DemandValidTokenResponse(JObject json)
         {
-            if (json["error"] == null) 
+            if (json["error"] == null)
                 return;
             if (json["error_description"] != null)
                 throw new AuthenticationException(string.Format("{0} : {1}", json["error"], json["error_description"]));

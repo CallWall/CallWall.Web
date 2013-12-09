@@ -30,6 +30,11 @@ namespace CallWall.Web.GoogleProvider.Auth
             get { return "Google"; }
         }
 
+        protected override IAccount CreateAccount()
+        {
+            return new Account("TODO userName", "TODO displayName");
+        }
+
         protected override void DemandValidTokenResponse(JObject json)
         {
            //no op

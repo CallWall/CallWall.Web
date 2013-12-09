@@ -2,7 +2,7 @@
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
-    public class ContactSummary : IContactSummary
+    internal class ContactSummary : IContactSummary
     {
         private readonly string _title;
         private readonly IEnumerable<string> _tags;
