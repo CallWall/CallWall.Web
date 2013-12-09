@@ -1,7 +1,7 @@
 ﻿using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
 
-namespace CallWall.Web.GoogleProvider
+namespace CallWall.Web.GoogleProvider.Auth
 {
     public class GoogleAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
