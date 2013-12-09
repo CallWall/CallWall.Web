@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace CallWall.Web.LinkedInProvider
+namespace CallWall.Web.GoogleProvider.Contacts
 {
     public class ContactSummary : IContactSummary
     {
-        //TODO copy and paste job here - see google
-       
         private readonly string _title;
         private readonly IEnumerable<string> _tags;
         private readonly string _primaryAvatar;
 
-        public ContactSummary(string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags)
+        public ContactSummary(string title, string primaryAvatar, IEnumerable<string> tags)
         {
-            _title = string.Format("{0} {1}", firstname, lastname);
+            _title = title;
             _primaryAvatar = primaryAvatar;
             _tags = tags;
         }
@@ -35,4 +33,5 @@ namespace CallWall.Web.LinkedInProvider
             get { return _primaryAvatar; }
         }
     }
+
 }

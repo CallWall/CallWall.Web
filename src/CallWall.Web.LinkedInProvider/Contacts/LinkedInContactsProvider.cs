@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 
-namespace CallWall.Web.LinkedInProvider
+namespace CallWall.Web.LinkedInProvider.Contacts
 {
     public class LinkedInContactsProvider : IContactsProvider
     {

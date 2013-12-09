@@ -82,16 +82,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountConfiguration.cs" />
-    <Compile Include="BatchOperationPage.cs" />
-    <Compile Include="ContactSummary.cs" />
-    <Compile Include="GoogleAuthentication.cs" />
-    <Compile Include="GoogleContactProfileTranslator.cs" />
-    <Compile Include="GoogleContactsProvider.cs" />
+    <Compile Include="Auth\AccountConfiguration.cs" />
+    <Compile Include="Contacts\BatchOperationPage.cs" />
+    <Compile Include="Contacts\ContactSummary.cs" />
+    <Compile Include="Auth\GoogleAuthentication.cs" />
+    <Compile Include="Contacts\GoogleContactProfileTranslator.cs" />
+    <Compile Include="Contacts\GoogleContactsProvider.cs" />
     <Compile Include="GoogleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResourceScope.cs" />
-    <Compile Include="Session.cs" />
+    <Compile Include="Auth\ResourceScope.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

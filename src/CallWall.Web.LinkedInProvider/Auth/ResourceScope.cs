@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 
-namespace CallWall.Web.GoogleProvider
+namespace CallWall.Web.LinkedInProvider.Auth
 {
     public sealed class ResourceScope : IResourceScope
     {
-        public static readonly ResourceScope Contacts;
-        public static readonly ResourceScope Gmail;
-        public static readonly ResourceScope Calendar;
-
+        public static readonly ResourceScope Connections;
+       
         private static readonly ReadOnlyCollection<ResourceScope> _availableResourceScopes;
 
         private readonly string _name;
@@ -17,21 +15,17 @@ namespace CallWall.Web.GoogleProvider
 
         static ResourceScope()
         {
-            Contacts = new ResourceScope("Contacts", "Contacts_48x48.png", @"https://www.google.com/m8/feeds/");
-            Gmail = new ResourceScope("Email", "Email_48x48.png", @"https://mail.google.com/");
-            Calendar = new ResourceScope("Calendar", "Calendar_48x48.png", null);
+            Connections = new ResourceScope("Connections", "Contacts_48x48.png", "r_network");
             _availableResourceScopes = new ReadOnlyCollection<ResourceScope>(new[]
                 {
-                    Contacts,
-                    Gmail,
-                    //Calendar
+                    Connections
                 });
         }
 
         private ResourceScope(string name, string image, string resource)
         {
             _name = name;
-            _image = new Uri(string.Format("/Content/Google/Images/{0}", image), UriKind.Relative);
+            _image = new Uri(string.Format("/Content/LinkedIn/Images/{0}", image), UriKind.Relative);
             _resource = resource;
         }
 
@@ -48,7 +42,7 @@ namespace CallWall.Web.GoogleProvider
 
         public override string ToString()
         {
-            return string.Format("Google.ResourceScope{{{0}}}", Name);
+            return string.Format("LinkedIn.ResourceScope{{{0}}}", Name);
         }
     }
 }

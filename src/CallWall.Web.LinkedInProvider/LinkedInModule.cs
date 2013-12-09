@@ -1,4 +1,7 @@
-﻿namespace CallWall.Web.LinkedInProvider
+﻿using CallWall.Web.LinkedInProvider.Auth;
+using CallWall.Web.LinkedInProvider.Contacts;
+
+namespace CallWall.Web.LinkedInProvider
 {
     public sealed class LinkedInModule : IModule
     {
