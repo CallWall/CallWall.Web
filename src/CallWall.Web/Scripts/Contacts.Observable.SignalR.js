@@ -153,17 +153,19 @@ var ContactDefViewModel = function (contactsHub) {
 
     self.IncrementProgress = function () {
         var i = self.receivedResults();
-        console.log(i);
+        //console.log(i);
         i += 1;
         self.receivedResults(i);
     };
 
     contactsHub.client.ReceivedExpectedCount = function (count) {
-        console.log('count = ' + count);
-        self.totalResults(count);
+        console.log('append to count = ' + count);
+        var aggregateCount = self.totalResults() + count;
+        console.log('new count = ' + aggregateCount);
+        self.totalResults(aggregateCount);
     };
     contactsHub.client.ReceiveContactSummary = function (contact) {
-        console.log('OnNext...');
+        //console.log('OnNext...');
         self.addContact(contact);
         self.IncrementProgress();
     };
@@ -173,6 +175,8 @@ var ContactDefViewModel = function (contactsHub) {
     };
     contactsHub.client.ReceiveComplete = function () {
         console.log('OnComplete');
+        var i = self.receivedResults();
+        console.log(i);
         self.isProcessing(false);
         $.connection.hub.stop();
     };

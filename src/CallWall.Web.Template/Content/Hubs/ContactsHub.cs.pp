@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using CallWall.Web;
-using $rootnamespace$.Providers;
+using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
@@ -12,28 +12,30 @@ namespace $rootnamespace$.Hubs
     [HubName("contacts")]
     public class ContactsHub : Hub
     {
-        private readonly IContactsProvider _contactsProvider;
-        private readonly ISecurityProvider _securityProvider;
+        private readonly IEnumerable<IContactsProvider> _contactsProviders;
+        private readonly ISessionProvider _sessionProvider;
         private readonly ILogger _logger; 
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
-        public ContactsHub(IContactsProvider contactsProvider, ISecurityProvider securityProvider, ILoggerFactory loggerFactory)
+        public ContactsHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
         {
-            _contactsProvider = contactsProvider;
-            _securityProvider = securityProvider;
+            _contactsProviders = contactsProviders;
+            _sessionProvider = sessionProvider;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public void RequestContactSummaryStream()
         {
-            var session = _securityProvider.GetSession(Context.User);
-            var subscription = _contactsProvider.GetContactsFeed(session)
-                            .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
-                            .SelectMany(feed=>feed.Values)
-                            .Log(_logger, "GetContactsFeed")
-                            .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
-                                       ex => Clients.Caller.ReceiveError("Error receiving contacts"), 
-                                       ()=>Clients.Caller.ReceiveComplete());
+            var sessions = _sessionProvider.GetSessions(Context.User);
+            var subscription = _contactsProviders
+                                .ToObservable()
+                                .SelectMany(c => c.GetContactsFeed(sessions))
+                                .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
+                                .SelectMany(feed=>feed.Values)
+                                .Log(_logger, "GetContactsFeed")
+                                .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
+                                           ex => Clients.Caller.ReceiveError("Error receiving contacts"), 
+                                           ()=>Clients.Caller.ReceiveComplete());
             
             _contactsSummarySubsription.Disposable = subscription;
         }

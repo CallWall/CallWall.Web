@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
+using $rootnamespace$.Models;
 using $rootnamespace$.Providers;
 
 namespace $rootnamespace$.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ISecurityProvider _securityProvider;
+        private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
+        private readonly ISessionProvider _sessionProvider;
 
-        public AccountController(ISecurityProvider securityProvider)
+        public AccountController(IAuthenticationProviderGateway authenticationProviderGateway, 
+                                 ISessionProvider sessionProvider)
         {
-            _securityProvider = securityProvider;
+            _authenticationProviderGateway = authenticationProviderGateway;
+            _sessionProvider = sessionProvider;
         }
 
         public ActionResult Register()
         {
             return View();
         }
-        
+
         public ActionResult LogIn()
         {
             return View();
@@ -30,7 +36,7 @@ namespace $rootnamespace$.Controllers
 
         public ActionResult LogOff()
         {
-            _securityProvider.LogOff();
+            _sessionProvider.LogOff();
             return new RedirectResult("/");
         }
 
@@ -38,7 +44,9 @@ namespace $rootnamespace$.Controllers
         [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            var accountProviders = _securityProvider.GetAccountConfigurations();
+            var activeProviders = _sessionProvider.GetSessions(User).Select(s=>s.Provider);
+            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
+                                                                 .Select(ap => new OAuthAccountListItem(ap,activeProviders.Contains(ap.Name)));
             return PartialView("_OAuthAccountListPartial", accountProviders);
         }
 
@@ -47,14 +55,14 @@ namespace $rootnamespace$.Controllers
         {
             var callBackUri = CreateCallBackUri();
 
-            var redirectUri = _securityProvider.AuthenticationUri(account,
+            var redirectUri = _authenticationProviderGateway.AuthenticationUri(account,
                 callBackUri,
                 resource);
 
             return new RedirectResult(redirectUri.ToString());
         }
 
-        private string CreateCallBackUri()
+        private static string CreateCallBackUri()
         {
             var serverName = System.Web.HttpContext.Current.Request.Url;
             var callbackUri = new UriBuilder(serverName.Scheme, serverName.Host, serverName.Port, "Account/oauth2callback");
@@ -64,9 +72,9 @@ namespace $rootnamespace$.Controllers
         [AllowAnonymous]
         public void Oauth2Callback(string code, string state)
         {
-            var session = _securityProvider.CreateSession(code, state);
+            var session = _sessionProvider.CreateSession(code, state);
 
-            _securityProvider.SetPrincipal(this, session);
+            _sessionProvider.SetPrincipal(this, session);
             Response.Redirect("~/");
         }
     }
