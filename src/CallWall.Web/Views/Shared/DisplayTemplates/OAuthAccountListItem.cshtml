@@ -1,4 +1,4 @@
-﻿@model CallWall.Web.IAccountConfiguration
+﻿@model CallWall.Web.Models.OAuthAccountListItem
 
 @using (Html.BeginForm("Authenticate", "Account"))
 {
@@ -9,7 +9,7 @@
             <img src="@Model.Image" height="100" alt="@Model.Name" class="account-icon"/>
         </legend>
         @Html.EditorFor(m => m.Resources)
-        <input type="submit" value="Register" style="float: right"/>
+        <input type="submit" value="@string.Format("{0}", Model.IsActive ? "Registered":"Register")" style="float: right" @string.Format("{0}", Model.IsActive ? "disabled='disabled'":"")/>
     </fieldset>
 }
 
