@@ -1,8 +1,5 @@
-﻿using System.Web.Security;
-using CallWall.Web;
+﻿using CallWall.Web;
 using $rootnamespace$.Logging;
-using $rootnamespace$.Providers;
-using Microsoft.Practices.Unity;
 
 namespace $rootnamespace$
 {
@@ -23,25 +20,6 @@ namespace $rootnamespace$
             _logger.Info("Starting Application...");
             // The Startup class now does most of the work to play nicely with OWIN.
             _logger.Info("Application started.");
-        }
-
-        protected void FormsAuthentication_OnAuthentication(object sender, FormsAuthenticationEventArgs args)
-        {
-            _logger.Info("Authentication user...");
-            //HACK: How do I inject the security provider into the global asax?
-            //Perhaps this : http://www.hanselman.com/blog/IPrincipalUserModelBinderInASPNETMVCForEasierTesting.aspx 
-            var securityProvider = Startup.Container.Resolve<ISecurityProvider>();
-
-            var principal = securityProvider.GetPrincipal(args.Context.Request);
-            if (principal != null)
-            {
-                args.Context.User = principal;
-                _logger.Info("User authenticated.");
-            }
-            else
-            {
-                _logger.Info("User is anonymous.");
-            }
         }
 
         public override void Dispose()
