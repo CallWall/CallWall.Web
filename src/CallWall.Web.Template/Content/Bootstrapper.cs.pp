@@ -65,6 +65,7 @@ namespace $rootnamespace$
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<ISessionProvider, SessionProvider>();
+			container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             container.RegisterType<ContactsHub>();
 
             InitialiseModules(container);
