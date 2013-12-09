@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
 
-namespace CallWall.Web.GoogleProvider
+namespace CallWall.Web.LinkedInProvider.Contacts
 {
     public class ContactSummary : IContactSummary
     {
+        //TODO copy and paste job here - see google
+
         private readonly string _title;
         private readonly IEnumerable<string> _tags;
         private readonly string _primaryAvatar;
 
-        public ContactSummary(string title, string primaryAvatar, IEnumerable<string> tags)
+        public ContactSummary(string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags)
         {
-            _title = title;
+            _title = string.Format("{0} {1}", firstname, lastname);
             _primaryAvatar = primaryAvatar;
             _tags = tags;
         }
 
-        /// <summary>
-        /// The title description for the contact. Usually their First and Last name.
-        /// </summary>
         public string Title
         {
             get { return _title; }
@@ -33,5 +32,4 @@ namespace CallWall.Web.GoogleProvider
             get { return _primaryAvatar; }
         }
     }
-
 }

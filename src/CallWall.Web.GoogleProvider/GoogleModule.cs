@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.GoogleProvider
+﻿using CallWall.Web.GoogleProvider.Contacts;
+
+namespace CallWall.Web.GoogleProvider
 {
     public sealed class GoogleModule : IModule
     {
