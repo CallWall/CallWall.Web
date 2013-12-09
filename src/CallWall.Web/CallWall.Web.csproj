@@ -204,6 +204,7 @@
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="MenuHelperExtensions.cs" />
+    <Compile Include="Models\OAuthAccountListItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\AuthenticationProviderGateway.cs" />
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
@@ -369,7 +370,7 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\Home\Download.cshtml" />
     <Content Include="Views\Account\_OAuthAccountListPartial.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\AccountConfiguration.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\OAuthAccountListItem.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ResourceScope.cshtml" />
     <Content Include="Views\Contact\Detail.cshtml" />
   </ItemGroup>

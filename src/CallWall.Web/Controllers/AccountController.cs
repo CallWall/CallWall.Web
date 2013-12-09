@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
+using CallWall.Web.Models;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.Controllers
@@ -10,8 +13,8 @@ namespace CallWall.Web.Controllers
         private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
         private readonly ISessionProvider _sessionProvider;
 
-        public AccountController(IManagePrincipal principalManger, 
-                                 IAuthenticationProviderGateway authenticationProviderGateway, 
+        public AccountController(IManagePrincipal principalManger,
+                                 IAuthenticationProviderGateway authenticationProviderGateway,
                                  ISessionProvider sessionProvider)
         {
             _principalManger = principalManger;
@@ -23,7 +26,7 @@ namespace CallWall.Web.Controllers
         {
             return View();
         }
-        
+
         public ActionResult LogIn()
         {
             return View();
@@ -44,7 +47,9 @@ namespace CallWall.Web.Controllers
         [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations();
+            var activeProviders = _sessionProvider.GetSessions(User).Select(s=>s.Provider);
+            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
+                                                                 .Select(ap => new OAuthAccountListItem(ap,activeProviders.Contains(ap.Name)));
             return PartialView("_OAuthAccountListPartial", accountProviders);
         }
 
