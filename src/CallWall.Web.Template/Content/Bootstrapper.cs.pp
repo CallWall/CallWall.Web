@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using CallWall.Web;
+using CallWall.Web.Providers;
 using $rootnamespace$.Hubs;
 using $rootnamespace$.Logging;
-using $rootnamespace$.Providers;
 using $rootnamespace$.Unity;
 using Microsoft.Practices.Unity;
 using Unity.Mvc4;
@@ -64,7 +64,7 @@ namespace $rootnamespace$
         {
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
-            container.RegisterType<ISecurityProvider, SecurityProvider>();
+            container.RegisterType<ISessionProvider, SessionProvider>();
             container.RegisterType<ContactsHub>();
 
             InitialiseModules(container);

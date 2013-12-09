@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using CallWall.Web.Models;
@@ -12,7 +11,7 @@ namespace CallWall.Web.Controllers
         private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
         private readonly ISessionProvider _sessionProvider;
 
-        public AccountController(IAuthenticationProviderGateway authenticationProviderGateway, 
+        public AccountController(IAuthenticationProviderGateway authenticationProviderGateway,
                                  ISessionProvider sessionProvider)
         {
             _authenticationProviderGateway = authenticationProviderGateway;
@@ -44,9 +43,9 @@ namespace CallWall.Web.Controllers
         [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            var activeProviders = _sessionProvider.GetSessions(User).Select(s=>s.Provider);
+            var activeProviders = _sessionProvider.GetSessions(User).Select(s => s.Provider);
             var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
-                                                                 .Select(ap => new OAuthAccountListItem(ap,activeProviders.Contains(ap.Name)));
+                                                                 .Select(ap => new OAuthAccountListItem(ap, activeProviders.Contains(ap.Name)));
             return PartialView("_OAuthAccountListPartial", accountProviders);
         }
 
