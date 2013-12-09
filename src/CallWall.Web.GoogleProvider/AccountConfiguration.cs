@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CallWall.Web.GoogleProvider
 {
-    public sealed class AccountConfiguration : IAccountConfiguration
+    internal sealed class AccountConfiguration : IAccountConfiguration
     {
         public static readonly IAccountConfiguration Instance = new AccountConfiguration();
 

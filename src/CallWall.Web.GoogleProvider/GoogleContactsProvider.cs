@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using System.Web;
 
 namespace CallWall.Web.GoogleProvider
 {
-    public class GoogleContactsProvider : IContactsProvider
+    internal sealed class GoogleContactsProvider : IContactsProvider
     {
         public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions)
         {

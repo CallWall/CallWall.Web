@@ -42,10 +42,11 @@ namespace CallWall.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            
             _logger.Info("Owin started.");
         }
 
-        private void RegisterHubs(IAppBuilder app, IUnityContainer container)
+        private static void RegisterHubs(IAppBuilder app, IUnityContainer container)
         {
             _logger.Info("SignalR Hubs registration starting ...");
             var config = new HubConfiguration
