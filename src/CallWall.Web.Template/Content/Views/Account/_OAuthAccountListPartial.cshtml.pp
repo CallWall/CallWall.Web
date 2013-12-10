@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CallWall.Web.Models.OAuthAccountListItem>
+﻿@model IEnumerable<$rootnamespace$.Models.OAuthAccountListItem>
 
 @foreach (var accountConfig in Model)
 {

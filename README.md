@@ -2,7 +2,10 @@
 # CallWall.Web
 <br clear="both"/>
 
-The CallWall.Web project represents the Website for CallWall.
+The CallWall.Web project represents the public shared components to help build the Website for CallWall. The two key projects are CallWall.Web.Core and the folder CallWall.Web.Templates. The CallWall.Web.Templates currently needs to be kept manually in sync with the CallWall.Web sample project.
+
+CallWall.Web.Core will be deployed as a Nuget package and expose via the private package source. The CallWall.Web.Template directory will be also deployed as a Nuget package to allow satellite repositories to have a similar web host to test their content provider modules.
+
 The website will need to cater for the following:
 
  1. Marketing site.
@@ -11,6 +14,7 @@ The website will need to cater for the following:
  4. Settings
  5. Cloud services
  6. Financing
+
 
 
 ## Marketing website 
