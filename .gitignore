@@ -218,3 +218,6 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+src/CallWall.Web/Content/Google
+src/CallWall.Web/Content/LinkedIn
