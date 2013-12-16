@@ -41,24 +41,33 @@
     .value {
     }
 
-    .ol {
+    ol.messages {
         margin-left: 0;
     }
-    .message {
-        background-color: #505050;
-        min-height: 80px;
-    }
-
-    .chat {
+    ol.messages li {
         list-style-position: inside;
-        list-style-image: url(/Content/images/Google/Contacts_48x48.png);
-        list-style-type :
+        list-style-type: none;
         margin-left: 0;
         padding-left: 0;
+        border-bottom: 1px solid #545354;
+        height: 60px;
+        overflow: hidden;
+        margin-top: 5px;
     }
-    .email {
-        list-style-position: inside;
-        list-style-image: url(/Content/images/Google/Email_48x48.png);
+
+    ol.messages li p{
+        color: #A7A7A7;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        -ms-text-overflow: ellipsis;
+    }
+
+    ol.messages li h5 {
+        margin-top: 0px;
+        padding-top: 0px;
     }
 </style>
 <div class="title">
@@ -118,27 +127,40 @@
     <div id="CommunicationSection" class="span4 ContentSection">
         <h3>Communication</h3>
 
-        <ol style="margin-left: 0">
-            <li  class="message chat received">
-                <span>&uE119;</span><h5>On My Way LEE</h5>
+        <ol class="messages">
+            <li class="message chat received">
+                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <div>
+                    @*<span>&uE119;</span>*@
+                    <h5>On My Way LEE</h5>
+                </div>
             </li>
             <li class="message chat sent">
-                <h5>Dude, where are you?</h5>
+                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <div>
+                    <h5>Dude, where are you?</h5>
+                </div>
             </li>
             <li class="message email received">
-                <h5>Pricing a cross example</h5>
-                <p>Here is the sample we were talking about the other da...</p>
+                <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <div>
+                    <h5>Pricing a cross example</h5>
+                    <p>Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.</p>
+                </div>
             </li>
             <li class="message email received">
-                <h5>Pricing a cross example</h5>
-                <p>Here is the sample we were talking about the other da...</p>
+                <img src="/Content/Google/images/hangouts_42x42.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <div>
+                    <h5>Pricing a cross example</h5>
+                    <p>Here is the sample we were talking about the other da...</p>
+                </div>
             </li>
         </ol>
     </div>
 
-    <div id="CalendarSection" class="span4 ContentSection">
-        <h3>Calendar</h3>
-    </div>
+<div id="CalendarSection" class="span4 ContentSection">
+    <h3>Calendar</h3>
+</div>
 </div>
 
 <div class="row">
