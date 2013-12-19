@@ -44,18 +44,19 @@
     ol.messages {
         margin-left: 0;
     }
-    ol.messages li {
-        list-style-position: inside;
-        list-style-type: none;
-        margin-left: 0;
-        padding-left: 0;
-        border-bottom: 1px solid #545354;
-        height: 60px;
-        overflow: hidden;
-        margin-top: 5px;
-    }
 
-    ol.messages li p{
+ol.messages li {
+    list-style-position: inside;
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+    border-bottom: 1px solid #545354;
+    height: 60px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+    ol.messages li p {
         color: #A7A7A7;
         font-size: 12px;
         white-space: nowrap;
@@ -68,6 +69,29 @@
     ol.messages li h5 {
         margin-top: 0px;
         padding-top: 0px;
+    }
+
+    dl.calendar dt {
+        float:left; 
+        font-weight: 100;
+        font-size: 26px;
+        padding:5px;  
+        width:80px;
+        height: 65px;
+        text-align: center;
+    }
+ 
+    dl.calendar dd {
+        padding:5px 0;
+        width:330px; 
+        height: 65px;
+    }
+    dl.calendar dt.today {
+        background:#503C50;
+    }
+ 
+    dl.calendar dd.today {
+        background:#503C50;
     }
 </style>
 <div class="title">
@@ -127,29 +151,30 @@
     <div id="CommunicationSection" class="span4 ContentSection">
         <h3>Communication</h3>
 
+        <!--TODO: VisualClue for read/unread messages-->
         <ol class="messages">
             <li class="message chat received">
-                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
                 <div>
                     @*<span>&uE119;</span>*@
                     <h5>On My Way LEE</h5>
                 </div>
             </li>
             <li class="message chat sent">
-                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
                 <div>
                     <h5>Dude, where are you?</h5>
                 </div>
             </li>
             <li class="message email received">
-                <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
                 <div>
                     <h5>Pricing a cross example</h5>
                     <p>Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.</p>
                 </div>
             </li>
             <li class="message email received">
-                <img src="/Content/Google/images/hangouts_42x42.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px"/>
+                <img src="/Content/Google/images/hangouts_42x42.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
                 <div>
                     <h5>Pricing a cross example</h5>
                     <p>Here is the sample we were talking about the other da...</p>
@@ -158,9 +183,27 @@
         </ol>
     </div>
 
-<div id="CalendarSection" class="span4 ContentSection">
-    <h3>Calendar</h3>
-</div>
+    <div id="CalendarSection" class="span4 ContentSection">
+        <h3>Calendar</h3>
+        <dl class="calendar">
+
+            <dt>29<br/>Oct</dt>
+            <dd>Lunch with Lee</dd>
+
+            <dt>27<br/>Oct</dt>
+            <dd>Training</dd>
+
+            <dt class="today">26<br/>Oct</dt>
+            <dd class="today">Document Review</dd>
+
+            <dt>16<br/>Oct</dt>
+            <dd>Document design session</dd>
+
+            <dt>29<br/>Oct</dt>
+            <dd>Lunch with Lee</dd>
+
+        </dl>
+    </div>
 </div>
 
 <div class="row">
