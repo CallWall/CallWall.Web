@@ -13,6 +13,9 @@
         margin-bottom: 0px;
         padding-bottom: 0px;
     }
+    h1, h2, h3 {
+        margin-top: 20px;
+    }
 
     body {
         background-color: #373737; /*CallWall.Windows has #F5303030, but assuming a white background then it becomes #373737 with the alpha channel removed.;*/
@@ -68,21 +71,27 @@
         padding-top: 0px;
     }
 
+    dl.calendar {
+        margin-top: 0;
+    }
     dl.calendar dt {
-        float:left; 
+        float:left;
+        margin: 0px;
+        padding:5px;  
+        width:55px;
+        height: 55px;
         font-weight: 100;
         font-size: 26px;
         line-height: 26px;
-        padding:5px;  
-        width:65px;
-        height: 65px;
         text-align: center;
         color: #A7A7A7;
+        border-bottom: 1px solid #545354;
     }
     dl.calendar dd {
-        padding:5px 0;
-        /*width:330px; */
-        height: 65px;
+        padding:5px;
+        margin: 0px;
+        height: 55px;
+        border-bottom: 1px solid #545354;
     }
     dl.calendar dt .day{
         letter-spacing: 2px;
