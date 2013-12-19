@@ -44,18 +44,16 @@
     ol.messages {
         margin-left: 0;
     }
-
-ol.messages li {
-    list-style-position: inside;
-    list-style-type: none;
-    margin-left: 0;
-    padding-left: 0;
-    border-bottom: 1px solid #545354;
-    height: 60px;
-    overflow: hidden;
-    margin-top: 5px;
-}
-
+    ol.messages li {
+        list-style-position: inside;
+        list-style-type: none;
+        margin-left: 0;
+        padding-left: 0;
+        border-bottom: 1px solid #545354;
+        height: 60px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
     ol.messages li p {
         color: #A7A7A7;
         font-size: 12px;
@@ -65,7 +63,6 @@ ol.messages li {
         -o-text-overflow: ellipsis;
         -ms-text-overflow: ellipsis;
     }
-
     ol.messages li h5 {
         margin-top: 0px;
         padding-top: 0px;
@@ -75,24 +72,38 @@ ol.messages li {
         float:left; 
         font-weight: 100;
         font-size: 26px;
+        line-height: 26px;
         padding:5px;  
-        width:80px;
+        width:65px;
         height: 65px;
         text-align: center;
+        color: #A7A7A7;
     }
- 
     dl.calendar dd {
         padding:5px 0;
         width:330px; 
         height: 65px;
     }
+    dl.calendar dt .day{
+        letter-spacing: 2px;
+    }
+    dl.calendar dt .month{
+        font-size: 22px;
+        line-height: 22px;
+    }
     dl.calendar dt.today {
         background:#503C50;
     }
- 
     dl.calendar dd.today {
         background:#503C50;
     }
+    dl.calendar dt.past {
+        color: #A7A7A7;
+    }
+    dl.calendar dd.past {
+        color: #A7A7A7;
+    }
+    
 </style>
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
@@ -187,20 +198,20 @@ ol.messages li {
         <h3>Calendar</h3>
         <dl class="calendar">
 
-            <dt>29<br/>Oct</dt>
+            <dt><span class="day">29</span><br/><span class="month">Oct</span></dt>
             <dd>Lunch with Lee</dd>
 
-            <dt>27<br/>Oct</dt>
+            <dt><span class="day">27</span><br/><span class="month">Oct</span></dt>
             <dd>Training</dd>
 
-            <dt class="today">26<br/>Oct</dt>
+            <dt class="today"><span class="day">26</span><br/><span class="month">Oct</span></dt>
             <dd class="today">Document Review</dd>
 
-            <dt>16<br/>Oct</dt>
-            <dd>Document design session</dd>
+            <dt class="past"><span class="day">16</span><br/><span class="month">Oct</span></dt>
+            <dd class="past">Document design session</dd>
 
-            <dt>29<br/>Oct</dt>
-            <dd>Lunch with Lee</dd>
+            <dt class="past"><span class="day">14</span><br/><span class="month">Oct</span></dt>
+            <dd class="past">Lunch with Lee</dd>
 
         </dl>
     </div>
