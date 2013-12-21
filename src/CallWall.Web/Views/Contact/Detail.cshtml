@@ -129,6 +129,24 @@
         dl.calendar dd.past {
             color: #A7A7A7;
         }
+        
+        .symbol {
+            font-family: "Segoe UI Symbol";
+            font-size: 18px;
+            line-height: 18px;
+        }
+        /*
+        ol.messages li.received:before {
+            float: left;
+            margin-top: 35px;
+            font-family: "Segoe UI Symbol";
+            content: '\2937';
+        }
+        ol.messages li.sent:after {
+            font-family: "Segoe UI Symbol";
+            margin-top: 35px;
+            content: '\2934';
+        }*/
 </style>
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
@@ -189,30 +207,72 @@
         <div class="ContentSection">
             <!--TODO: VisualClue for read/unread messages-->
             <ol class="messages">
-                <li class="message chat received">
-                    <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+                <li class="received">
+                    <table style="float: left; margin: 5px" >
+                        <tr>
+                            <td colspan="2">
+                                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
+                            </td>
+                        </tr>    
+                        <tr>
+                            <td width="50%">
+                                <span class="symbol">&#x2937;</span>
+                            </td>
+                            <td width="50%">
+                                
+                            </td>
+                        </tr>
+                    </table>
                     <div>
-                        <h5>On My Way LEE</h5>
+                        <h5>On My Way</h5>
                     </div>
                 </li>
-                <li class="message chat sent">
-                    <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+                <li class="sent">
+                    <table style="float: left; margin: 5px" >
+                        <tr>
+                            <td colspan="2">
+                                <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
+                            </td>
+                        </tr>    
+                        <tr>
+                            <td width="50%">
+                                
+                            </td>
+                            <td width="50%">
+                                <span class="symbol">&#x2934;</span>
+                            </td>
+                        </tr>
+                    </table>
                     <div>
                         <h5>Dude, where are you?</h5>
                     </div>
                 </li>
-                <li class="message email received">
+                <li class="received">
                     <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
                     <div>
                         <h5>Pricing a cross example</h5>
                         <p title="Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.">Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.</p>
                     </div>
                 </li>
-                <li class="message email received">
+                <li class="received">
                     <img src="/Content/Google/images/hangouts_42x42.png" alt="Gmail" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
                     <div>
                         <h5>Pricing a cross example</h5>
                         <p title="Here is the sample we were talking about the other day. If you find any problems talk to Jim. He might be more helpful.">Here is the sample we were talking about the other day. If you find any problems talk to Jim. He might be more helpful.</p>
+                    </div>
+                </li>
+                <li class="received">
+                    <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+                    <div>
+                        <h5>Rugby at my place on Saturday morning</h5>
+                        <p title="To: James Alex, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">To: James Alex, Simon Real + 3 others</p>
+                    </div>
+                </li>
+                <li class="received">
+                    <img src="/Content/Twitter/images/Twitter_64x64.png" alt="Tweet" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+                    <div>
+                        <h5>#CallWall are recruiting engineers now!</h5>
+                        <p title="Retweets: 7">Retweets : 7</p>
                     </div>
                 </li>
             </ol>
