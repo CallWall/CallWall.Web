@@ -47,7 +47,7 @@
     }
 
     h5.closed {
-        text-decoration-line: line-through
+        text-decoration-line: line-through;
     }
 
     ol.messages {
@@ -129,13 +129,13 @@
         dl.calendar dd.past {
             color: #A7A7A7;
         }
-        
-        .symbol {
-            font-family: "Segoe UI Symbol";
-            font-size: 18px;
-            line-height: 18px;
-        }
-        /*
+
+    .symbol {
+        font-family: "Segoe UI Symbol";
+        font-size: 18px;
+        line-height: 18px;
+    }
+    /*
         ol.messages li.received:before {
             float: left;
             margin-top: 35px;
@@ -147,6 +147,16 @@
             margin-top: 35px;
             content: '\2934';
         }*/
+    img.mainPicture {
+        height: 150px;
+        width: 150px;
+        overflow: hidden;
+    }
+    img.miniPicture {
+        height: 75px;
+        width: 75px;
+        overflow: hidden;
+    }
 </style>
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
@@ -208,19 +218,17 @@
             <!--TODO: VisualClue for read/unread messages-->
             <ol class="messages">
                 <li class="received">
-                    <table style="float: left; margin: 5px" >
+                    <table style="float: left; margin: 5px">
                         <tr>
                             <td colspan="2">
                                 <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
                             </td>
-                        </tr>    
+                        </tr>
                         <tr>
                             <td width="50%">
                                 <span class="symbol">&#x2937;</span>
                             </td>
-                            <td width="50%">
-                                
-                            </td>
+                            <td width="50%"></td>
                         </tr>
                     </table>
                     <div>
@@ -228,16 +236,14 @@
                     </div>
                 </li>
                 <li class="sent">
-                    <table style="float: left; margin: 5px" >
+                    <table style="float: left; margin: 5px">
                         <tr>
                             <td colspan="2">
                                 <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
                             </td>
-                        </tr>    
+                        </tr>
                         <tr>
-                            <td width="50%">
-                                
-                            </td>
+                            <td width="50%"></td>
                             <td width="50%">
                                 <span class="symbol">&#x2934;</span>
                             </td>
@@ -310,11 +316,41 @@
 <div class="row">
     <div id="GallerySection" class="span4">
         <h3>Pictures</h3>
+        <div class="ContentSection">
+            <div>
+                <img src="/Content/Facebook/images/Facebook_64x64.png" alt="Facebook" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+                <div>
+                    <h5>Snow swim</h5>
+                    <p title="Added 1 day ago (25th Oct)">1d</p>
+                </div>
+            </div>
+            <table width="300" height="150">
+                <tr>
+                    <td width="50%" rowspan="2">
+                        <img src="/Content/images/pictures/Interlaken1.jpg" class="mainPicture"/>
+                    </td>
+                    <td width="25%">
+                        <img src="/Content/images/pictures/Interlaken2.jpg" class="miniPicture" />
+                    </td>
+                    <td width="25%">
+                        <img src="/Content/images/pictures/Interlaken3.jpg" class="miniPicture"/>
+                    </td>   
+                </tr>
+                <tr>
+                    <td width="25%">
+                        <img src="/Content/images/pictures/Interlaken4.jpg" class="miniPicture"/>
+                    </td>
+                    <td width="25%">
+                        <img src="/Content/images/pictures/Interlaken5.jpg" class="miniPicture"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <div id="CollborationSection" class="span4">
         <h3>Collaboration</h3>
-            <div class="ContentSection">
+        <div class="ContentSection">
             <ol class="messages">
                 <li>
                     <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
