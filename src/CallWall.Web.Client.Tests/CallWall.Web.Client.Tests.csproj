@@ -48,6 +48,81 @@
       <Link>phantomjs.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\CallWall.Web\Scripts\bootstrap.js">
+      <Link>Scripts\bootstrap.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\bootstrap.min.js">
+      <Link>Scripts\bootstrap.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\Contacts.Observable.SignalR.js">
+      <Link>Scripts\Contacts.Observable.SignalR.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.intellisense.js">
+      <Link>Scripts\jquery-2.0.3.intellisense.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.js">
+      <Link>Scripts\jquery-2.0.3.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.min.js">
+      <Link>Scripts\jquery-2.0.3.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-ui-1.10.3.js">
+      <Link>Scripts\jquery-ui-1.10.3.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-ui-1.10.3.min.js">
+      <Link>Scripts\jquery-ui-1.10.3.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color-2.1.2.js">
+      <Link>Scripts\jquery.color-2.1.2.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color-2.1.2.min.js">
+      <Link>Scripts\jquery.color-2.1.2.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color.svg-names-2.1.2.js">
+      <Link>Scripts\jquery.color.svg-names-2.1.2.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color.svg-names-2.1.2.min.js">
+      <Link>Scripts\jquery.color.svg-names-2.1.2.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.0.0.js">
+      <Link>Scripts\jquery.signalR-2.0.0.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.0.0.min.js">
+      <Link>Scripts\jquery.signalR-2.0.0.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.unobtrusive-ajax.js">
+      <Link>Scripts\jquery.unobtrusive-ajax.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.unobtrusive-ajax.min.js">
+      <Link>Scripts\jquery.unobtrusive-ajax.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate-vsdoc.js">
+      <Link>Scripts\jquery.validate-vsdoc.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.js">
+      <Link>Scripts\jquery.validate.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.min.js">
+      <Link>Scripts\jquery.validate.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.unobtrusive.js">
+      <Link>Scripts\jquery.validate.unobtrusive.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.unobtrusive.min.js">
+      <Link>Scripts\jquery.validate.unobtrusive.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.0.0.debug.js">
+      <Link>Scripts\knockout-3.0.0.debug.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.0.0.js">
+      <Link>Scripts\knockout-3.0.0.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\modernizr-2.6.2.js">
+      <Link>Scripts\modernizr-2.6.2.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\_references.js">
+      <Link>Scripts\_references.js</Link>
+    </Content>
     <Content Include="Content\jasmine\jasmine.css" />
     <Content Include="Content\jasmine\jasmine_favicon.png" />
     <Content Include="phantomjs-license.txt">
@@ -59,9 +134,13 @@
     <Content Include="Scripts\jasmine-samples\SpecHelper.js" />
     <Content Include="Scripts\jasmine\jasmine-html.js" />
     <Content Include="Scripts\jasmine\jasmine.js" />
+    <Content Include="Scripts\specs\ContactSpec.js" />
     <Content Include="SpecRunner.html" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\CallWall.Web\Scripts\jquery-2.0.3.min.map">
+      <Link>Scripts\jquery-2.0.3.min.map</Link>
+    </None>
     <None Include="packages.config" />
     <None Include="Scripts\jasmine\MIT.LICENSE" />
   </ItemGroup>
