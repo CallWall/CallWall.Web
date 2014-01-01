@@ -27,55 +27,20 @@ var ContactViewModel = function (contact) {
     var self = this;
     self.title = contact.Title;
     self.titleUpperCase = self.title.toUpperCase();
-    if (contact.PrimaryAvatar == null) {
-        self.primaryAvatar = '/Content/images/AnonContact.svg';
-    } else {
-        self.primaryAvatar = contact.PrimaryAvatar;
-    }
-    
+    self.primaryAvatar = contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
     self.tags = contact.Tags;
     self.isVisible = ko.observable(true);
     self.filter = function (prefixTest) {
-        var isVisible = (self.titleUpperCase.toUpperCase().lastIndexOf(prefixTest, 0) === 0);
+        var isVisible = (self.titleUpperCase.lastIndexOf(prefixTest, 0) === 0);
         self.isVisible(isVisible);
     };
 };
-var AnyContactGroup = function (header) {
-    var self = this;
-    self.header = header;
-    self.contacts = ko.observableArray();
-    self.visibleContacts = ko.computed(function () {
-        return ko.utils.arrayFilter(self.contacts(), function (contactVm) {
-            return contactVm.isVisible();
-        });
-    }, this);
-
-    self.isVisible = ko.computed(function () {
-        return self.visibleContacts().length > 0;
-    });
-    self.isValid = function (contact) { return true; };
-    self.addContact = function (contact) {
-        var vm = new ContactViewModel(contact);
-        vm.filter(self.filterText);
-        self.contacts.push(vm);
-    };
-    self.filterText = '';
-    self.filter = function (filterText) {
-        self.filterText = filterText.toUpperCase();
-        var contacts = self.contacts();
-        for (var i = 0; i < contacts.length; i++) {
-            var contactVm = contacts[i];
-            contactVm.filter(self.filterText);
-        }
-    };
-};
-var AlphaContactGroup = function (startsWith) {
-    var self = this;
+var ContactGroup = function (startsWith) {
+    var self = this,
+        filterText = '';
     self.header = startsWith;
     self.contacts = ko.observableArray();
     self.visibleContacts = ko.computed(function () {
-        // Represents a filtered list of planets
-        // i.e., only those contacts that are visible
         return ko.utils.arrayFilter(self.contacts(), function (contactVm) {
             return contactVm.isVisible();
         });
@@ -84,21 +49,33 @@ var AlphaContactGroup = function (startsWith) {
         return self.visibleContacts().length > 0;
     });
     self.isValid = function (contact) {
-        return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
+        throw 'This is intended to be an abstract class please do not use';
     };
     self.addContact = function (contact) {
         var vm = new ContactViewModel(contact);
-        vm.filter(self.filterText);
+        vm.filter(filterText);
         self.contacts.push(vm);
     };
-    self.filterText = '';
-    self.filter = function (filterText) {
-        self.filterText = filterText.toUpperCase();
+    self.filter = function (filter) {
+        filterText = filter.toUpperCase();
         var contacts = self.contacts();
         for (var i = 0; i < contacts.length; i++) {
             var contactVm = contacts[i];
-            contactVm.filter(self.filterText);
+            contactVm.filter(filterText);
         }
+    };
+};
+var AnyContactGroup = function (header) {
+    var self = this;
+    ContactGroup.call(self, header);
+    self.isValid = function () { return true; };
+};
+var AlphaContactGroup = function (startsWith) {
+    var self = this;
+    ContactGroup.call(self, startsWith);
+    self.isValid = function (contact) {
+        //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
+        return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
     };
 };
 
@@ -136,6 +113,7 @@ var ContactDefViewModel = function (contactsHub) {
     self.addContact = function (contact) {
         var cgsLength = self.contactGroups().length;
         for (var j = 0; j < cgsLength; j++) {
+            //TODO - switch this to just a look up? ie use the first char as the key look up? 
             var cg = self.contactGroups()[j];
             if (cg.isValid(contact)) {
                 cg.addContact(contact);
