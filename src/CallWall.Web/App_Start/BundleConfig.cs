@@ -13,10 +13,10 @@ namespace CallWall.Web
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui-{version}.js"));
-            
+
             bundles.Add(new ScriptBundle("~/bundles/jquerycolor").Include(
                 "~/Scripts/jquery.color-{version}.js"));
-            
+
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*"));
@@ -31,6 +31,11 @@ namespace CallWall.Web
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                         "~/Scripts/knockout-3.0.0.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
+                       "~/Scripts/Inhouse/ContactBindings.js",
+                       "~/Scripts/Inhouse/ContactModels.js",
+                       "~/Scripts/Inhouse/ContactSignalR.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 //"~/Content/bootstrap.css",

@@ -1,5 +1,6 @@
 /// <reference path="../knockout-3.0.0.debug.js" />
-/// <reference path="../Contacts.Observable.SignalR.js" />
+/// <reference path="../Inhouse/ContactScratch.js" />
+/// <reference path="../Inhouse/ContactModels.js" />
 /// <reference path="../jasmine/jasmine.js" />
 
 describe("Contacts", function () {
@@ -10,7 +11,7 @@ describe("Contacts", function () {
 
         beforeEach(function () {
             contact = { Title: 'abc', Tags: ['alpha', 'beta'] };
-            contactViewModel = new ContactViewModel(contact);
+            contactViewModel = new callWall.ContactViewModel(contact);
         });
 
         it("should be able to created with a valid contact", function () {
@@ -19,6 +20,12 @@ describe("Contacts", function () {
             expect(contactViewModel.primaryAvatar).toBe(anoncontactSvg);
             expect(contactViewModel.isVisible()).toBeTruthy();
             expect(contactViewModel.tags).toEqual(contact.Tags);
+        });
+        it("should expose binding properties", function () {
+            expect(contactViewModel.isVisible()).toBeDefined();
+            expect(contactViewModel.primaryAvatar).toBeDefined();
+            expect(contactViewModel.title).toBeDefined();
+            expect(contactViewModel.tags).toBeDefined();
         });
 
         describe("filter", function () {
@@ -38,13 +45,38 @@ describe("Contacts", function () {
             });
         });
     });
+    
+    describe("AnyContactGroup", function () {
+        var alphaContactGroup;
+        beforeEach(function() {
+            alphaContactGroup = new callWall.AnyContactGroup('');
+        });
+        it("should expose binding properties", function() {
+            expect(alphaContactGroup.isVisible()).toBeDefined();
+            expect(alphaContactGroup.header).toBeDefined();
+            expect(alphaContactGroup.contacts()).toBeDefined();
+        });
+        describe("Is contact valid ", function () {
+            it("should always return true", function () {
+                var invalidContactTitle = [null, 123, {alpha:'a'},'ABCD', 'a', 'B', 'ax', ' ', ' x', '_x', ':X'];
+                invalidContactTitle.forEach(function (title) {
+                    expect(alphaContactGroup.isValid({ Title: title })).toBeTruthy();
+                });
+            });
+        });
+    });
+    
     describe("AlphaContactGroup", function () {
         var groupPrefix = 'X';
         var alphaContactGroup;
         beforeEach(function () {
-            alphaContactGroup = new AlphaContactGroup(groupPrefix);
+            alphaContactGroup = new callWall.AlphaContactGroup(groupPrefix);
         });
-
+        it("should expose binding properties", function () {
+            expect(alphaContactGroup.isVisible()).toBeDefined();
+            expect(alphaContactGroup.header).toBeDefined();
+            expect(alphaContactGroup.contacts()).toBeDefined();
+        });
         it("should not be visible by default", function () {
             expect(alphaContactGroup.isVisible()).toBeFalsy();
         });
