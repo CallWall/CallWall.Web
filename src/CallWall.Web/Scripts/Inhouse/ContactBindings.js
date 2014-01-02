@@ -16,4 +16,6 @@
             }
         };
     };
-})(jQuery, ko, this.callWall = this.callWall || {});
+// ReSharper disable ThisInGlobalContext
+}(jQuery, ko, this.callWall = this.callWall || {}));
+// ReSharper restore ThisInGlobalContext

@@ -1,5 +1,8 @@
-﻿(function (callWall) {
-    callWall.ContactViewModel = function (contact) {
+﻿//TODO: provide internal group sorting
+//TODO: provide search/filter while contacts still being loaded
+
+(function (ko, callWall) {
+    var ContactViewModel = function (contact) {
         var self = this;
         self.title = contact.Title;
         self.titleUpperCase = self.title.toUpperCase();
@@ -12,9 +15,7 @@
         };
     };
     
-    var contactGroup = function () {
-        //These methods can be on the protype (like static methods) currently ever object will have its own refence to its own versions of these methods which given the number of objects could be a memory issue on lesser clients
-        // See page 95+ : Javascript Patterns (Stefanov)
+    var ContactGroup = function () {
         var self = this,
             filterText = '';
         self.contacts = ko.observableArray();
@@ -30,7 +31,7 @@
             throw 'This is intended to be an abstract class please do not use';
         };
         self.addContact = function(contact) {
-            var vm = new callWall.ContactViewModel(contact);
+            var vm = new ContactViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
         };
@@ -43,15 +44,15 @@
             }
         };
     };
-    callWall.AnyContactGroup = function () {
+    var AnyContactGroup = function () {
         var self = this;
-        contactGroup.call(self);
+        ContactGroup.call(self);
         self.header = '';
         self.isValid = function() { return true; };
     };
-    callWall.AlphaContactGroup = function(startsWith) {
+    var AlphaContactGroup = function(startsWith) {
         var self = this;
-        contactGroup.call(self);
+        ContactGroup.call(self);
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
@@ -59,7 +60,7 @@
         };
     };
 
-    callWall.ContactDefViewModel = function () {
+    var ContactDefViewModel = function () {
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
@@ -106,4 +107,14 @@
             self.receivedResults(i);
         };
     };
-}(this.callWall = this.callWall || {}));
+    //Publicly exposed object are attached to the callWall namespace
+    callWall.ContactDefViewModel = ContactDefViewModel;
+    //Exposed for testing, but not nessecary to be hidden either
+    callWall.ContactViewModel = ContactViewModel;
+    callWall.AnyContactGroup = AnyContactGroup;
+    callWall.AlphaContactGroup = AlphaContactGroup;
+
+    
+// ReSharper disable ThisInGlobalContext
+}(ko, this.callWall = this.callWall || {}));
+// ReSharper restore ThisInGlobalContext

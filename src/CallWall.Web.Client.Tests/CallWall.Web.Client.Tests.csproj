@@ -54,9 +54,6 @@
     <Content Include="..\CallWall.Web\Scripts\bootstrap.min.js">
       <Link>Scripts\bootstrap.min.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\Contacts.Observable.SignalR.js">
-      <Link>Scripts\Contacts.Observable.SignalR.js</Link>
-    </Content>
     <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactBindings.js">
       <Link>Scripts\Inhouse\ContactBindings.js</Link>
     </Content>

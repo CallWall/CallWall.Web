@@ -1,5 +1,4 @@
 /// <reference path="../knockout-3.0.0.debug.js" />
-/// <reference path="../Inhouse/ContactScratch.js" />
 /// <reference path="../Inhouse/ContactModels.js" />
 /// <reference path="../jasmine/jasmine.js" />
 

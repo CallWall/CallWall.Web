@@ -35,4 +35,6 @@
             $.connection.hub.stop();
         };
     };
+// ReSharper disable ThisInGlobalContext
 }(this.callWall = this.callWall || {}));
+// ReSharper restore ThisInGlobalContext
