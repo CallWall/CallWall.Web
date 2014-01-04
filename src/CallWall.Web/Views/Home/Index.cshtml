@@ -55,7 +55,7 @@
     <script>
         $(function () {
             // $.connection.contacts =  the generated client-side hub proxy
-            var model = new callWall.ContactDefViewModel();
+            model = new callWall.ContactDefViewModel();
             model.LoadContactGroups();
             callWall.createCustomContactBindings();
             ko.applyBindings(model);

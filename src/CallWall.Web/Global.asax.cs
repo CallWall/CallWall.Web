@@ -1,4 +1,5 @@
-﻿using CallWall.Web.Logging;
+﻿using System;
+using CallWall.Web.Logging;
 
 namespace CallWall.Web
 {
@@ -22,6 +23,13 @@ namespace CallWall.Web
         {
             _logger.Info("Application being disposed.");
             base.Dispose();
+        }
+        
+        void Application_Error(object sender, EventArgs e)
+        {
+            //see http://msdn.microsoft.com/en-us/library/24395wz3(v=vs.100).aspx for more details
+            if (_logger != null)
+                _logger.Error(Server.GetLastError(), "Application error");
         }
     }
 }

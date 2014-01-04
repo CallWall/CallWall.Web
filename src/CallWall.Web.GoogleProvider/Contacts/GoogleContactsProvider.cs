@@ -11,7 +11,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 {
     internal sealed class GoogleContactsProvider : IContactsProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions)
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions, IEnumerable<IClientLastUpdated> lastUpdatedDetails)
         {
             var session = sessions.SingleOrDefault(s => s.Provider == "Google");
             if(session == null)

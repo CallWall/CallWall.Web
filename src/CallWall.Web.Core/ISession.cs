@@ -14,4 +14,10 @@ namespace CallWall.Web
         IAccount AccountDetails { get; }
         string Serialize();      
     }
+
+    public interface IClientLastUpdated //TODO rename me to something not shite
+    {
+        string Provider { get; }
+        DateTime LastUpdated { get; }
+    }
 }

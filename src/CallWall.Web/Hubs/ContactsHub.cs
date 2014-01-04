@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace CallWall.Web.Hubs
     {
         private readonly IEnumerable<IContactsProvider> _contactsProviders;
         private readonly ISessionProvider _sessionProvider;
-        private readonly ILogger _logger; 
+        private readonly ILogger _logger;
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
         public ContactsHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
@@ -24,26 +25,39 @@ namespace CallWall.Web.Hubs
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public void RequestContactSummaryStream()
+        public void RequestContactSummaryStream(ClientLastUpdated[] lastUpdatedDetails)
         {
             var sessions = _sessionProvider.GetSessions(Context.User);
             var subscription = _contactsProviders
                                 .ToObservable()
-                                .SelectMany(c => c.GetContactsFeed(sessions))
-                                .Do(feed=>Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
-                                .SelectMany(feed=>feed.Values)
+                                .SelectMany(c => c.GetContactsFeed(sessions, lastUpdatedDetails))
+                                .Do(feed => Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
+                                .SelectMany(feed => feed.Values)
                                 .Log(_logger, "GetContactsFeed")
                                 .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
-                                           ex => Clients.Caller.ReceiveError("Error receiving contacts"), 
-                                           ()=>Clients.Caller.ReceiveComplete());
-            
+                                           ex => Clients.Caller.ReceiveError("Error receiving contacts"),
+                                           () => Clients.Caller.ReceiveComplete(sessions.Select(s => new ClientLastUpdated{
+                                                Provider = s.Provider,
+                                                LastUpdated = DateTime.UtcNow, 
+                                                Revision = lastUpdatedDetails.Where(l=>l.Provider == s.Provider)
+                                                                             .Select(l=>l.Revision)
+                                                                             .FirstOrDefault() 
+                                           })));
+
             _contactsSummarySubsription.Disposable = subscription;
         }
-        
+
         public override Task OnDisconnected()
         {
             _contactsSummarySubsription.Dispose();
             return base.OnDisconnected();
         }
+    }
+
+    public class ClientLastUpdated : IClientLastUpdated
+    {
+        public string Provider { get; set; }
+        public DateTime LastUpdated { get; set; }
+        public string Revision { get; set; }
     }
 }
