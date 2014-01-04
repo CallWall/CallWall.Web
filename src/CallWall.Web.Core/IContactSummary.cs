@@ -5,9 +5,13 @@ namespace CallWall.Web
     public interface IContactSummary
     {
         /// <summary>
+        /// The contact provider 
+        /// </summary>
+        string Provider { get; }
+        /// <summary>
         /// The provider specific id for the contact
         /// </summary>
-        string Id { get; }
+        string ProviderId { get; }
         /// <summary>
         /// How the user commonly references the contact e.g. Dan Rowe
         /// </summary>
