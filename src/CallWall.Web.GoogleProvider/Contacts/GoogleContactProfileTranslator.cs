@@ -107,11 +107,12 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 if (xContactEntry == null)
                     return null;
 
+                var id = GetId(xContactEntry);
                 var title = GetTitle(xContactEntry);
                 var avatar = GetAvatar(xContactEntry, accessToken);
                 var tags = GetTags(xContactEntry);
 
-                var contact = new ContactSummary(title, avatar, tags);
+                var contact = new ContactSummary(id, title, avatar, tags);
                 contacts.Add(contact);
             }
 
@@ -126,6 +127,11 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 int.Parse(startIndex.Value),
                 int.Parse(totalResults.Value),
                 int.Parse(itemsPerPage.Value));
+        }
+
+        private static string GetId(XElement xContactEntry)
+        {
+            return XPathString(xContactEntry, "x:id", Ns);
         }
 
         private static string GetTitle(XElement xContactEntry)

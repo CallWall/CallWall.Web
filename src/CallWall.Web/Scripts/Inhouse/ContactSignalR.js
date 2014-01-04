@@ -2,7 +2,8 @@
     callWall.Db = {};
     var db = new PouchDB('contacts');
     var persistContact = function (contact) {
-        db.post(contact, function (err, result) {
+        contact._id = contact.Id;
+        db.put(contact, function (err, result) {
             console.log('result');
             console.log(result);
             if (err) {

@@ -9,12 +9,20 @@ namespace CallWall.Web.LinkedInProvider.Contacts
         private readonly string _title;
         private readonly IEnumerable<string> _tags;
         private readonly string _primaryAvatar;
+        private readonly string _id;
 
-        public ContactSummary(string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags)
+        public ContactSummary(string id, string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags)
         {
+            _id = string.Format("LinkedIn-{0}", id);
             _title = string.Format("{0} {1}", firstname, lastname);
             _primaryAvatar = primaryAvatar;
             _tags = tags;
+
+        }
+
+        public string Id
+        {
+            get { return _id; }
         }
 
         public string Title
