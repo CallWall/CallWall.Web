@@ -2,6 +2,7 @@
 //TODO: provide search/filter while contacts still being loaded
 
 (function (ko, callWall) {
+    
     var ContactViewModel = function (contact) {
         var self = this;
         self.title = contact.Title;
