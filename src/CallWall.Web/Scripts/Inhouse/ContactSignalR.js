@@ -58,7 +58,7 @@
     callWall.Db.getAllContacts = getAllContacts;
     callWall.Db.getProvidersLastUpdateTimestamps = getProvidersLastUpdateTimestamps;
     callWall.Db.setProvidersLastUpdateTimestamps = setProvidersLastUpdateTimestamps;
-    callWall.Db.NukeDbs = function() {
+    callWall.Db.NukeDbs = function () {
         PouchDB.destroy('callwall.contacts');
         PouchDB.destroy('callwall.providerContacts');
     };
@@ -78,7 +78,7 @@
         var self = this;
         self.StartHub = function () {
             //Load existing contacts
-            callWall.Db.getAllContacts(function(contactRecords) {
+            callWall.Db.getAllContacts(function (contactRecords) {
                 contactRecords.forEach(function (contactRecord) {
                     model.addContact(contactRecord.doc);
                 });
@@ -90,7 +90,7 @@
                     callWall.Db.getProvidersLastUpdateTimestamps(function (timestamps) {
                         console.log("timestamps");
                         console.log(timestamps);
-                        var formattedTimestamps = $.map(timestamps, function(dbObject) {
+                        var formattedTimestamps = $.map(timestamps, function (dbObject) {
                             return {
                                 LastUpdated: dbObject.LastUpdated,
                                 Provider: dbObject.Provider,
