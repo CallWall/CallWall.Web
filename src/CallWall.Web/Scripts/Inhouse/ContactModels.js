@@ -48,13 +48,13 @@
     };
     var AnyContactGroup = function () {
         var self = this;
-        ContactGroup.call(self);
+        ContactGroup.call(self);//inherit
         self.header = '';
         self.isValid = function() { return true; };
     };
     var AlphaContactGroup = function(startsWith) {
         var self = this;
-        ContactGroup.call(self);
+        ContactGroup.call(self);//inherit
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work

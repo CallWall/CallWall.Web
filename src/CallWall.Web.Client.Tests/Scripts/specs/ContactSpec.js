@@ -118,8 +118,9 @@ describe("Contacts", function () {
         });
         describe('Add multiple contacts', function () {
             //What about adding a bad contact - the model doesnt actually deal with this but hopes the caller does
+            var contacts;
             beforeEach(function () {
-                var contacts = [{ Title: 'Xavier Charles', Tags: ['SciFi', 'Legless'] },
+                contacts = [{ Title: 'Xavier Charles', Tags: ['SciFi', 'Legless'] },
                                 { Title: 'Xerxes Khan', Tags: ['Fighter', 'Ruler'] },
                                 { Title: 'Xylon Forrest', Tags: ['Hippy', 'Dealer'] },
                                 { Title: 'Xioping Chang', Tags: ['Mathematician', 'Nerd'] }];
@@ -135,6 +136,12 @@ describe("Contacts", function () {
             });
             it("should have 4 visible contact", function () {
                 expect(alphaContactGroup.visibleContacts().length).toBe(4);
+            });
+            it("should be sorted alphabetically by Title", function () {
+                expect(alphaContactGroup.contacts()[0].title).toBe(contacts[0].Title);
+                expect(alphaContactGroup.contacts()[1].title).toBe(contacts[1].Title);
+                expect(alphaContactGroup.contacts()[2].title).toBe(contacts[3].Title);
+                expect(alphaContactGroup.contacts()[3].title).toBe(contacts[2].Title);
             });
             describe('Filtering on multiple contacts with XA', function () {
                 describe('When filter should only match one contact', function () {

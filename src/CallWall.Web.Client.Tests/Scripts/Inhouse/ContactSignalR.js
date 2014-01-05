@@ -41,6 +41,7 @@
         console.log(timestamps);
         timestamps.forEach(function (timestamp) {
             timestamp._id = timestamp.Provider;
+            timestamp._rev = timestamp.Revision;
             console.log(timestamp);
             providerContactDb.put(timestamp, function (err) {
                 if (err) {
@@ -57,7 +58,7 @@
     callWall.Db.getAllContacts = getAllContacts;
     callWall.Db.getProvidersLastUpdateTimestamps = getProvidersLastUpdateTimestamps;
     callWall.Db.setProvidersLastUpdateTimestamps = setProvidersLastUpdateTimestamps;
-    callWall.Db.NukeDbs = function() {
+    callWall.Db.NukeDbs = function () {
         PouchDB.destroy('callwall.contacts');
         PouchDB.destroy('callwall.providerContacts');
     };
@@ -76,13 +77,27 @@
     callWall.SignalR.ContactAdapter = function (contactsHub, model) {
         var self = this;
         self.StartHub = function () {
+            //Load existing contacts
+            callWall.Db.getAllContacts(function (contactRecords) {
+                contactRecords.forEach(function (contactRecord) {
+                    model.addContact(contactRecord.doc);
+                });
+            });
+            //check for updates
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');
                 try {
                     callWall.Db.getProvidersLastUpdateTimestamps(function (timestamps) {
                         console.log("timestamps");
                         console.log(timestamps);
-                        contactsHub.server.requestContactSummaryStream(timestamps);
+                        var formattedTimestamps = $.map(timestamps, function (dbObject) {
+                            return {
+                                LastUpdated: dbObject.LastUpdated,
+                                Provider: dbObject.Provider,
+                                Revision: dbObject._rev
+                            };
+                        });
+                        contactsHub.server.requestContactSummaryStream(formattedTimestamps);
                     });
                 } catch (ex) {
                     console.log(ex);
