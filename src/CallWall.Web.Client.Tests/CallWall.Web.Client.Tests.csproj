@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{493BF281-3FDA-4900-BECB-72A4AE60A237}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CallWall.Web.Client.Tests</RootNamespace>
+    <AssemblyName>CallWall.Web.Client.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\packages\phantomjs.exe.1.9.2\tools\phantomjs\phantomjs.exe">
+      <Link>phantomjs.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\bootstrap.js">
+      <Link>Scripts\bootstrap.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\bootstrap.min.js">
+      <Link>Scripts\bootstrap.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactBindings.js">
+      <Link>Scripts\Inhouse\ContactBindings.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactModels.js">
+      <Link>Scripts\Inhouse\ContactModels.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactSignalR.js">
+      <Link>Scripts\Inhouse\ContactSignalR.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.intellisense.js">
+      <Link>Scripts\jquery-2.0.3.intellisense.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.js">
+      <Link>Scripts\jquery-2.0.3.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.min.js">
+      <Link>Scripts\jquery-2.0.3.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-ui-1.10.3.js">
+      <Link>Scripts\jquery-ui-1.10.3.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery-ui-1.10.3.min.js">
+      <Link>Scripts\jquery-ui-1.10.3.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color-2.1.2.js">
+      <Link>Scripts\jquery.color-2.1.2.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color-2.1.2.min.js">
+      <Link>Scripts\jquery.color-2.1.2.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color.svg-names-2.1.2.js">
+      <Link>Scripts\jquery.color.svg-names-2.1.2.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.color.svg-names-2.1.2.min.js">
+      <Link>Scripts\jquery.color.svg-names-2.1.2.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.0.0.js">
+      <Link>Scripts\jquery.signalR-2.0.0.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.0.0.min.js">
+      <Link>Scripts\jquery.signalR-2.0.0.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.unobtrusive-ajax.js">
+      <Link>Scripts\jquery.unobtrusive-ajax.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.unobtrusive-ajax.min.js">
+      <Link>Scripts\jquery.unobtrusive-ajax.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate-vsdoc.js">
+      <Link>Scripts\jquery.validate-vsdoc.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.js">
+      <Link>Scripts\jquery.validate.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.min.js">
+      <Link>Scripts\jquery.validate.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.unobtrusive.js">
+      <Link>Scripts\jquery.validate.unobtrusive.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\jquery.validate.unobtrusive.min.js">
+      <Link>Scripts\jquery.validate.unobtrusive.min.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.0.0.debug.js">
+      <Link>Scripts\knockout-3.0.0.debug.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.0.0.js">
+      <Link>Scripts\knockout-3.0.0.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\modernizr-2.6.2.js">
+      <Link>Scripts\modernizr-2.6.2.js</Link>
+    </Content>
+    <Content Include="..\CallWall.Web\Scripts\_references.js">
+      <Link>Scripts\_references.js</Link>
+    </Content>
+    <Content Include="Content\jasmine\jasmine.css" />
+    <Content Include="Content\jasmine\jasmine_favicon.png" />
+    <Content Include="phantomjs-license.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\jasmine\jasmine-html.js" />
+    <Content Include="Scripts\jasmine\jasmine.js" />
+    <Content Include="Scripts\specs\ContactSpec.js" />
+    <Content Include="SpecRunner.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\CallWall.Web\Scripts\jquery-2.0.3.min.map">
+      <Link>Scripts\jquery-2.0.3.min.map</Link>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Scripts\jasmine\MIT.LICENSE" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="%(Content.Identity)" DestinationFiles="%(Content.Link)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Condition="'%(Content.Link)' != ''" />
+  </Target>
+</Project>
