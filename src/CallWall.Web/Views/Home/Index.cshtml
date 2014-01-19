@@ -60,7 +60,7 @@
             callWall.createCustomProgressbarBindings();
             ko.applyBindings(model);
             // Start the connection
-            var adapter = new callWall.SignalR.ContactAdapter($.connection.contacts, model);
+            var adapter = new callWall.SignalR.ContactAdapter($.connection.contactSummaries, model);
             adapter.StartHub();
         });
     </script>

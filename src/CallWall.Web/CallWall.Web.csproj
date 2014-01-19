@@ -201,7 +201,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Hubs\ContactsHub.cs" />
+    <Compile Include="Hubs\ContactSummariesHub.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
@@ -297,7 +297,7 @@
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\Inhouse\ProgressbarBindings.js" />
     <Content Include="Scripts\Inhouse\ContactSummariesModels.js" />
-    <Content Include="Scripts\Inhouse\ContactSignalR.js" />
+    <Content Include="Scripts\Inhouse\ContactSummariesSignalR.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
     <Content Include="Scripts\jquery-2.0.3.min.map" />

@@ -10,15 +10,15 @@ using Microsoft.AspNet.SignalR.Hubs;
 
 namespace CallWall.Web.Hubs
 {
-    [HubName("contacts")]
-    public class ContactsHub : Hub
+    [HubName("contactSummaries")]
+    public class ContactSummariesHub : Hub
     {
         private readonly IEnumerable<IContactsProvider> _contactsProviders;
         private readonly ISessionProvider _sessionProvider;
         private readonly ILogger _logger;
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
-        public ContactsHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactSummariesHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
         {
             _contactsProviders = contactsProviders;
             _sessionProvider = sessionProvider;
