@@ -2,8 +2,7 @@
 //TODO: provide search/filter while contacts still being loaded
 
 (function (ko, callWall) {
-    
-    var ContactViewModel = function (contact) {
+    var ContactSummaryViewModel = function (contact) {
         var self = this;
         self.title = contact.Title;
         self.titleUpperCase = self.title.toUpperCase();
@@ -16,7 +15,7 @@
         };
     };
     
-    var ContactGroup = function () {
+    var ContactSummaryGroup = function () {
         var self = this,
             filterText = '';
         self.contacts = ko.observableArray();
@@ -32,7 +31,7 @@
             throw 'This is intended to be an abstract class please do not use';
         };
         self.addContact = function(contact) {
-            var vm = new ContactViewModel(contact);
+            var vm = new ContactSummaryViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
             self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
@@ -46,15 +45,15 @@
             }
         };
     };
-    var AnyContactGroup = function () {
+    var AnyContactSummaryGroup = function () {
         var self = this;
-        ContactGroup.call(self);//inherit
+        ContactSummaryGroup.call(self);
         self.header = '';
         self.isValid = function() { return true; };
     };
-    var AlphaContactGroup = function(startsWith) {
+    var AlphaContactSummaryGroup = function(startsWith) {
         var self = this;
-        ContactGroup.call(self);//inherit
+        ContactSummaryGroup.call(self);
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
@@ -87,9 +86,9 @@
             for (var i = 0; i < charList.length; i++) {
                 var h = charList[i];
                 console.log('loading ' + h);
-                self.contactGroups.push(new AlphaContactGroup(charList[i]));
+                self.contactGroups.push(new AlphaContactSummaryGroup(charList[i]));
             }
-            self.contactGroups.push(new AnyContactGroup('123'));
+            self.contactGroups.push(new AnyContactSummaryGroup('123'));
         };
 
         self.addContact = function(contact) {
@@ -112,10 +111,10 @@
     };
     //Publicly exposed object are attached to the callWall namespace
     callWall.ContactDefViewModel = ContactDefViewModel;
-    //Exposed for testing, but not nessecary to be hidden either
-    callWall.ContactViewModel = ContactViewModel;
-    callWall.AnyContactGroup = AnyContactGroup;
-    callWall.AlphaContactGroup = AlphaContactGroup;
+    //Exposed for testing, but not necessary to be hidden either
+    callWall.ContactSummaryViewModel = ContactSummaryViewModel;
+    callWall.AnyContactSummaryGroup = AnyContactSummaryGroup;
+    callWall.AlphaContactSummaryGroup = AlphaContactSummaryGroup;
 
     
 // ReSharper disable ThisInGlobalContext

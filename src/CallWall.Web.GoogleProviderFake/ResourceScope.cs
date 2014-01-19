@@ -13,12 +13,12 @@ namespace CallWall.Web.GoogleProviderFake
 
         private readonly string _name;
         private readonly Uri _image;
-        private readonly Uri _resource;
+        private readonly string _resource;
 
         static ResourceScope()
         {
-            Contacts = new ResourceScope("Contacts(Fake)", "Contacts_48x48.png", new Uri(@"https://www.google.com/m8/feeds/"));
-            Gmail = new ResourceScope("Email(Fake)", "Email_48x48.png", new Uri(@"https://mail.google.com/"));
+            Contacts = new ResourceScope("Contacts(Fake)", "Contacts_48x48.png", @"https://www.google.com/m8/feeds/");
+            Gmail = new ResourceScope("Email(Fake)", "Email_48x48.png", @"https://mail.google.com/");
             Calendar = new ResourceScope("Calendar(Fake)", "Calendar_48x48.png", null);
             _availableResourceScopes = new ReadOnlyCollection<ResourceScope>(new[]
                 {
@@ -28,7 +28,7 @@ namespace CallWall.Web.GoogleProviderFake
                 });
         }
 
-        private ResourceScope(string name, string image, Uri resource)
+        private ResourceScope(string name, string image, string resource)
         {
             _name = name;
             //TODO: How do I get content/resources/images from a Provider build into dir that is safe for the web to serve? -LC
@@ -44,7 +44,7 @@ namespace CallWall.Web.GoogleProviderFake
 
         public string Name { get { return _name; } }
 
-        public Uri Resource { get { return _resource; } }
+        public string Resource { get { return _resource; } }
 
         public Uri Image { get { return _image; } }
 

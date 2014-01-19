@@ -15,7 +15,7 @@ namespace CallWall.Web.GoogleProviderFake
         {
             var uriBuilder = new StringBuilder();
             uriBuilder.Append(redirectUri);
-            
+
             uriBuilder.Append("?code=FakeCode&");
 
             var state = new AuthState { Scopes = scopes };
@@ -33,19 +33,25 @@ namespace CallWall.Web.GoogleProviderFake
         public ISession CreateSession(string code, string state)
         {
             var authState = AuthState.Deserialize(state);
-            return new FakeSession(authState.Scopes);
+            return new FakeSession(CreateFakeAccount(), authState.Scopes);
         }
+
 
         public bool TryDeserialiseSession(string payload, out ISession session)
         {
             if (AuthState.IsValidOAuthState(payload))
             {
                 var authState = AuthState.Deserialize(payload);
-                session = new FakeSession(authState.Scopes);
+                session = new FakeSession(CreateFakeAccount(), authState.Scopes);
                 return true;
             }
             session = null;
             return false;
+        }
+
+        private static FakeAccount CreateFakeAccount()
+        {
+            return new FakeAccount { DisplayName = Environment.UserName, Username = Environment.UserDomainName };
         }
 
         private class AuthState
@@ -83,5 +89,5 @@ namespace CallWall.Web.GoogleProviderFake
         }
     }
 
-    
+
 }
