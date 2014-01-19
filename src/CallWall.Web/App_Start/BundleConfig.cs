@@ -33,7 +33,7 @@ namespace CallWall.Web
                         "~/Scripts/knockout-3.0.0.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
-                       "~/Scripts/Inhouse/ContactBindings.js",
+                       "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactModels.js",
                        "~/Scripts/Inhouse/ContactSignalR.js"));
             

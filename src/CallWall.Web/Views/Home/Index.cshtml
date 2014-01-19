@@ -57,7 +57,7 @@
             // $.connection.contacts =  the generated client-side hub proxy
             model = new callWall.ContactDefViewModel();
             model.LoadContactGroups();
-            callWall.createCustomContactBindings();
+            callWall.createCustomProgressbarBindings();
             ko.applyBindings(model);
             // Start the connection
             var adapter = new callWall.SignalR.ContactAdapter($.connection.contacts, model);
