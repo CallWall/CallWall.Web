@@ -61,7 +61,7 @@
         };
     };
 
-    var ContactDefViewModel = function () {
+    var ContactSummariesViewModel = function () {
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
@@ -110,7 +110,7 @@
         };
     };
     //Publicly exposed object are attached to the callWall namespace
-    callWall.ContactDefViewModel = ContactDefViewModel;
+    callWall.ContactSummariesViewModel = ContactSummariesViewModel;
     //Exposed for testing, but not necessary to be hidden either
     callWall.ContactSummaryViewModel = ContactSummaryViewModel;
     callWall.AnyContactSummaryGroup = AnyContactSummaryGroup;
