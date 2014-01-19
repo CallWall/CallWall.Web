@@ -580,3 +580,49 @@
         </small>
     </div>
 </div>
+
+
+<script type="text/html" id="ContactDetailDefTemplate">
+    <div id="ContactDetailsSection" class="span4 ContentSection">
+        <h3>Details</h3>
+        <h4 data-bind="text: fullName"></h4>
+        <h5 data-bind="text: dateOfBirth"></h5>
+        <div>
+            <!-- ko foreach: tags -->
+            <span class="label" data-bind="text: $data"></span>
+            <!-- /ko -->
+        </div>
+
+        <h4>Organizations</h4>
+        <!-- ko foreach: organizations -->
+        <div class="kvp">
+            <div class="key" data-bind="text: name"></div>
+            <div data-bind="text: association"></div>
+        </div>
+        <!-- /ko -->
+
+        <h4>Relationships</h4>
+        <!-- ko foreach: relationships -->
+        <div class="kvp">
+            <div class="key" data-bind="text: name"></div>
+            <div data-bind="text: association"></div>
+        </div>
+        <!-- /ko -->
+
+        <h4>Phone Numbers...</h4>
+        <!-- ko foreach: phoneNumbers -->
+        <div class="kvp">
+            <div class="key" data-bind="text: name"></div>
+            <div data-bind="text: association"></div>
+        </div>
+        <!-- /ko -->
+        
+        <h4>Email</h4>
+        <!-- ko foreach: emailAddresses -->
+        <div class="kvp">
+            <div class="key" data-bind="text: name"></div>
+            <div data-bind="text: association"></div>
+        </div>
+        <!-- /ko -->
+    </div>
+</script>

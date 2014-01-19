@@ -33,6 +33,11 @@ namespace CallWall.Web.GoogleProvider.Contacts
               });
         }
 
+        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session)
+        {
+            throw new NotImplementedException();
+        }
+
         private sealed class ContactFeed : IFeed<IContactSummary>
         {
             private readonly int _totalResults;

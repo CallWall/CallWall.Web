@@ -6,5 +6,8 @@ namespace CallWall.Web
     public interface IContactsProvider
     {
         IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> session, IEnumerable<IClientLastUpdated> lastUpdatedDetails);
+        IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> session);
+
+        IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session);
     }
 }
