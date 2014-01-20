@@ -2,6 +2,7 @@
 //TODO: provide search/filter while contacts still being loaded
 
 (function (ko, callWall) {
+    
     var ContactViewModel = function (contact) {
         var self = this;
         self.title = contact.Title;
@@ -34,6 +35,7 @@
             var vm = new ContactViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
+            self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
         };
         self.filter = function(filter) {
             filterText = filter.toUpperCase();
@@ -69,6 +71,7 @@
         self.progress = ko.computed(function() {
             return 100 * self.receivedResults() / self.totalResults();
         });
+        self.currentState = ko.observable('Initialising');
         self.isProcessing = ko.observable(true);
 
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {

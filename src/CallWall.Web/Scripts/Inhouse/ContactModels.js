@@ -2,6 +2,7 @@
 //TODO: provide search/filter while contacts still being loaded
 
 (function (ko, callWall) {
+    
     var ContactViewModel = function (contact) {
         var self = this;
         self.title = contact.Title;
@@ -34,6 +35,7 @@
             var vm = new ContactViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
+            self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
         };
         self.filter = function(filter) {
             filterText = filter.toUpperCase();
@@ -46,13 +48,13 @@
     };
     var AnyContactGroup = function () {
         var self = this;
-        ContactGroup.call(self);
+        ContactGroup.call(self);//inherit
         self.header = '';
         self.isValid = function() { return true; };
     };
     var AlphaContactGroup = function(startsWith) {
         var self = this;
-        ContactGroup.call(self);
+        ContactGroup.call(self);//inherit
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
@@ -69,6 +71,7 @@
         self.progress = ko.computed(function() {
             return 100 * self.receivedResults() / self.totalResults();
         });
+        self.currentState = ko.observable('Initialising');
         self.isProcessing = ko.observable(true);
 
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {

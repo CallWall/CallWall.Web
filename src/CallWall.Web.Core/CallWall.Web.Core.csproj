@@ -119,6 +119,7 @@
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
     <Compile Include="Providers\ISessionProvider.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
+    <Compile Include="Providers\UriExtensions.cs" />
     <Compile Include="ResharperAnnotations.cs" />
     <Compile Include="IAccountAuthentication.cs" />
     <Compile Include="IAccountConfiguration.cs" />
