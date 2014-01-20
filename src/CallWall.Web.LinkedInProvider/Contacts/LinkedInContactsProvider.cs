@@ -57,7 +57,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             
             private static IContactSummary TranslateToContactSummary(Contact c)
             {
-                return new ContactSummary(c.FirstName, c.LastName, c.PictureUrl, Enumerable.Empty<string>());
+                return new ContactSummary(c.FirstName, c.LastName, c.PictureUrl, new []{c.Industry, c.Headline});
             }
         }
     }
