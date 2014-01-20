@@ -36,7 +36,6 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactSummariesModels.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
-                       "~/Scripts/Inhouse/ContactSignalR.js"));
             
             bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
                        "~/Scripts/pouchdb-nightly-{version}.js"));
