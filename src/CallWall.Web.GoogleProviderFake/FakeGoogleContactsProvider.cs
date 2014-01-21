@@ -95,6 +95,8 @@ namespace CallWall.Web.GoogleProviderFake
 
         public class ContactSummary : IContactSummary
         {
+            public string Provider { get; private set; }
+            public string ProviderId { get; private set; }
             public string Title { get; set; }
             public string PrimaryAvatar { get; set; }
             public IEnumerable<string> Tags { get; set; }

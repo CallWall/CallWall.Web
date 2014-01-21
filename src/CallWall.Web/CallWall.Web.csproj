@@ -202,6 +202,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\ContactSummariesHub.cs" />
+    <Compile Include="Hubs\ContactProfileHub.cs" />
+    <Compile Include="Hubs\ContactsHub.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
@@ -298,6 +300,10 @@
     <Content Include="Scripts\Inhouse\ProgressbarBindings.js" />
     <Content Include="Scripts\Inhouse\ContactSummariesModels.js" />
     <Content Include="Scripts\Inhouse\ContactSummariesSignalR.js" />
+    <Content Include="Scripts\Inhouse\ContactBindings.js" />
+    <Content Include="Scripts\Inhouse\ContactModels.js" />
+    <Content Include="Scripts\Inhouse\ContactSignalR.js" />
+    <Content Include="Scripts\Inhouse\DashboardModel.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
     <Content Include="Scripts\jquery-2.0.3.min.map" />
@@ -358,6 +364,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Scripts\Inhouse\Dashboard\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

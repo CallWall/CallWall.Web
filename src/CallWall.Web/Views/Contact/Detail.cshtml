@@ -1,10 +1,6 @@
 ﻿@{
     ViewBag.Title = "Detail";
 }
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jquery")
-}
 <!--
     TODO : pass to the page the providers that should be used.
     TODO : for each provider call the signal R endpoint and render the VMs.
@@ -236,354 +232,29 @@
 </script>
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
-    <h2>Lee Fake Campbell</h2>
+    <h2 data-bind="text: contactProfile.title"></h2>
 </div>
 <div style="clear: both" />
 
 <div class="row">
-    <div id="ContactDetailsSection" class="span4 ContentSection">
-        <h3>Details</h3>
-        <h4>Mr. Lee Fake Ryan Campbell</h4>
-        <h5>27 Dec</h5>
-        <div>
-            <span class="label">Family</span> <span class="label">UK</span>
-        </div>
+    <div id="ContactDetailSection" data-bind="template: { name: 'ContactProfileTemplate', data: contactProfile }" class="span4"></div>
+    
+    <div id="CommunicationSection" data-bind="template: { name: 'CommunicationTemplate', data: communications }"  class="span4"></div>
 
-        <h4>Organizations</h4>
-        <div class="kvp">
-            <div class="key">Work</div>
-            <div>RBC Capital Markets</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Owner</div>
-            <div>Campbell Consulting London Ltd</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Volunteer</div>
-            <div>VLCON - Very long charitable organization name</div>
-        </div>
-
-        <h4>Relationships</h4>
-        <div class="kvp">
-            <div class="key">Wife</div>
-            <div>Erynne Campbell</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Brother</div>
-            <div>Rhys Campbell</div>
-        </div>
-
-        <h4>Phone Numbers...</h4>
-        @*<div class="kvp">
-            <div class="key">Mobile</div>
-            <div>+44 71234 1234</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Work</div>
-            <div>+44 21234 1234</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Home</div>
-            <div>+44 41234 1234</div>
-        </div>*@
-    </div>
-
-    <div id="CommunicationSection" class="span4">
-        <h3>Communication</h3>
-        <!--TODO: VisualClue for read/unread messages-->
-        <!--TODO: Still not great UX for received/Sent/broadcast(Tweeted)-->
-        <ol class="messages">
-            <li class="received">
-                <table style="float: left; margin: 5px">
-                    <tr>
-                        <td>
-                            <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="symbol">&#x2937;</span>
-                            10m
-                        </td>
-                    </tr>
-                </table>
-                <div>
-                    <h5>On My Way</h5>
-                </div>
-            </li>
-            <li class="sent">
-                <table style="float: left; margin: 5px">
-                    <tr>
-                        <td>
-                            <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="symbol">&#x2934;</span>
-                            13m
-                        </td>
-                    </tr>
-                </table>
-                <div>
-                    <h5>Dude, where are you?</h5>
-                </div>
-            </li>
-            <li class="received">
-                <table style="float: left; margin: 5px">
-                    <tr>
-                        <td colspan="2">
-                            <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="max-width: 32px; max-height: 32px;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="50%">
-                            <span class="symbol">&#x2937;</span>
-                        </td>
-                        <td width="50%">2d</td>
-                    </tr>
-                </table>
-                
-                <div>
-                    <h5>Pricing a cross example</h5>
-                    <p title="Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.">Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.</p>
-                </div>
-            </li>
-            <li class="received">
-                <table style="float: left; margin: 5px">
-                    <tr>
-                        <td colspan="2">
-                            <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="max-width: 32px; max-height: 32px;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="50%">
-                            <span class="symbol">&#x2937;</span>
-                        </td>
-                        <td width="50%">4d</td>
-                    </tr>
-                </table>
-                <div>
-                    <h5>I will bring the food for the Rugby</h5>
-                    <p title="From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">From: James Alex</p>
-                </div>
-            </li>
-            
-            <li class="received">
-                <table style="float: left; margin: 5px">
-                    <tr>
-                        <td colspan="2">
-                            <img src="/Content/Twitter/images/Twitter_64x64.png" alt="Tweet" style="max-width: 32px; max-height: 32px;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="50%">
-                            <span class="symbol">&#x2937;</span>
-                        </td>
-                        <td width="50%">4d</td>
-                    </tr>
-                </table>
-                <div>
-                    <h5>#CallWall are recruiting engineers now!</h5>
-                    <p title="Retweets: 7">Retweets : 7</p>
-                </div>
-            </li>
-            <li class="received">
-                <table style="float: left; margin: 5px">
-                    <tr>
-                        <td colspan="2">
-                            <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="max-width: 32px; max-height: 32px;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="50%">
-                            <span class="symbol">&#x2937;</span>
-                        </td>
-                        <td width="50%">5d</td>
-                    </tr>
-                </table>
-                <div>
-                    <h5>Rugby at my place on Saturday morning</h5>
-                    <p title="To: James Alex, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">To: James Alex, Simon Real + 3 others</p>
-                </div>
-            </li>
-        </ol>
-    </div>
-
-    <div id="CalendarSection" class="span4">
-        <h3>Calendar</h3>
-        <dl class="calendar">
-
-            <dt><span class="day">29</span><br />
-                <span class="month">Oct</span></dt>
-            <dd>Lunch with Lee</dd>
-
-            <dt><span class="day">27</span><br />
-                <span class="month">Oct</span></dt>
-            <dd>Training</dd>
-
-            <dt class="today"><span class="day">26</span><br />
-                <span class="month">Oct</span></dt>
-            <dd class="today">Document Review</dd>
-
-            <dt class="past"><span class="day">16</span><br />
-                <span class="month">Oct</span></dt>
-            <dd class="past">Document design session</dd>
-
-            <dt class="past"><span class="day">14</span><br />
-                <span class="month">Oct</span></dt>
-            <dd class="past">Lunch with Lee</dd>
-
-        </dl>
-    </div>
+    <div id="CalendarSection" data-bind="template: { name: 'CalendarTemplate', data: calendar }" class="span4"></div>
 </div>
 
 <div class="row">
-    <div id="GallerySection" class="span4">
-        <h3>Pictures</h3>
-        <div>
-            <img src="/Content/Facebook/images/Facebook_64x64.png" alt="Facebook" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-            <div>
-                <h5>Interlaken Cycle</h5>
-                <span title="Added 1 day ago (25th Oct)" style="font-size: 12px; line-height: 20px; color:#a7a7a7;">1d</span>
-            </div>
-        </div>
-        <table class="gallery">
-            <tr>
-                <td width="50%" rowspan="2">
-                    <div class="mainPicture">
-                        <img src="/Content/images/pictures/Interlaken1.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Interlaken2.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Interlaken3.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Interlaken4.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Interlaken5.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-        
-        <div>
-            <img src="/Content/Microsoft/images/Microsoft_64x64.png" alt="Microsoft" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-            <div>
-                <h5>Landscape shots</h5>
-                <span title="Added 10 days ago (16th Oct)" style="font-size: 12px; line-height: 20px; color:#a7a7a7;">10d</span>
-            </div>
-        </div>
-        <table class="gallery">
-            <tr>
-                <td width="50%" rowspan="2">
-                    <div class="mainPicture">
-                        <img src="/Content/images/pictures/Landscape1.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Landscape2.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Landscape3.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Landscape4.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-                <td width="25%">
-                    <div class="miniPicture">
-                        <img src="/Content/images/pictures/Landscape5.jpg" onload="OnImageLoad(event);" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div id="GallerySection" data-bind="template: { name: 'GalleryTemplate', data: gallery }" class="span4"></div>
 
-    <div id="CollborationSection" class="span4">
-        <h3>Collaboration</h3>
-        
-        <ol class="messages">
-            <li>
-                <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-                <div>
-                    <h5>Design Standards</h5>
-                    <p title="Modified 16-Oct">Modified 16-Oct</p>
-                </div>
-            </li>
-            <li>
-                <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-                <div>
-                    <h5>EOY 2013 Reports</h5>
-                    <p title="Modified 14-Oct">Modified 14-Oct</p>
-                </div>
-            </li>
-            <li>
-                <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-                <div>
-                    <h5>Pricing a cross example</h5>
-                    <p title="Modified 14-Oct">Modified 14-Oct</p>
-                </div>
-            </li>
-            <li>
-                <img src="/Content/Github/images/Github_64x64.png" alt="GitHub Issue" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-                <div>
-                    <!--TODO: Find out how to make this work in a supported manner-->
-                    <h5><strike>CallWall #122 - install Https</strike></h5>
-                    @*<h5 style="text-decoration-line: line-through">CallWall #122 - install Https</h5>*@
-                    <p title="Closed 14-Oct">Closed 14-Oct</p>
-                </div>
-            </li>
-            <li>
-                <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-                <div>
-                    <h5>Pricing a cross example</h5>
-                    <p title="Created 12-Oct">Created 12-Oct</p>
-                </div>
-            </li>
-            <li>
-                <img src="/Content/Github/images/Github_64x64.png" alt="GitHub Issue" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-                <div>
-                    <h5>CallWall #122 - install Https</h5>
-                    <p title="Modified 14-Oct">Modified 14-Oct</p>
-                </div>
-            </li>
-        </ol>
-    </div>
+    <div id="CollborationSection" data-bind="template: { name: 'CollborationTemplate', data: collaboration }" class="span4"></div>
 
-    <div id="LocationSection" class="span4">
-        <h3 style="margin-bottom: 5px">Location</h3>
-        <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;output=embed"></iframe>
-        <br />
-        <small>
-            <a href="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;source=embed" style="color: #0000FF; text-align: left">View Larger Map</a>
-        </small>
-    </div>
+    <div id="LocationSection" data-bind="template: { name: 'LocationTemplate', data: location }" class="span4"></div>
 </div>
 
 
-<script type="text/html" id="ContactDetailDefTemplate">
-    <div id="ContactDetailsSection" class="span4 ContentSection">
+<script type="text/html" id="ContactProfileTemplate">
+    <div id="ContactProfileSection" class="span4 ContentSection">
         <h3>Details</h3>
         <h4 data-bind="text: fullName"></h4>
         <h5 data-bind="text: dateOfBirth"></h5>
@@ -626,3 +297,329 @@
         <!-- /ko -->
     </div>
 </script>
+
+<script type="text/html" id="CommunicationTemplate">
+    <h3>Communication</h3>
+    <!--TODO: VisualClue for read/unread messages-->
+    <!--TODO: Still not great UX for received/Sent/broadcast(Tweeted)-->
+    <ol class="messages">
+        <li class="received">
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td>
+                        <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="symbol">&#x2937;</span>
+                        10m
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <h5>On My Way</h5>
+            </div>
+        </li>
+        <li class="sent">
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td>
+                        <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="symbol">&#x2934;</span>
+                        13m
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <h5>Dude, where are you?</h5>
+            </div>
+        </li>
+        <li class="received">
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td colspan="2">
+                        <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <span class="symbol">&#x2937;</span>
+                    </td>
+                    <td width="50%">2d</td>
+                </tr>
+            </table>
+                
+            <div>
+                <h5>Pricing a cross example</h5>
+                <p title="Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.">Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.</p>
+            </div>
+        </li>
+        <li class="received">
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td colspan="2">
+                        <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <span class="symbol">&#x2937;</span>
+                    </td>
+                    <td width="50%">4d</td>
+                </tr>
+            </table>
+            <div>
+                <h5>I will bring the food for the Rugby</h5>
+                <p title="From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">From: James Alex</p>
+            </div>
+        </li>
+            
+        <li class="received">
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td colspan="2">
+                        <img src="/Content/Twitter/images/Twitter_64x64.png" alt="Tweet" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <span class="symbol">&#x2937;</span>
+                    </td>
+                    <td width="50%">4d</td>
+                </tr>
+            </table>
+            <div>
+                <h5>#CallWall are recruiting engineers now!</h5>
+                <p title="Retweets: 7">Retweets : 7</p>
+            </div>
+        </li>
+        <li class="received">
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td colspan="2">
+                        <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <span class="symbol">&#x2937;</span>
+                    </td>
+                    <td width="50%">5d</td>
+                </tr>
+            </table>
+            <div>
+                <h5>Rugby at my place on Saturday morning</h5>
+                <p title="To: James Alex, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">To: James Alex, Simon Real + 3 others</p>
+            </div>
+        </li>
+    </ol>
+</script>
+
+<script type="text/html" id="CalendarTemplate">
+    <h3>Calendar</h3>
+    <dl class="calendar">
+
+        <dt><span class="day">29</span><br />
+            <span class="month">Oct</span></dt>
+        <dd>Lunch with Lee</dd>
+
+        <dt><span class="day">27</span><br />
+            <span class="month">Oct</span></dt>
+        <dd>Training</dd>
+
+        <dt class="today"><span class="day">26</span><br />
+            <span class="month">Oct</span></dt>
+        <dd class="today">Document Review</dd>
+
+        <dt class="past"><span class="day">16</span><br />
+            <span class="month">Oct</span></dt>
+        <dd class="past">Document design session</dd>
+
+        <dt class="past"><span class="day">14</span><br />
+            <span class="month">Oct</span></dt>
+        <dd class="past">Lunch with Lee</dd>
+
+    </dl>
+</script>
+
+<script type="text/html" id="GalleryTemplate">
+    <h3>Pictures</h3>
+    <div>
+        <img src="/Content/Facebook/images/Facebook_64x64.png" alt="Facebook" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+        <div>
+            <h5>Interlaken Cycle</h5>
+            <span title="Added 1 day ago (25th Oct)" style="font-size: 12px; line-height: 20px; color:#a7a7a7;">1d</span>
+        </div>
+    </div>
+    <table class="gallery">
+        <tr>
+            <td width="50%" rowspan="2">
+                <div class="mainPicture">
+                    <img src="/Content/images/pictures/Interlaken1.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Interlaken2.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Interlaken3.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Interlaken4.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Interlaken5.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+        </tr>
+    </table>
+        
+    <div>
+        <img src="/Content/Microsoft/images/Microsoft_64x64.png" alt="Microsoft" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+        <div>
+            <h5>Landscape shots</h5>
+            <span title="Added 10 days ago (16th Oct)" style="font-size: 12px; line-height: 20px; color:#a7a7a7;">10d</span>
+        </div>
+    </div>
+    <table class="gallery">
+        <tr>
+            <td width="50%" rowspan="2">
+                <div class="mainPicture">
+                    <img src="/Content/images/pictures/Landscape1.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Landscape2.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Landscape3.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Landscape4.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img src="/Content/images/pictures/Landscape5.jpg" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="CollborationTemplate">
+    <h3>Collaboration</h3>
+        
+    <ol class="messages">
+        <li>
+            <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <h5>Design Standards</h5>
+                <p title="Modified 16-Oct">Modified 16-Oct</p>
+            </div>
+        </li>
+        <li>
+            <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <h5>EOY 2013 Reports</h5>
+                <p title="Modified 14-Oct">Modified 14-Oct</p>
+            </div>
+        </li>
+        <li>
+            <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <h5>Pricing a cross example</h5>
+                <p title="Modified 14-Oct">Modified 14-Oct</p>
+            </div>
+        </li>
+        <li>
+            <img src="/Content/Github/images/Github_64x64.png" alt="GitHub Issue" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <!--TODO: Find out how to make this work in a supported manner-->
+                <h5><strike>CallWall #122 - install Https</strike></h5>
+                @*<h5 style="text-decoration-line: line-through">CallWall #122 - install Https</h5>*@
+                <p title="Closed 14-Oct">Closed 14-Oct</p>
+            </div>
+        </li>
+        <li>
+            <img src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <h5>Pricing a cross example</h5>
+                <p title="Created 12-Oct">Created 12-Oct</p>
+            </div>
+        </li>
+        <li>
+            <img src="/Content/Github/images/Github_64x64.png" alt="GitHub Issue" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <h5>CallWall #122 - install Https</h5>
+                <p title="Modified 14-Oct">Modified 14-Oct</p>
+            </div>
+        </li>
+    </ol>
+</script>
+
+<script type="text/html" id="LocationTemplate">
+    <h3 style="margin-bottom: 5px">Location</h3>
+    <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;output=embed"></iframe>
+    <br />
+    <small>
+        <a href="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;source=embed" style="color: #0000FF; text-align: left">View Larger Map</a>
+    </small>
+</script>
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jquerycolor")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/dashboard")
+
+    <script>
+        $(function () {
+            // $.connection.contacts =  the generated client-side hub proxy
+            model = new callWall.DashboardViewModel();
+            model.LoadContactProfile();
+            //model.LoadCommunications();
+            //model.LoadCalendar();
+            //model.LoadGallery();
+            //model.LoadCollaborations();
+            //model.LoadLocations();
+
+            //callWall.createCustomContactBindings();
+            ko.applyBindings(model);
+
+            // Start the connection
+            //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
+            //adapter.StartHub();
+            //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactCommunications, model.communications);
+            //var adapter = new callWall.SignalR.ContactCalendarAdapter($.connection.contactCalendar, model.calendar);
+            //var adapter = new callWall.SignalR.ContactGalleryAdapter($.connection.contactGallery, model.gallery);
+            //var adapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollboration, model.collboration);
+            //var adapter = new callWall.SignalR.ContactLocationAdapter($.connection.contactLocation, model.location);
+            //adapter.StartHub();
+        });
+    </script>
+}
+@Styles.Render("~/Content/themes/base/css")

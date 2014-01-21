@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace CallWall.Web
 {
@@ -36,6 +35,9 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactSummariesModels.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/dashboard").Include(
+                       "~/Scripts/Inhouse/Dashboard/DashboardModel.js"));
             
             bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
                        "~/Scripts/pouchdb-nightly-{version}.js"));
