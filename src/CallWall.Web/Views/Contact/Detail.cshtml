@@ -423,27 +423,11 @@
 <script type="text/html" id="CalendarTemplate">
     <h3>Calendar</h3>
     <dl class="calendar">
-
-        <dt><span class="day">29</span><br />
-            <span class="month">Oct</span></dt>
-        <dd>Lunch with Lee</dd>
-
-        <dt><span class="day">27</span><br />
-            <span class="month">Oct</span></dt>
-        <dd>Training</dd>
-
-        <dt class="today"><span class="day">26</span><br />
-            <span class="month">Oct</span></dt>
-        <dd class="today">Document Review</dd>
-
-        <dt class="past"><span class="day">16</span><br />
-            <span class="month">Oct</span></dt>
-        <dd class="past">Document design session</dd>
-
-        <dt class="past"><span class="day">14</span><br />
-            <span class="month">Oct</span></dt>
-        <dd class="past">Lunch with Lee</dd>
-
+        <!-- ko foreach: entries -->
+        <dt data-bind="css: {today: isToday, past: isPast}"><span class="day" data-bind="text: day"></span><br />
+            <span class="month" data-bind="text: month"></span></dt>
+        <dd data-bind="css: {today: isToday, past: isPast}, text: title"></dd>
+        <!-- /ko -->
     </dl>
 </script>
 

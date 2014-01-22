@@ -26,16 +26,18 @@ namespace CallWall.Web.Hubs
 
         public void RequestContactProfile()
         {
-            var sessions = _sessionProvider.GetSessions(Context.User);
-            var subscription = _contactsProviders
-                                .ToObservable()
-                                .SelectMany(c => c.GetContactDetails(sessions))
-                                .Log(_logger, "RequestContactProfile")
-                                .Subscribe(contact => Clients.Caller.ReceiveContactProfile(contact),
-                                           ex => Clients.Caller.ReceiveError("Error receiving contact profile"),
-                                           () => Clients.Caller.ReceiveComplete());
+            throw new NotImplementedException();
 
-            _contactProfileSubscription.Disposable = subscription;
+            //var sessions = _sessionProvider.GetSessions(Context.User);
+            //var subscription = _contactsProviders
+            //                    .ToObservable()
+            //                    .SelectMany(c => c.GetContactDetails(sessions))
+            //                    .Log(_logger, "RequestContactProfile")
+            //                    .Subscribe(contact => Clients.Caller.ReceiveContactProfile(contact),
+            //                               ex => Clients.Caller.ReceiveError("Error receiving contact profile"),
+            //                               () => Clients.Caller.ReceiveComplete());
+
+            //_contactProfileSubscription.Disposable = subscription;
         }
 
         public override Task OnDisconnected()
