@@ -257,7 +257,7 @@
     <div id="ContactProfileSection" class="span4 ContentSection">
         <h3>Details</h3>
         <h4 data-bind="text: fullName"></h4>
-        <h5 data-bind="text: dateOfBirth"></h5>
+        <h5 data-bind="text: dateOfBirth.format()"></h5>
         <div>
             <!-- ko foreach: tags -->
             <span class="label" data-bind="text: $data"></span>
@@ -424,9 +424,9 @@
     <h3>Calendar</h3>
     <dl class="calendar">
         <!-- ko foreach: entries -->
-        <dt data-bind="css: {today: isToday, past: isPast}"><span class="day" data-bind="text: day"></span><br />
-            <span class="month" data-bind="text: month"></span></dt>
-        <dd data-bind="css: {today: isToday, past: isPast}, text: title"></dd>
+        <dt data-bind="css: { today: date.isToday(), past: date.isPast() }"><span class="day" data-bind="text: date.getDate()"></span><br />
+            <span class="month" data-bind="text: date.getMonthName()"></span></dt>
+        <dd data-bind="css: { today: date.isToday(), past: date.isPast() }, text: title"></dd>
         <!-- /ko -->
     </dl>
 </script>

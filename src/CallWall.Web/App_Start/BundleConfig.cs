@@ -37,6 +37,7 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/dashboard").Include(
+                       "~/Scripts/Inhouse/DateExtensions.js",
                        "~/Scripts/Inhouse/Dashboard/DashboardModel.js"));
             
             bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(

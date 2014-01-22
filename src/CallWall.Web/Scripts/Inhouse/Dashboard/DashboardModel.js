@@ -19,43 +19,14 @@
     var ContactCommunicationViewModel = function () {
     };
 
-    var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
     var CalendarEntry = function (date, title) {
         var self = this;
-        self.day = date.getDate();
-        self.month = monthNames[date.getMonth()];
-
+        self.date = date;
         self.title = title;
-        var today = new Date();
-        var isToday = function(sourceDate) {
-            return (sourceDate.getFullYear() == today.getFullYear()
-                && sourceDate.getMonth() == today.getMonth()
-                && sourceDate.getDate() == today.getDate());
-        };
-        if (isToday(date)) {
-            self.isToday = isToday(date);
-            self.isPast = false;
-            self.isFuture = false;
-        } else if (date < today) {
-            self.isToday = false;
-            self.isPast = true;
-            self.isFuture = false;
-        } else {
-            self.isToday = false;
-            self.isPast = false;
-            self.isFuture = true;
-        }   
     };
     var ContactCalendarViewModel = function() {
         var self = this;
 
-        Date.prototype.addDays = function(days) {
-            var dat = new Date(this.valueOf());
-            dat.setDate(dat.getDate() + days);
-            return dat;
-        };
-
-        var today = new Date();
         self.entries = [
             new CalendarEntry(today.addDays(2), 'Lunch KO with Lee'),
             new CalendarEntry(today.addDays(1), 'Training'),

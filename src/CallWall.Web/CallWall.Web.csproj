@@ -304,6 +304,7 @@
     <Content Include="Scripts\Inhouse\ContactModels.js" />
     <Content Include="Scripts\Inhouse\ContactSignalR.js" />
     <Content Include="Scripts\Inhouse\Dashboard\DashboardModel.js" />
+    <Content Include="Scripts\Inhouse\DateExtensions.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
     <Content Include="Scripts\jquery-2.0.3.min.map" />
