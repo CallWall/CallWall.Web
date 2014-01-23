@@ -1,4 +1,17 @@
 ﻿(function (ko, callWall) {
+    //Provider
+    var ProviderDescription = function(name, imageUrl) {
+        var self = this;
+        self.name = name;
+        self.imageUrl = imageUrl;
+    };
+    var googleProvider = new ProviderDescription("Google", "/Content/Google/images/GoogleIcon.svg");
+    var gmailProvider = new ProviderDescription("Gmail", "/Content/Google/images/Email_48x48.png");
+    var hangoutsProvider = new ProviderDescription("Gmail", "/Content/Google/images/Hangouts_42x42.png");
+    var linkedinProvider = new ProviderDescription("LinkedIn", "/Content/LinkedIn/images/LinkedIn_64x64.png");
+    var twitterProvider = new ProviderDescription("Twitter", "/Content/Twitter/images/Twitter_64x64.png");
+
+    //Contact Profile
     var ContactAssociation = function(name, association) {
         var self = this;
         self.name = name;
@@ -16,9 +29,31 @@
         self.emailAddresses = [new ContactAssociation('Home', 'lee.ryan.campbell@gmail.com'), new ContactAssociation('Work', 'lee.campbell@callwall.com')];
     };
 
+    //Communication
+    var Message = function (timestamp, isOutbound, subject, content, provider) {
+        var self = this;
+        
+        self.timestamp = timestamp;
+        self.isOutbound = isOutbound;
+        self.subject = subject;
+        self.content = content;
+        self.provider = provider;
+    };
     var ContactCommunicationViewModel = function () {
+        var self = this;
+        var n = now();
+        self.messages = [
+            new Message(n.addMinutes(-10), false, "On my way", null, hangoutsProvider),
+            new Message(n.addMinutes(-13), true, "Dude, where are you?", null, hangoutsProvider),
+            new Message(n.addDays(-2), false, "Pricing a cross example", "Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.", linkedinProvider),
+            new Message(n.addDays(-4), false, "I will bring the food for the Rugby", "From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard", gmailProvider),
+            new Message(n.addDays(-4), false, "#CallWall are recruiting engineers now!", "Retweets : 7", twitterProvider),
+            new Message(n.addDays(-5), true, "Rugby at my place on Saturday morning", "To: James Alex, Simon Real + 3 others", gmailProvider)
+        ];
     };
 
+
+    //Calendar
     var CalendarEntry = function (date, title) {
         var self = this;
         self.date = date;
@@ -26,21 +61,24 @@
     };
     var ContactCalendarViewModel = function() {
         var self = this;
-
+        var t = today();
         self.entries = [
-            new CalendarEntry(today.addDays(2), 'Lunch KO with Lee'),
-            new CalendarEntry(today.addDays(1), 'Training'),
-            new CalendarEntry(today.addDays(0), 'Document Review'),
-            new CalendarEntry(today.addDays(-2), 'Document design session'),
-            new CalendarEntry(today.addDays(-3), 'Lunch with Lee')];
+            new CalendarEntry(t.addDays(2), 'Lunch KO with Lee'),
+            new CalendarEntry(t.addDays(1), 'Training'),
+            new CalendarEntry(t.addDays(0), 'Document Review'),
+            new CalendarEntry(t.addDays(-2), 'Document design session'),
+            new CalendarEntry(t.addDays(-3), 'Lunch with Lee')];
     };
 
+    //Gallery
     var ContactGalleryViewModel = function () {
     };
 
+    //Collaboration
     var ContactCollaborationViewModel = function () {
     };
 
+    //Location
     var ContactLocationViewModel = function () {
     };
 

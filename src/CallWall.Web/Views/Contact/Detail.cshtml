@@ -303,120 +303,32 @@
     <!--TODO: VisualClue for read/unread messages-->
     <!--TODO: Still not great UX for received/Sent/broadcast(Tweeted)-->
     <ol class="messages">
-        <li class="received">
+        <!-- ko foreach: messages -->
+        <li>
             <table style="float: left; margin: 5px">
                 <tr>
                     <td>
-                        <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
+                        <img data-bind="attr:{src: provider.imageUrl, alt: name}" style="max-width: 32px; max-height: 32px;" />
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <span class="symbol">&#x2937;</span>
-                        10m
-                    </td>
-                </tr>
-            </table>
-            <div>
-                <h5>On My Way</h5>
-            </div>
-        </li>
-        <li class="sent">
-            <table style="float: left; margin: 5px">
-                <tr>
-                    <td>
-                        <img src="/Content/Google/images/hangouts_42x42.png" alt="Hangouts chat" style="max-width: 32px; max-height: 32px;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
+                        <!-- ko if: isOutbound -->
                         <span class="symbol">&#x2934;</span>
-                        13m
-                    </td>
-                </tr>
-            </table>
-            <div>
-                <h5>Dude, where are you?</h5>
-            </div>
-        </li>
-        <li class="received">
-            <table style="float: left; margin: 5px">
-                <tr>
-                    <td colspan="2">
-                        <img src="/Content/Google/images/Email_48x48.png" alt="Gmail" style="max-width: 32px; max-height: 32px;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td width="50%">
+                        <!-- /ko -->
+                        <!-- ko if: !isOutbound -->
                         <span class="symbol">&#x2937;</span>
+                        <!-- /ko -->
+                        <span data-bind="text: timestamp.untilToday()"></span>
                     </td>
-                    <td width="50%">2d</td>
-                </tr>
-            </table>
-                
-            <div>
-                <h5>Pricing a cross example</h5>
-                <p title="Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.">Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.</p>
-            </div>
-        </li>
-        <li class="received">
-            <table style="float: left; margin: 5px">
-                <tr>
-                    <td colspan="2">
-                        <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="max-width: 32px; max-height: 32px;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td width="50%">
-                        <span class="symbol">&#x2937;</span>
-                    </td>
-                    <td width="50%">4d</td>
                 </tr>
             </table>
             <div>
-                <h5>I will bring the food for the Rugby</h5>
-                <p title="From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">From: James Alex</p>
+                <h5 data-bind="text: subject, attr:{title: subject}"></h5>
+                <p data-bind="text: content, attr: { title: content }"></p>
             </div>
         </li>
-            
-        <li class="received">
-            <table style="float: left; margin: 5px">
-                <tr>
-                    <td colspan="2">
-                        <img src="/Content/Twitter/images/Twitter_64x64.png" alt="Tweet" style="max-width: 32px; max-height: 32px;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td width="50%">
-                        <span class="symbol">&#x2937;</span>
-                    </td>
-                    <td width="50%">4d</td>
-                </tr>
-            </table>
-            <div>
-                <h5>#CallWall are recruiting engineers now!</h5>
-                <p title="Retweets: 7">Retweets : 7</p>
-            </div>
-        </li>
-        <li class="received">
-            <table style="float: left; margin: 5px">
-                <tr>
-                    <td colspan="2">
-                        <img src="/Content/Facebook/images/facebook_64x64.png" alt="Facebook message" style="max-width: 32px; max-height: 32px;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td width="50%">
-                        <span class="symbol">&#x2937;</span>
-                    </td>
-                    <td width="50%">5d</td>
-                </tr>
-            </table>
-            <div>
-                <h5>Rugby at my place on Saturday morning</h5>
-                <p title="To: James Alex, Simon Real, Brian Baxter, Josh Taylor and Sally Hubard ">To: James Alex, Simon Real + 3 others</p>
-            </div>
-        </li>
+        <!-- /ko -->
     </ol>
 </script>
 
