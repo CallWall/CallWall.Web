@@ -65,7 +65,7 @@ namespace CallWall.Web
             container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<ISessionProvider, SessionProvider>();
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
-            container.RegisterType<ContactsHub>();
+            container.RegisterType<ContactSummariesHub>();
 
             InitialiseModules(container);
         }

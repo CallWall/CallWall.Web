@@ -12,16 +12,16 @@
 <!--TODO: ensure that the progress bar is briefly animated green onComplete, before it is hidden -->
 <!--TODO: ensure some sort of error message is displayed onError -->
 <div id="progressbar" data-bind="progress: progress, visible: isProcessing"></div>
-<div id="ContactGroupDefListBound" data-bind="template: { name: 'ContactGroupDefTemplate', foreach: contactGroups }"></div>
+<div id="ContactGroups" data-bind="template: { name: 'ContactSummaryGroupTemplate', foreach: contactGroups }"></div>
 
-<script type="text/html" id="ContactGroupDefTemplate">
+<script type="text/html" id="ContactSummaryGroupTemplate">
     <div class="contact-group" data-bind="visible: isVisible">
         <h3 data-bind="text: header"></h3>
-        <div id="ContactDefListBound" data-bind="template: { name: 'ContactDefTemplate', foreach: contacts }"></div>
+        <div id="ContactSummaries" data-bind="template: { name: 'ContactSummaryTemplate', foreach: contacts }"></div>
     </div>
 </script>
 
-<script type="text/html" id="ContactDefTemplate">
+<script type="text/html" id="ContactSummaryTemplate">
     <div class="contact-card" data-bind="visible: isVisible">
         <table>
             <tr>
@@ -55,12 +55,12 @@
     <script>
         $(function () {
             // $.connection.contacts =  the generated client-side hub proxy
-            model = new callWall.ContactDefViewModel();
+            var model = new callWall.ContactSummariesViewModel();
             model.LoadContactGroups();
-            callWall.createCustomContactBindings();
+            callWall.createCustomProgressbarBindings();
             ko.applyBindings(model);
             // Start the connection
-            var adapter = new callWall.SignalR.ContactAdapter($.connection.contacts, model);
+            var adapter = new callWall.SignalR.ContactAdapter($.connection.contactSummaries, model);
             adapter.StartHub();
         });
     </script>

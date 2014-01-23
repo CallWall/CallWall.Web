@@ -1,16 +1,16 @@
 /// <reference path="../knockout-3.0.0.debug.js" />
-/// <reference path="../Inhouse/ContactModels.js" />
+/// <reference path="../Inhouse/ContactSummariesModels.js" />
 /// <reference path="../jasmine/jasmine.js" />
 
 describe("Contacts", function () {
     var anoncontactSvg = '/Content/images/AnonContact.svg';
 
-    describe("ContactViewModel", function () {
+    describe("ContactSummaryViewModel", function () {
         var contact, contactViewModel;
 
         beforeEach(function () {
             contact = { Title: 'abc', Tags: ['alpha', 'beta'] };
-            contactViewModel = new callWall.ContactViewModel(contact);
+            contactViewModel = new callWall.ContactSummaryViewModel(contact);
         });
 
         it("should be able to created with a valid contact", function () {
@@ -45,10 +45,10 @@ describe("Contacts", function () {
         });
     });
     
-    describe("AnyContactGroup", function () {
+    describe("AnyContactSummaryGroup", function () {
         var alphaContactGroup;
         beforeEach(function() {
-            alphaContactGroup = new callWall.AnyContactGroup('');
+            alphaContactGroup = new callWall.AnyContactSummaryGroup('');
         });
         it("should expose binding properties", function() {
             expect(alphaContactGroup.isVisible()).toBeDefined();
@@ -65,11 +65,11 @@ describe("Contacts", function () {
         });
     });
     
-    describe("AlphaContactGroup", function () {
+    describe("AlphaContactSummaryGroup", function () {
         var groupPrefix = 'X';
         var alphaContactGroup;
         beforeEach(function () {
-            alphaContactGroup = new callWall.AlphaContactGroup(groupPrefix);
+            alphaContactGroup = new callWall.AlphaContactSummaryGroup(groupPrefix);
         });
         it("should expose binding properties", function () {
             expect(alphaContactGroup.isVisible()).toBeDefined();

@@ -54,14 +54,14 @@
     <Content Include="..\CallWall.Web\Scripts\bootstrap.min.js">
       <Link>Scripts\bootstrap.min.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactBindings.js">
-      <Link>Scripts\Inhouse\ContactBindings.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactSummariesModels.js">
+      <Link>Scripts\Inhouse\ContactSummariesModels.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactModels.js">
-      <Link>Scripts\Inhouse\ContactModels.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactSummariesSignalR.js">
+      <Link>Scripts\Inhouse\ContactSummariesSignalR.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactSignalR.js">
-      <Link>Scripts\Inhouse\ContactSignalR.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\ProgressbarBindings.js">
+      <Link>Scripts\Inhouse\ProgressbarBindings.js</Link>
     </Content>
     <Content Include="..\CallWall.Web\Scripts\jquery-2.0.3.intellisense.js">
       <Link>Scripts\jquery-2.0.3.intellisense.js</Link>

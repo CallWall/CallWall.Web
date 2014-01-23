@@ -34,7 +34,6 @@
             var vm = new ContactSummaryViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
-            self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
         };
         self.filter = function(filter) {
             filterText = filter.toUpperCase();
@@ -61,7 +60,7 @@
         };
     };
 
-    var ContactDefViewModel = function () {
+    var ContactSummariesViewModel = function () {
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
@@ -70,7 +69,6 @@
         self.progress = ko.computed(function() {
             return 100 * self.receivedResults() / self.totalResults();
         });
-        self.currentState = ko.observable('Initialising');
         self.isProcessing = ko.observable(true);
 
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {
@@ -110,7 +108,7 @@
         };
     };
     //Publicly exposed object are attached to the callWall namespace
-    callWall.ContactDefViewModel = ContactDefViewModel;
+    callWall.ContactSummariesViewModel = ContactSummariesViewModel;
     //Exposed for testing, but not necessary to be hidden either
     callWall.ContactSummaryViewModel = ContactSummaryViewModel;
     callWall.AnyContactSummaryGroup = AnyContactSummaryGroup;

@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.GoogleProviderFake
 {
-    class FakeSession : ISession
+    sealed class FakeSession : ISession
     {
-        private readonly HashSet<Uri> _authorizedResources;
+        private readonly IAccount _accountDetails;
+        private readonly HashSet<string> _authorizedResources;
 
-        public FakeSession(IEnumerable<string> scopes)
+        public FakeSession(IAccount account, IEnumerable<string> scopes)
         {
-            var authorizedScopes = scopes.Select(s => new Uri(s)).ToArray();
-            _authorizedResources = new HashSet<Uri>(authorizedScopes);
+            _accountDetails = account;
+            _authorizedResources = new HashSet<string>(scopes);
         }
 
         public string Provider { get { return "GoogleFake"; } }
         public string AccessToken { get { return "FakeAccessToken"; } }
         public string RefreshToken { get { return "FakeRefreshToken"; } }
         public DateTimeOffset Expires { get { return DateTimeOffset.Now.AddHours(1); } }
-        public ISet<Uri> AuthorizedResources { get { return _authorizedResources; } }
+        public ISet<string> AuthorizedResources { get { return _authorizedResources; } }
+        public IAccount AccountDetails { get { return _accountDetails; } }
+
         public bool HasExpired()
         {
             return false;
@@ -31,5 +33,11 @@ namespace CallWall.Web.GoogleProviderFake
             var json = jObject.ToString(Formatting.None);
             return json;
         }
+    }
+
+    sealed class FakeAccount : IAccount
+    {
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
     }
 }
