@@ -21,6 +21,9 @@
     h1, h2, h3 {
         margin-top: 20px;
     }
+    h5 {
+        line-height: 20px;
+    }
 
     body {
         background-color: #373737; /*CallWall.Windows has #F5303030, but assuming a white background then it becomes #373737 with the alpha channel removed.;*/
@@ -48,10 +51,6 @@
     }
 
     .value {
-    }
-
-    h5.closed {
-        text-decoration-line: line-through;
     }
 
     ol.messages, ol.collaborations {
@@ -357,9 +356,8 @@
         <div>
             <h5 data-bind="text: title"></h5>
             <!--TODO: Implement the title attribute properly-->
-            <span title="Added 1 day ago (25th Oct)"
-                style="font-size: 12px; line-height: 20px; color: #a7a7a7;"
-                data-bind="text: lastModifiedDate.untilToday()"></span>
+            <span style="font-size: 12px; line-height: 20px; color: #a7a7a7;"
+                  data-bind="text: lastModifiedDate.untilToday(), attr: { title: formatAction('Created', createdDate) + ', ' + formatAction('Modified', lastModifiedDate) }"></span>
         </div>
     </div>
 
