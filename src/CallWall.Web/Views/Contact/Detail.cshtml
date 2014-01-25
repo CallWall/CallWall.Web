@@ -308,7 +308,7 @@
             <table style="float: left; margin: 5px">
                 <tr>
                     <td>
-                        <img data-bind="attr:{src: provider.imageUrl, alt: name}" style="max-width: 32px; max-height: 32px;" />
+                        <img data-bind="attr:{src: provider.imageUrl, alt: provider.name}" style="max-width: 32px; max-height: 32px;" />
                     </td>
                 </tr>
                 <tr>
@@ -333,6 +333,7 @@
 </script>
 
 <script type="text/html" id="CalendarTemplate">
+    <!--TODO: Handle dates with multple entries. -->
     <h3>Calendar</h3>
     <dl class="calendar">
         <!-- ko foreach: entries -->
@@ -345,83 +346,54 @@
 
 <script type="text/html" id="GalleryTemplate">
     <h3>Pictures</h3>
+    <!-- ko foreach: albums -->
     <div>
-        <img src="/Content/Facebook/images/Facebook_64x64.png" alt="Facebook" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+        <img data-bind="attr: { src: provider.imageUrl, alt: provider.name }" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
         <div>
-            <h5>Interlaken Cycle</h5>
-            <span title="Added 1 day ago (25th Oct)" style="font-size: 12px; line-height: 20px; color:#a7a7a7;">1d</span>
+            <h5 data-bind="text: title"></h5>
+            <!--TODO: Implement the title attribute properly-->
+            <span title="Added 1 day ago (25th Oct)" 
+                  style="font-size: 12px; line-height: 20px; color:#a7a7a7;"
+                  data-bind="text: lastModifiedDate.untilToday()"></span>
         </div>
     </div>
+    
+    <!--TODO: Implement some sort of smart template selector-->
+    <!-- 1-4 image rotator -->
+    <!-- 5+ image rotator -->
+    <!-- If goes from 4 to 5 then swap template?-->
     <table class="gallery">
         <tr>
             <td width="50%" rowspan="2">
                 <div class="mainPicture">
-                    <img src="/Content/images/pictures/Interlaken1.jpg" onload="OnImageLoad(event);" />
+                    <img data-bind="attr: { src: imageUrls[0] }" onload="OnImageLoad(event);" />
                 </div>
             </td>
             <td width="25%">
                 <div class="miniPicture">
-                    <img src="/Content/images/pictures/Interlaken2.jpg" onload="OnImageLoad(event);" />
+                    <img data-bind="attr: { src: imageUrls[1] }" onload="OnImageLoad(event);" />
                 </div>
             </td>
             <td width="25%">
                 <div class="miniPicture">
-                    <img src="/Content/images/pictures/Interlaken3.jpg" onload="OnImageLoad(event);" />
+                    <img data-bind="attr: { src: imageUrls[2] }" onload="OnImageLoad(event);" />
                 </div>
             </td>
         </tr>
         <tr>
             <td width="25%">
                 <div class="miniPicture">
-                    <img src="/Content/images/pictures/Interlaken4.jpg" onload="OnImageLoad(event);" />
+                    <img data-bind="attr: { src: imageUrls[3] }" onload="OnImageLoad(event);" />
                 </div>
             </td>
             <td width="25%">
                 <div class="miniPicture">
-                    <img src="/Content/images/pictures/Interlaken5.jpg" onload="OnImageLoad(event);" />
+                    <img data-bind="attr: { src: imageUrls[4] }" onload="OnImageLoad(event);" />
                 </div>
             </td>
         </tr>
     </table>
-        
-    <div>
-        <img src="/Content/Microsoft/images/Microsoft_64x64.png" alt="Microsoft" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
-        <div>
-            <h5>Landscape shots</h5>
-            <span title="Added 10 days ago (16th Oct)" style="font-size: 12px; line-height: 20px; color:#a7a7a7;">10d</span>
-        </div>
-    </div>
-    <table class="gallery">
-        <tr>
-            <td width="50%" rowspan="2">
-                <div class="mainPicture">
-                    <img src="/Content/images/pictures/Landscape1.jpg" onload="OnImageLoad(event);" />
-                </div>
-            </td>
-            <td width="25%">
-                <div class="miniPicture">
-                    <img src="/Content/images/pictures/Landscape2.jpg" onload="OnImageLoad(event);" />
-                </div>
-            </td>
-            <td width="25%">
-                <div class="miniPicture">
-                    <img src="/Content/images/pictures/Landscape3.jpg" onload="OnImageLoad(event);" />
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td width="25%">
-                <div class="miniPicture">
-                    <img src="/Content/images/pictures/Landscape4.jpg" onload="OnImageLoad(event);" />
-                </div>
-            </td>
-            <td width="25%">
-                <div class="miniPicture">
-                    <img src="/Content/images/pictures/Landscape5.jpg" onload="OnImageLoad(event);" />
-                </div>
-            </td>
-        </tr>
-    </table>
+    <!-- /ko -->
 </script>
 
 <script type="text/html" id="CollborationTemplate">

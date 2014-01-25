@@ -10,6 +10,8 @@
     var hangoutsProvider = new ProviderDescription("Gmail", "/Content/Google/images/Hangouts_42x42.png");
     var linkedinProvider = new ProviderDescription("LinkedIn", "/Content/LinkedIn/images/LinkedIn_64x64.png");
     var twitterProvider = new ProviderDescription("Twitter", "/Content/Twitter/images/Twitter_64x64.png");
+    var facebookProvider = new ProviderDescription("Facebook", "/Content/Facebook/images/Facebook_64x64.png");
+    var microsoftProvider = new ProviderDescription("Microsoft", "/Content/Microsoft/images/Microsoft_64x64.png");
 
     //Contact Profile
     var ContactAssociation = function(name, association) {
@@ -71,7 +73,36 @@
     };
 
     //Gallery
+    var GalleryAlbum = function(createdDate, lastModifiedDate, title, provider, imageUrls) {
+        var self = this;
+        self.createdDate = createdDate;
+        self.lastModifiedDate = lastModifiedDate;
+        self.title = title;
+        self.provider = provider;
+        self.imageUrls = imageUrls;
+    };
     var ContactGalleryViewModel = function () {
+        var self = this;
+        var t = today();
+        self.albums = [
+            new GalleryAlbum(t.addDays(-1), t.addDays(-1), 'Interlaken Cycle', facebookProvider, 
+                [
+                    '/Content/images/pictures/Interlaken1.jpg',
+                    '/Content/images/pictures/Interlaken2.jpg',
+                    '/Content/images/pictures/Interlaken3.jpg',
+                    '/Content/images/pictures/Interlaken4.jpg',
+                    '/Content/images/pictures/Interlaken5.jpg'
+
+                ]),
+            new GalleryAlbum(t.addDays(-2), t.addDays(-2), 'Landscape shots', microsoftProvider,
+                [
+                    '/Content/images/pictures/Landscape1.jpg',
+                    '/Content/images/pictures/Landscape2.jpg',
+                    '/Content/images/pictures/Landscape3.jpg',
+                    '/Content/images/pictures/Landscape4.jpg',
+                    '/Content/images/pictures/Landscape5.jpg'
+                ])
+        ];
     };
 
     //Collaboration
