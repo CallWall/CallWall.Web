@@ -1,25 +1,27 @@
 ﻿(function (ko, callWall) {
     //Provider
-    var ProviderDescription = function(name, imageUrl) {
+    var ProviderDescription = function (name, imageUrl) {
         var self = this;
         self.name = name;
         self.imageUrl = imageUrl;
     };
-    var googleProvider = new ProviderDescription("Google", "/Content/Google/images/GoogleIcon.svg");
-    var gmailProvider = new ProviderDescription("Gmail", "/Content/Google/images/Email_48x48.png");
-    var hangoutsProvider = new ProviderDescription("Gmail", "/Content/Google/images/Hangouts_42x42.png");
-    var linkedinProvider = new ProviderDescription("LinkedIn", "/Content/LinkedIn/images/LinkedIn_64x64.png");
-    var twitterProvider = new ProviderDescription("Twitter", "/Content/Twitter/images/Twitter_64x64.png");
-    var facebookProvider = new ProviderDescription("Facebook", "/Content/Facebook/images/Facebook_64x64.png");
-    var microsoftProvider = new ProviderDescription("Microsoft", "/Content/Microsoft/images/Microsoft_64x64.png");
+    var googleProvider = new ProviderDescription('Google', '/Content/Google/images/GoogleIcon.svg');
+    var gmailProvider = new ProviderDescription('Gmail', '/Content/Google/images/Email_48x48.png');
+    var hangoutsProvider = new ProviderDescription('Hangouts', '/Content/Google/images/Hangouts_42x42.png');
+    var googleDriveProvider = new ProviderDescription('Google Drive', '/Content/Google/images/Drive_128x128.png');
+    var linkedinProvider = new ProviderDescription('LinkedIn', '/Content/LinkedIn/images/LinkedIn_64x64.png');
+    var twitterProvider = new ProviderDescription('Twitter', '/Content/Twitter/images/Twitter_64x64.png');
+    var facebookProvider = new ProviderDescription('Facebook', '/Content/Facebook/images/Facebook_64x64.png');
+    var microsoftProvider = new ProviderDescription('Microsoft', '/Content/Microsoft/images/Microsoft_64x64.png');
+    var githubProvider = new ProviderDescription('GitHub', '/Content/Github/images/Github_64x64.png');
 
     //Contact Profile
-    var ContactAssociation = function(name, association) {
+    var ContactAssociation = function (name, association) {
         var self = this;
         self.name = name;
         self.association = association;
     };
-    var ContactProfileViewModel = function() {
+    var ContactProfileViewModel = function () {
         var self = this;
         self.title = 'Lee Campbell';
         self.fullName = '';
@@ -34,7 +36,7 @@
     //Communication
     var Message = function (timestamp, isOutbound, subject, content, provider) {
         var self = this;
-        
+
         self.timestamp = timestamp;
         self.isOutbound = isOutbound;
         self.subject = subject;
@@ -45,12 +47,12 @@
         var self = this;
         var n = now();
         self.messages = [
-            new Message(n.addMinutes(-10), false, "On my way", null, hangoutsProvider),
-            new Message(n.addMinutes(-13), true, "Dude, where are you?", null, hangoutsProvider),
-            new Message(n.addDays(-2), false, "Pricing a cross example", "Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.", linkedinProvider),
-            new Message(n.addDays(-4), false, "I will bring the food for the Rugby", "From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard", gmailProvider),
-            new Message(n.addDays(-4), false, "#CallWall are recruiting engineers now!", "Retweets : 7", twitterProvider),
-            new Message(n.addDays(-5), true, "Rugby at my place on Saturday morning", "To: James Alex, Simon Real + 3 others", gmailProvider)
+            new Message(n.addMinutes(-10), false, 'On my way', null, hangoutsProvider),
+            new Message(n.addMinutes(-13), true, 'Dude, where are you?', null, hangoutsProvider),
+            new Message(n.addDays(-2), false, 'Pricing a cross example', 'Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.', linkedinProvider),
+            new Message(n.addDays(-4), false, 'I will bring the food for the Rugby', 'From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard', gmailProvider),
+            new Message(n.addDays(-4), false, '#CallWall are recruiting engineers now!', 'Retweets : 7', twitterProvider),
+            new Message(n.addDays(-5), true, 'Rugby at my place on Saturday morning', 'To: James Alex, Simon Real + 3 others', gmailProvider)
         ];
     };
 
@@ -61,7 +63,7 @@
         self.date = date;
         self.title = title;
     };
-    var ContactCalendarViewModel = function() {
+    var ContactCalendarViewModel = function () {
         var self = this;
         var t = today();
         self.entries = [
@@ -73,7 +75,7 @@
     };
 
     //Gallery
-    var GalleryAlbum = function(createdDate, lastModifiedDate, title, provider, imageUrls) {
+    var GalleryAlbum = function (createdDate, lastModifiedDate, title, provider, imageUrls) {
         var self = this;
         self.createdDate = createdDate;
         self.lastModifiedDate = lastModifiedDate;
@@ -85,7 +87,7 @@
         var self = this;
         var t = today();
         self.albums = [
-            new GalleryAlbum(t.addDays(-1), t.addDays(-1), 'Interlaken Cycle', facebookProvider, 
+            new GalleryAlbum(t.addDays(-1), t.addDays(-1), 'Interlaken Cycle', facebookProvider,
                 [
                     '/Content/images/pictures/Interlaken1.jpg',
                     '/Content/images/pictures/Interlaken2.jpg',
@@ -106,7 +108,25 @@
     };
 
     //Collaboration
+    var CollaborationAction = function (title, actionDate, actionPerformed, isCompleted, provider) {
+        var self = this;
+        //self.project = project;   //Maybe use project/projectName instead of name.
+        self.title = title;
+        self.actionDate = actionDate;
+        self.actionPerformed = actionPerformed;
+        self.isCompleted = isCompleted;
+        self.provider = provider;
+    };
     var ContactCollaborationViewModel = function () {
+        var self = this;
+        var t = today();
+        self.entries = [
+                new CollaborationAction('Design KO Standards', t.addMinutes(-35), 'Created Document', false, googleDriveProvider),
+                new CollaborationAction('EOY 2013 Reports', t.addDays(-8), 'Modified Document', false, googleDriveProvider),
+                new CollaborationAction('Pricing a cross example', t.addDays(-37), 'Modified Document', false, googleDriveProvider),
+                new CollaborationAction('CallWall #122 - install Https', t.addDays(-40), 'Closed issue', true, githubProvider),
+                new CollaborationAction('Pricing a cross example', t.addDays(-45), 'Created document', false, googleDriveProvider)
+        ];
     };
 
     //Location
@@ -115,7 +135,7 @@
 
     var DashboardViewModel = function () {
         var self = this;
-        
+
         self.contactProfile = new ContactProfileViewModel();
         self.communications = new ContactCommunicationViewModel();
         self.calendar = new ContactCalendarViewModel();
@@ -123,13 +143,13 @@
         self.collaboration = new ContactCollaborationViewModel();
         self.location = new ContactLocationViewModel();
 
-        self.LoadContactProfile = function() {};
+        self.LoadContactProfile = function () { };
     };
 
 
     //Publicly exposed object are attached to the callWall namespace
     callWall.DashboardViewModel = DashboardViewModel;
-    
+
     // ReSharper disable ThisInGlobalContext
 }(ko, this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext

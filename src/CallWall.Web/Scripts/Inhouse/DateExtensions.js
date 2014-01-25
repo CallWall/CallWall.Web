@@ -6,10 +6,10 @@ var today = function () {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 };
 var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-var minutes=1000*60;
-var hours=minutes*60;
-var days=hours*24;
-var years=days*365;
+var minutes = 1000 * 60;
+var hours = minutes * 60;
+var days = hours * 24;
+var years = days * 365;
 Date.prototype.isToday = function () {
     var t = today();
     return (this.getFullYear() == t.getFullYear()
@@ -53,4 +53,22 @@ Date.prototype.untilToday = function () {
     if (msDelta > days) return '' + Math.round(msDelta / days) + 'd';
     if (msDelta > hours) return '' + Math.round(msDelta / hours) + 'h';
     return Math.round(msDelta / minutes) + 'm';
+};
+Date.prototype.todayDeltaFormat = function () {
+    var msDelta = now().getTime() - this.getTime();
+    var absMsDelta = Math.abs(msDelta);
+
+    var count = Math.round(absMsDelta / days);
+    if (count > 14) return this.format();
+
+    var suffix = (msDelta > 0) ? 'ago' : 'to go';
+    if (absMsDelta > 0) {
+        return count == 1 ? '1 day ' + suffix : '' + count + ' days ' + suffix;
+    }
+    if (absMsDelta > hours) {
+        count = Math.round(absMsDelta / hours);
+        return count == 1 ? '1 hour ' + suffix : '' + count + ' hours ' + suffix;
+    }
+    count = Math.round(absMsDelta / minutes);
+    return count == 1 ? '1 minute ' + suffix : '' + count + ' minute ' + suffix;
 };
