@@ -296,6 +296,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
+    <Content Include="Scripts\Inhouse\Dashboard\ContactProfileSignalR.js" />
     <Content Include="Scripts\Inhouse\ProgressbarBindings.js" />
     <Content Include="Scripts\Inhouse\ContactSummariesModels.js" />
     <Content Include="Scripts\Inhouse\ContactSummariesSignalR.js" />

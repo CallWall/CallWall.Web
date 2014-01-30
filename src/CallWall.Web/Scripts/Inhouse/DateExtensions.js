@@ -72,3 +72,24 @@ Date.prototype.todayDeltaFormat = function () {
     count = Math.round(absMsDelta / minutes);
     return count == 1 ? '1 minute ' + suffix : '' + count + ' minute ' + suffix;
 };
+function formatDate(source) {
+    alert(source);
+    if (source == undefined) return null;
+    //alert('formatDate(source) source != undefined');
+    alert(Object.prototype.toString.call(source));
+    if (Object.prototype.toString.call(source) === '[object Date]') {
+        return source.format();
+    }
+    alert('returning source');
+    return source;
+}
+
+ko.bindingHandlers.date = {
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        var value = valueAccessor();
+        var date = value();
+        if (date != null) {
+            $(element).text(date.format());
+        }
+     }
+};

@@ -66,6 +66,7 @@ namespace CallWall.Web
             container.RegisterType<ISessionProvider, SessionProvider>();
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             container.RegisterType<ContactSummariesHub>();
+            container.RegisterType<ContactProfileHub>();
 
             InitialiseModules(container);
         }

@@ -23,14 +23,41 @@
     };
     var ContactProfileViewModel = function () {
         var self = this;
-        self.title = 'Lee Campbell';
-        self.fullName = '';
-        self.dateOfBirth = new Date(1979, 11, 27);
-        self.tags = Array('Family', 'Dolphins', 'London');
-        self.organizations = [new ContactAssociation('Consultant', 'Adaptive'), new ContactAssociation('Triathlon', 'Serpentine')];
-        self.relationships = [new ContactAssociation('Wife', 'Erynne'), new ContactAssociation('Brother', 'Rhys')];
-        self.phoneNumbers = [new ContactAssociation('Mobile - UK', '07827743025'), new ContactAssociation('Mobile - NZ', '021 254 3824')];
-        self.emailAddresses = [new ContactAssociation('Home', 'lee.ryan.campbell@gmail.com'), new ContactAssociation('Work', 'lee.campbell@callwall.com')];
+        //TODO: Add this to the ko ObservableArray prototype.
+        var concat = function(target, source) {
+            if (target == undefined || source == undefined) return;
+            for (var i = 0; i < source.length; i++) {
+                target.push(source[i]);
+            }
+        };
+        var Aggregate = function (data) {
+            
+            //TODO: Check for duplicates. Actually no, if I check for dupes here, I will need to rewrite this in every client.
+            //TODO: Run a ObsEx.Scan on the server stream to only produce updates.
+
+            self.title(data.title);
+            self.fullName(data.fullName);
+            //var dob = new Date(Date.parse(data.dateOfBirth));
+            var dob = new Date(data.dateOfBirth);
+            self.dateOfBirth(dob);
+            concat(self.tags, data.tags);
+            
+            concat(self.organizations, data.organizations);
+            concat(self.relationships, data.relationships);
+            concat(self.phoneNumbers, data.phoneNumbers);
+            concat(self.emailAddresses, data.emailAddresses);
+        };
+
+        self.aggregate = Aggregate;
+        self.title = ko.observable('');
+        self.fullName = ko.observable('');
+        self.dateOfBirth = ko.observable();
+        self.tags = ko.observableArray();
+        self.organizations = ko.observableArray();
+        self.relationships = ko.observableArray();
+        self.phoneNumbers = ko.observableArray();
+        self.emailAddresses = ko.observableArray();
+        self.isProcessing = ko.observable(true);
     };
 
     //Communication
@@ -132,6 +159,9 @@
     //Location
     var ContactLocationViewModel = function () {
     };
+
+
+
 
     var DashboardViewModel = function () {
         var self = this;

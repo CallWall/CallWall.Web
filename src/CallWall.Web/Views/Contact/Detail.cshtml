@@ -260,10 +260,12 @@
     <div id="ContactProfileSection" class="span4 ContentSection">
         <h3>Details</h3>
         <h4 data-bind="text: fullName"></h4>
-        <h5 data-bind="text: dateOfBirth.format()"></h5>
+        @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
+        <h5 data-bind="date: dateOfBirth"></h5>
         <div>
             <!-- ko foreach: tags -->
-            <span class="label" data-bind="text: $data"></span>
+            <span class="tag" data-bind="text: $data"></span>
+            @*<span class="label" data-bind="text: $data"></span>*@
             <!-- /ko -->
         </div>
 
@@ -434,6 +436,8 @@
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jquerycolor")
     @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/signalR")
+    @Scripts.Render("~/signalR/hubs")
     @Scripts.Render("~/bundles/dashboard")
 
     <script>
@@ -449,8 +453,10 @@
 
             //callWall.createCustomContactBindings();
             ko.applyBindings(model);
-
+            
             // Start the connection
+            var contactProfileAdapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
+            contactProfileAdapter.StartHub(["lee@mail.com"]);
             //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
             //adapter.StartHub();
             //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactCommunications, model.communications);
