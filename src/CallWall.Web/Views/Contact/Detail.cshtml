@@ -293,6 +293,7 @@
 
 <script type="text/html" id="GalleryTemplate">
     <h3>Pictures</h3>
+    <div id="galleryProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
     <!-- ko foreach: albums -->
     <div>
         <img data-bind="attr: { src: provider.imageUrl, alt: provider.name }" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
@@ -349,6 +350,7 @@
 </script>
 <script type="text/html" id="CollborationTemplate">
     <h3>Collaboration</h3>
+    <div id="collborationyProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
     <ol class="collaborations">
         <!-- ko foreach: entries -->
         <li data-bind="css: { completedItem: isCompleted }">

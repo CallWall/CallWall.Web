@@ -135,6 +135,8 @@
                     '/Content/images/pictures/Landscape5.jpg'
                 ])
         ];
+        self.isProcessing = ko.observable(true);
+        setTimeout(function () { self.isProcessing(false); }, 1100);
     };
 
     //Collaboration
@@ -157,6 +159,8 @@
                 new CollaborationAction('CallWall #122 - install Https', t.addDays(-40), 'Closed issue', true, githubProvider),
                 new CollaborationAction('Pricing a cross example', t.addDays(-45), 'Created document', false, googleDriveProvider)
         ];
+        self.isProcessing = ko.observable(true);
+        setTimeout(function () { self.isProcessing(false); }, 1800);
     };
 
     //Location
