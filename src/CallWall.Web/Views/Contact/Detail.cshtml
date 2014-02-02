@@ -172,7 +172,7 @@
         }
 </style>
 <div class="title">
-    <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
+    <img src="~/Content/images/AnonContact.svg" data-bind="attr: { alt: contactProfile.title }" height="80" style="float: left" />
     <h2 data-bind="text: contactProfile.title"></h2>
 </div>
 <div style="clear: both" />
@@ -194,56 +194,56 @@
 </div>
 
 
+
 <script type="text/html" id="ContactProfileTemplate">
-    <div id="ContactProfileSection" class="span4 ContentSection">
-        <h3>Details</h3>
-        <div id="progressbar" data-bind="visible: isProcessing"></div>
-        <h4 data-bind="text: fullName"></h4>
-        @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
-        <h5 data-bind="date: dateOfBirth"></h5>
-        <div>
-            <!-- ko foreach: tags -->
-            <span class="tag" data-bind="text: $data"></span>
-            @*<span class="label" data-bind="text: $data"></span>*@
-            <!-- /ko -->
-        </div>
-
-        <h4>Organizations</h4>
-        <!-- ko foreach: organizations -->
-        <div class="kvp">
-            <div class="key" data-bind="text: name"></div>
-            <div data-bind="text: association"></div>
-        </div>
-        <!-- /ko -->
-
-        <h4>Relationships</h4>
-        <!-- ko foreach: relationships -->
-        <div class="kvp">
-            <div class="key" data-bind="text: name"></div>
-            <div data-bind="text: association"></div>
-        </div>
-        <!-- /ko -->
-
-        <h4>Phone Numbers...</h4>
-        <!-- ko foreach: phoneNumbers -->
-        <div class="kvp">
-            <div class="key" data-bind="text: name"></div>
-            <div data-bind="text: association"></div>
-        </div>
-        <!-- /ko -->
-
-        <h4>Email</h4>
-        <!-- ko foreach: emailAddresses -->
-        <div class="kvp">
-            <div class="key" data-bind="text: name"></div>
-            <div data-bind="text: association"></div>
-        </div>
+    <h3>Details</h3>
+    <div id="contactProfileProgress" data-bind="template:{ name : 'ProgressBarTemplate', data: isProcessing}"></div>
+    <h4 data-bind="text: fullName"></h4>
+    @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
+    <h5 data-bind="date: dateOfBirth"></h5>
+    <div>
+        <!-- ko foreach: tags -->
+        <span class="tag" data-bind="text: $data"></span>
+        @*<span class="label" data-bind="text: $data"></span>*@
         <!-- /ko -->
     </div>
+
+    <h4>Organizations</h4>
+    <!-- ko foreach: organizations -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+
+    <h4>Relationships</h4>
+    <!-- ko foreach: relationships -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+
+    <h4>Phone Numbers...</h4>
+    <!-- ko foreach: phoneNumbers -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+
+    <h4>Email</h4>
+    <!-- ko foreach: emailAddresses -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
 </script>
 
 <script type="text/html" id="CommunicationTemplate">
     <h3>Communication</h3>
+    <div id="communicationProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
     <!--TODO: VisualClue for read/unread messages-->
     <!--TODO: Still not great UX for received/Sent/broadcast(Tweeted)-->
     <ol class="messages">
@@ -280,6 +280,7 @@
     <!--TODO: Handle dates with multple entries. -->
     <!--TODO: Show day with 2 digits ie 02 Feb not 2 Feb-->
     <h3>Calendar</h3>
+    <div id="calendarProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
     <dl class="calendar">
         <!-- ko foreach: entries -->
         <dt data-bind="css: { today: date.isToday(), past: date.isPast() }"><span class="day" data-bind="    text: date.getDate()"></span>
@@ -370,6 +371,11 @@
     </small>
 </script>
 
+<script type="text/html" id="ProgressBarTemplate">
+    <div data-bind="visible: $data" class="progress progress-striped active">
+        <div class="bar" style="width: 100%;"></div>
+    </div>
+</script>
 
 @section scripts{
     @Scripts.Render("~/bundles/jquery")

@@ -34,12 +34,12 @@
             
             //TODO: Check for duplicates. Actually no, if I check for dupes here, I will need to rewrite this in every client.
             //TODO: Run a ObsEx.Scan on the server stream to only produce updates.
-
-            self.title(data.title);
-            self.fullName(data.fullName);
-            //var dob = new Date(Date.parse(data.dateOfBirth));
-            var dob = new Date(data.dateOfBirth);
-            self.dateOfBirth(dob);
+            if(data.title) self.title(data.title);
+            if (data.fullName) self.fullName(data.fullName);
+            if (data.dateOfBirth) {
+                var dob = new Date(data.dateOfBirth);
+                self.dateOfBirth(dob);
+            }
             concat(self.tags, data.tags);
             
             concat(self.organizations, data.organizations);
@@ -73,14 +73,15 @@
     var ContactCommunicationViewModel = function () {
         var self = this;
         var n = now();
-        self.messages = [
-            new Message(n.addMinutes(-10), false, 'On my way', null, hangoutsProvider),
-            new Message(n.addMinutes(-13), true, 'Dude, where are you?', null, hangoutsProvider),
-            new Message(n.addDays(-2), false, 'Pricing a cross example', 'Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.', linkedinProvider),
-            new Message(n.addDays(-4), false, 'I will bring the food for the Rugby', 'From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard', gmailProvider),
-            new Message(n.addDays(-4), false, '#CallWall are recruiting engineers now!', 'Retweets : 7', twitterProvider),
-            new Message(n.addDays(-5), true, 'Rugby at my place on Saturday morning', 'To: James Alex, Simon Real + 3 others', gmailProvider)
-        ];
+        self.isProcessing = ko.observable(true);
+        self.messages = ko.observableArray();
+        setTimeout(function() { self.messages.push(new Message(n.addMinutes(-10), false, 'On my way', null, hangoutsProvider)); }, 500);
+        setTimeout(function() { self.messages.push(new Message(n.addMinutes(-13), true, 'Dude, where are you?', null, hangoutsProvider)); }, 1000);
+        setTimeout(function() { self.messages.push(new Message(n.addDays(-2), false, 'Pricing a cross example', 'Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.', linkedinProvider)); }, 1500);
+        setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, 'I will bring the food for the Rugby', 'From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard', gmailProvider)); }, 2000);
+        setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, '#CallWall are recruiting engineers now!', 'Retweets : 7', twitterProvider)); }, 2500);
+        setTimeout(function () { self.messages.push(new Message(n.addDays(-5), true, 'Rugby at my place on Saturday morning', 'To: James Alex, Simon Real + 3 others', gmailProvider)); }, 3000);
+        setTimeout(function () { self.isProcessing(false); }, 3100);
     };
 
 
@@ -93,12 +94,14 @@
     var ContactCalendarViewModel = function () {
         var self = this;
         var t = today();
-        self.entries = [
-            new CalendarEntry(t.addDays(2), 'Lunch KO with Lee'),
-            new CalendarEntry(t.addDays(1), 'Training'),
-            new CalendarEntry(t.addDays(0), 'Document Review'),
-            new CalendarEntry(t.addDays(-2), 'Document design session'),
-            new CalendarEntry(t.addDays(-3), 'Lunch with Lee')];
+        self.isProcessing = ko.observable(true);
+        self.entries = ko.observableArray();
+        setTimeout(function() {self.entries.push(new CalendarEntry(t.addDays(2), 'Lunch KO with Lee'));}, 200);
+        setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(1), 'Training'));}, 500);
+        setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(0), 'Document Review'));}, 600);
+        setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(-2), 'Document design session'));}, 1200);
+        setTimeout(function () { self.entries.push(new CalendarEntry(t.addDays(-3), 'Lunch with Lee')); }, 1300);
+        setTimeout(function () { self.isProcessing(false); }, 1400);
     };
 
     //Gallery
