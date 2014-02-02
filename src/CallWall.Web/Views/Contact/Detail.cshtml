@@ -171,68 +171,6 @@
             position: absolute;
         }
 </style>
-<script>
-    function ScaleImage(srcwidth, srcheight, targetwidth, targetheight, fLetterBox) {
-        var result = { width: 0, height: 0, fScaleToTargetWidth: true };
-
-        if ((srcwidth <= 0) || (srcheight <= 0) || (targetwidth <= 0) || (targetheight <= 0)) {
-            return result;
-        }
-
-        // scale to the target width
-        var scaleX1 = targetwidth;
-        var scaleY1 = (srcheight * targetwidth) / srcwidth;
-
-        // scale to the target height
-        var scaleX2 = (srcwidth * targetheight) / srcheight;
-        var scaleY2 = targetheight;
-
-        // now figure out which one we should use
-        var fScaleOnWidth = (scaleX2 > targetwidth);
-        if (fScaleOnWidth) {
-            fScaleOnWidth = fLetterBox;
-        }
-        else {
-            fScaleOnWidth = !fLetterBox;
-        }
-
-        if (fScaleOnWidth) {
-            result.width = Math.floor(scaleX1);
-            result.height = Math.floor(scaleY1);
-            result.fScaleToTargetWidth = true;
-        }
-        else {
-            result.width = Math.floor(scaleX2);
-            result.height = Math.floor(scaleY2);
-            result.fScaleToTargetWidth = false;
-        }
-        result.targetleft = Math.floor((targetwidth - result.width) / 2);
-        result.targettop = Math.floor((targetheight - result.height) / 2);
-
-        return result;
-    }
-    function OnImageLoad(evt) {
-
-        var img = evt.currentTarget;
-
-        // what's the size of this image and it's parent
-        var w = $(img).width();
-        var h = $(img).height();
-        var tw = $(img).parent().width();
-        var th = $(img).parent().height();
-
-        // compute the new size and offsets
-        var result = ScaleImage(w, h, tw, th, false);
-
-        // adjust the image coordinates and size
-        img.width = result.width;
-        img.height = result.height;
-        $(img).css("max-width", result.width);
-        $(img).css("max-height", result.height);
-        $(img).css("left", result.targetleft);
-        $(img).css("top", result.targettop);
-    }
-</script>
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
     <h2 data-bind="text: contactProfile.title"></h2>
@@ -259,6 +197,7 @@
 <script type="text/html" id="ContactProfileTemplate">
     <div id="ContactProfileSection" class="span4 ContentSection">
         <h3>Details</h3>
+        <div id="progressbar" data-bind="visible: isProcessing"></div>
         <h4 data-bind="text: fullName"></h4>
         @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
         <h5 data-bind="date: dateOfBirth"></h5>
@@ -339,6 +278,7 @@
 
 <script type="text/html" id="CalendarTemplate">
     <!--TODO: Handle dates with multple entries. -->
+    <!--TODO: Show day with 2 digits ie 02 Feb not 2 Feb-->
     <h3>Calendar</h3>
     <dl class="calendar">
         <!-- ko foreach: entries -->
@@ -451,7 +391,7 @@
             //model.LoadCollaborations();
             //model.LoadLocations();
 
-            //callWall.createCustomContactBindings();
+            callWall.createCustomProgressbarBindings();
             ko.applyBindings(model);
             
             // Start the connection
