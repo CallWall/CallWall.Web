@@ -313,6 +313,7 @@
     <Content Include="Scripts\Inhouse\Dashboard\DashboardModel.js" />
     <Content Include="Scripts\Inhouse\DateExtensions.js" />
     <None Include="Scripts\jquery-2.1.0.intellisense.js" />
+    <Content Include="Scripts\Inhouse\SignalRx.js" />
     <Content Include="Scripts\jquery-2.1.0.js" />
     <Content Include="Scripts\jquery-2.1.0.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
