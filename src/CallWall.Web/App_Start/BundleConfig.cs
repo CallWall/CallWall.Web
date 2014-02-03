@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace CallWall.Web
 {
@@ -27,15 +26,24 @@ namespace CallWall.Web
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/signalR").Include(
-                        "~/Scripts/jquery.signalR-2.0.0.js"));
+                        "~/Scripts/jquery.signalR-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                        "~/Scripts/knockout-3.0.0.js"));
+                        "~/Scripts/knockout-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
+                       "~/Scripts/Inhouse/ImageScaling.js",
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactSummariesModels.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/dashboard").Include(
+                       "~/Scripts/Inhouse/ImageScaling.js",
+                       "~/Scripts/Inhouse/DateExtensions.js",
+                       "~/Scripts/Inhouse/ProgressbarBindings.js",
+                       "~/Scripts/Inhouse/Dashboard/DashboardModel.js",
+                       "~/Scripts/Inhouse/Dashboard/ContactProfileSignalR.js"
+                       ));
             
             bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
                        "~/Scripts/pouchdb-nightly-{version}.js"));

@@ -14,6 +14,17 @@
         padding-bottom: 0px;
     }
 
+    h1, h2, h3 {
+        margin-top: 20px;
+    }
+
+    h1, h2, h3 {
+        margin-top: 20px;
+    }
+    h5 {
+        line-height: 20px;
+    }
+
     body {
         background-color: #373737; /*CallWall.Windows has #F5303030, but assuming a white background then it becomes #373737 with the alpha channel removed.;*/
         color: #FFFFFF;
@@ -26,6 +37,7 @@
 
 
     /* --New values --*/
+
     .kvp {
         padding: 2px 0px 2px 10px;
     }
@@ -41,121 +53,367 @@
     .value {
     }
 
-    .ol {
+    ol.messages, ol.collaborations {
         margin-left: 0;
-    }
-    .message {
-        background-color: #505050;
-        min-height: 80px;
     }
 
-    .chat {
-        list-style-position: inside;
-        list-style-image: url(/Content/images/Google/Contacts_48x48.png);
-        list-style-type :
-        margin-left: 0;
-        padding-left: 0;
+        ol.messages li, ol.collaborations li {
+            list-style-position: inside;
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 0;
+            border-bottom: 1px solid #545354;
+            height: 60px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+            ol.messages li p, ol.collaborations li p {
+                color: #A7A7A7;
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                -o-text-overflow: ellipsis;
+                -ms-text-overflow: ellipsis;
+            }
+
+            ol.messages li h5, ol.collaborations li h5 {
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            ol.collaborations li.completedItem h5 {
+                text-decoration: line-through;
+            }
+
+    dl.calendar {
+        margin-top: 0;
     }
-    .email {
-        list-style-position: inside;
-        list-style-image: url(/Content/images/Google/Email_48x48.png);
+
+        dl.calendar dt {
+            float: left;
+            margin: 0;
+            padding: 5px;
+            width: 55px;
+            height: 55px;
+            font-weight: 100;
+            font-size: 26px;
+            line-height: 26px;
+            text-align: center;
+            color: #A7A7A7;
+            border-bottom: 1px solid #545354;
+        }
+
+        dl.calendar dd {
+            padding: 5px;
+            margin: 0;
+            height: 55px;
+            border-bottom: 1px solid #545354;
+        }
+
+        dl.calendar dt .day {
+            letter-spacing: 2px;
+        }
+
+        dl.calendar dt .month {
+            font-size: 22px;
+            line-height: 22px;
+        }
+
+        dl.calendar dt.today {
+            background: #503C50;
+        }
+
+        dl.calendar dd.today {
+            background: #503C50;
+        }
+
+        dl.calendar dt.past {
+            color: #A7A7A7;
+        }
+
+        dl.calendar dd.past {
+            color: #A7A7A7;
+        }
+
+    .symbol {
+        font-family: "Segoe UI Symbol";
+        font-size: 18px;
+        line-height: 18px;
     }
+
+    .gallery {
+        width: 300px;
+        height: 150px;
+        clear: both;
+    }
+
+    .mainPicture {
+        overflow: hidden;
+        width: 150px;
+        height: 150px;
+        position: relative;
+    }
+
+        .mainPicture img {
+            position: absolute;
+        }
+
+    .miniPicture {
+        height: 75px;
+        width: 75px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .miniPicture img {
+            position: absolute;
+        }
 </style>
 <div class="title">
-    <img src="~/Content/images/AnonContact.svg" alt="Lee Fake Campbell" height="80" style="float: left" />
-    <h2>Lee Fake Campbell</h2>
+    <img src="~/Content/images/AnonContact.svg" data-bind="attr: { alt: contactProfile.title }" height="80" style="float: left" />
+    <h2 data-bind="text: contactProfile.title"></h2>
 </div>
 <div style="clear: both" />
 
 <div class="row">
-    <div id="ContactDetailsSection" class="span4 ContentSection">
-        <h3>Details</h3>
-        <h4>Mr. Lee Fake Ryan Campbell</h4>
-        <h5>27 Dec</h5>
-        <div>
-            <span class="label">Family</span> <span class="label">UK</span>
-        </div>
+    <div id="ContactDetailSection" data-bind="template: { name: 'ContactProfileTemplate', data: contactProfile }" class="span4"></div>
 
-        <h4>Organizations</h4>
-        <div class="kvp">
-            <div class="key">Work</div>
-            <div>RBC Capital Markets</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Owner</div>
-            <div>Campbell Consulting London Ltd</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Volunteer</div>
-            <div>VLCON - Very long charitable organization name</div>
-        </div>
+    <div id="CommunicationSection" data-bind="template: { name: 'CommunicationTemplate', data: communications }" class="span4"></div>
 
-        <h4>Relationships</h4>
-        <div class="kvp">
-            <div class="key">Wife</div>
-            <div>Erynne Campbell</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Brother</div>
-            <div>Rhys Campbell</div>
-        </div>
-
-        <h4>Phone Numbers</h4>
-        <div class="kvp">
-            <div class="key">Mobile</div>
-            <div>+44 71234 1234</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Work</div>
-            <div>+44 21234 1234</div>
-        </div>
-        <div class="kvp">
-            <div class="key">Home</div>
-            <div>+44 41234 1234</div>
-        </div>
-    </div>
-
-    <div id="CommunicationSection" class="span4 ContentSection">
-        <h3>Communication</h3>
-
-        <ol style="margin-left: 0">
-            <li  class="message chat received">
-                <span>&uE119;</span><h5>On My Way LEE</h5>
-            </li>
-            <li class="message chat sent">
-                <h5>Dude, where are you?</h5>
-            </li>
-            <li class="message email received">
-                <h5>Pricing a cross example</h5>
-                <p>Here is the sample we were talking about the other da...</p>
-            </li>
-            <li class="message email received">
-                <h5>Pricing a cross example</h5>
-                <p>Here is the sample we were talking about the other da...</p>
-            </li>
-        </ol>
-    </div>
-
-    <div id="CalendarSection" class="span4 ContentSection">
-        <h3>Calendar</h3>
-    </div>
+    <div id="CalendarSection" data-bind="template: { name: 'CalendarTemplate', data: calendar }" class="span4"></div>
 </div>
 
 <div class="row">
-    <div id="GallerySection" class="span4 ContentSection">
-        <h3>Calendar</h3>
-    </div>
+    <div id="GallerySection" data-bind="template: { name: 'GalleryTemplate', data: gallery }" class="span4"></div>
 
-    <div id="CollborationSection" class="span4 ContentSection">
-        <h3>Collaboration</h3>
-    </div>
+    <div id="CollborationSection" data-bind="template: { name: 'CollborationTemplate', data: collaboration }" class="span4"></div>
 
-    <div id="LocationSection" class="span4 ContentSection">
-        <h3 style="margin-bottom: 5px">Location</h3>
-        <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;output=embed"></iframe>
-        <br />
-        <small>
-            <a href="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;source=embed" style="color: #0000FF; text-align: left">View Larger Map</a>
-        </small>
-    </div>
+    <div id="LocationSection" data-bind="template: { name: 'LocationTemplate', data: location }" class="span4"></div>
 </div>
+
+
+
+<script type="text/html" id="ContactProfileTemplate">
+    <h3>Details</h3>
+    <div id="contactProfileProgress" data-bind="template:{ name : 'ProgressBarTemplate', data: isProcessing}"></div>
+    <h4 data-bind="text: fullName"></h4>
+    @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
+    <h5 data-bind="date: dateOfBirth"></h5>
+    <div>
+        <!-- ko foreach: tags -->
+        <span class="tag" data-bind="text: $data"></span>
+        @*<span class="label" data-bind="text: $data"></span>*@
+        <!-- /ko -->
+    </div>
+
+    <h4>Organizations</h4>
+    <!-- ko foreach: organizations -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+
+    <h4>Relationships</h4>
+    <!-- ko foreach: relationships -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+
+    <h4>Phone Numbers...</h4>
+    <!-- ko foreach: phoneNumbers -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+
+    <h4>Email</h4>
+    <!-- ko foreach: emailAddresses -->
+    <div class="kvp">
+        <div class="key" data-bind="text: name"></div>
+        <div data-bind="text: association"></div>
+    </div>
+    <!-- /ko -->
+</script>
+
+<script type="text/html" id="CommunicationTemplate">
+    <h3>Communication</h3>
+    <div id="communicationProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
+    <!--TODO: VisualClue for read/unread messages-->
+    <!--TODO: Still not great UX for received/Sent/broadcast(Tweeted)-->
+    <ol class="messages">
+        <!-- ko foreach: messages -->
+        <li>
+            <table style="float: left; margin: 5px">
+                <tr>
+                    <td>
+                        <img data-bind="attr: { src: provider.imageUrl, alt: provider.name }" style="max-width: 32px; max-height: 32px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <!-- ko if: isOutbound -->
+                        <span class="symbol">&#x2934;</span>
+                        <!-- /ko -->
+                        <!-- ko if: !isOutbound -->
+                        <span class="symbol">&#x2937;</span>
+                        <!-- /ko -->
+                        <span data-bind="text: timestamp.untilToday()"></span>
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <h5 data-bind="text: subject, attr: { title: subject }"></h5>
+                <p data-bind="text: content, attr: { title: content }"></p>
+            </div>
+        </li>
+        <!-- /ko -->
+    </ol>
+</script>
+
+<script type="text/html" id="CalendarTemplate">
+    <!--TODO: Handle dates with multple entries. -->
+    <!--TODO: Show day with 2 digits ie 02 Feb not 2 Feb-->
+    <h3>Calendar</h3>
+    <div id="calendarProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
+    <dl class="calendar">
+        <!-- ko foreach: entries -->
+        <dt data-bind="css: { today: date.isToday(), past: date.isPast() }"><span class="day" data-bind="    text: date.getDate()"></span>
+            <br />
+            <span class="month" data-bind="text: date.getMonthName()"></span></dt>
+        <dd data-bind="css: { today: date.isToday(), past: date.isPast() }, text: title"></dd>
+        <!-- /ko -->
+    </dl>
+</script>
+
+<script type="text/html" id="GalleryTemplate">
+    <h3>Pictures</h3>
+    <div id="galleryProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
+    <!-- ko foreach: albums -->
+    <div>
+        <img data-bind="attr: { src: provider.imageUrl, alt: provider.name }" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+        <div>
+            <h5 data-bind="text: title"></h5>
+            <!--TODO: Implement the title attribute properly-->
+            <span style="font-size: 12px; line-height: 20px; color: #a7a7a7;"
+                  data-bind="text: lastModifiedDate.untilToday(), attr: { title: formatAction('Created', createdDate) + ', ' + formatAction('Modified', lastModifiedDate) }"></span>
+        </div>
+    </div>
+
+    <!--TODO: Implement some sort of smart template selector-->
+    <!-- 1-4 image rotator -->
+    <!-- 5+ image rotator -->
+    <!-- If goes from 4 to 5 then swap template?-->
+    <table class="gallery">
+        <tr>
+            <td width="50%" rowspan="2">
+                <div class="mainPicture">
+                    <img data-bind="attr: { src: imageUrls[0] }" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img data-bind="attr: { src: imageUrls[1] }" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img data-bind="attr: { src: imageUrls[2] }" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img data-bind="attr: { src: imageUrls[3] }" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+            <td width="25%">
+                <div class="miniPicture">
+                    <img data-bind="attr: { src: imageUrls[4] }" onload="OnImageLoad(event);" />
+                </div>
+            </td>
+        </tr>
+    </table>
+    <!-- /ko -->
+</script>
+
+<script>
+    function formatAction(actionPerformed, actionDate) {
+        return '' + actionPerformed + ' ' + actionDate.todayDeltaFormat();
+    }
+</script>
+<script type="text/html" id="CollborationTemplate">
+    <h3>Collaboration</h3>
+    <div id="collborationyProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
+    <ol class="collaborations">
+        <!-- ko foreach: entries -->
+        <li data-bind="css: { completedItem: isCompleted }">
+            <img data-bind="attr: { src: provider.imageUrl, alt: provider.name }" src="/Content/Google/images/Drive_128x128.png" alt="Google Drive" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
+            <div>
+                <h5 data-bind="text: title"></h5>
+                <p data-bind="text: formatAction(actionPerformed, actionDate), attr: { title: formatAction(actionPerformed, actionDate) }"></p>
+            </div>
+        </li>
+        <!-- /ko -->
+    </ol>
+</script>
+
+<script type="text/html" id="LocationTemplate">
+    <h3 style="margin-bottom: 5px">Location</h3>
+    <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;output=embed"></iframe>
+    <br />
+    <small>
+        <a href="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;source=embed" style="color: #0000FF; text-align: left">View Larger Map</a>
+    </small>
+</script>
+
+<script type="text/html" id="ProgressBarTemplate">
+    <div data-bind="visible: $data" class="progress progress-striped active">
+        <div class="bar" style="width: 100%;"></div>
+    </div>
+</script>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jquerycolor")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/signalR")
+    @Scripts.Render("~/signalR/hubs")
+    @Scripts.Render("~/bundles/dashboard")
+
+    <script>
+        $(function () {
+            // $.connection.contacts =  the generated client-side hub proxy
+            model = new callWall.DashboardViewModel();
+            model.LoadContactProfile();
+            //model.LoadCommunications();
+            //model.LoadCalendar();
+            //model.LoadGallery();
+            //model.LoadCollaborations();
+            //model.LoadLocations();
+
+            callWall.createCustomProgressbarBindings();
+            ko.applyBindings(model);
+            
+            // Start the connection
+            var contactProfileAdapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
+            contactProfileAdapter.StartHub(["lee@mail.com"]);
+            //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
+            //adapter.StartHub();
+            //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactCommunications, model.communications);
+            //var adapter = new callWall.SignalR.ContactCalendarAdapter($.connection.contactCalendar, model.calendar);
+            //var adapter = new callWall.SignalR.ContactGalleryAdapter($.connection.contactGallery, model.gallery);
+            //var adapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollboration, model.collboration);
+            //var adapter = new callWall.SignalR.ContactLocationAdapter($.connection.contactLocation, model.location);
+            //adapter.StartHub();
+        });
+    </script>
+}
+@Styles.Render("~/Content/themes/base/css")

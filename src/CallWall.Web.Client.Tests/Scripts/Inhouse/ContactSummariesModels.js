@@ -34,6 +34,7 @@
             var vm = new ContactSummaryViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
+            self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
         };
         self.filter = function(filter) {
             filterText = filter.toUpperCase();
@@ -69,6 +70,7 @@
         self.progress = ko.computed(function() {
             return 100 * self.receivedResults() / self.totalResults();
         });
+        self.currentState = ko.observable('Initialising');
         self.isProcessing = ko.observable(true);
 
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {

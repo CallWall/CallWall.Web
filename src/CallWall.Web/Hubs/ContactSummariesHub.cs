@@ -46,7 +46,7 @@ namespace CallWall.Web.Hubs
 
             _contactsSummarySubsription.Disposable = subscription;
         }
-
+        
         public override Task OnDisconnected()
         {
             _contactsSummarySubsription.Dispose();

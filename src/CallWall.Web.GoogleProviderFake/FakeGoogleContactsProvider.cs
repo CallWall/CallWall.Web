@@ -12,6 +12,40 @@ namespace CallWall.Web.GoogleProviderFake
             return Observable.Return(new ContactFeed());
         }
 
+        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session)
+        {
+            var result = new ContactProfile
+            {
+                Title = "Lee Campbell",
+                FullName = "Mr. Lee Ryan Campbell",
+                DateOfBirth = new DateTime(1979, 12, 31),
+                //Avatars = 
+                Tags = new[] { "Family", "Water polo"},
+                Organizations = new[]
+                {
+                    new ContactAssociation{Association = "Owner", Name = "CallWall"}, 
+                    new ContactAssociation{Association = "Consultant", Name = "Adaptive"}, 
+                    new ContactAssociation{Association = "Member", Name = "Dolphins"}, 
+                },
+
+                Relationships= new[]
+                {
+                    new ContactAssociation{Association = "Wife", Name = "Erynne"}, 
+                    new ContactAssociation{Association = "Brother", Name = "Rhys"}, 
+                },
+                EmailAddresses = new[]
+                {
+                    new ContactAssociation{Association = "work", Name = "Lee.Campbell@callwall.com"}, 
+                },
+                PhoneNumbers= new[]
+                {
+                    new ContactAssociation{Association = "work", Name = "+44 7 4321 4321"}, 
+                },
+            
+            };
+            return Observable.Return(result);
+        }
+
         private sealed class ContactFeed : IFeed<IContactSummary>
         {
             private const string Family = "Family";
@@ -61,9 +95,30 @@ namespace CallWall.Web.GoogleProviderFake
 
         public class ContactSummary : IContactSummary
         {
+            public string Provider { get; private set; }
+            public string ProviderId { get; private set; }
             public string Title { get; set; }
             public string PrimaryAvatar { get; set; }
             public IEnumerable<string> Tags { get; set; }
         }
+
+        public class ContactProfile : IContactProfile
+        {
+            public string Title { get; set; }
+            public string FullName { get; set; }
+            public IEnumerable<Uri> Avatars { get;  set; }
+            public DateTime? DateOfBirth { get;  set; }
+            public IEnumerable<string> Tags { get;  set; }
+            public IEnumerable<IContactAssociation> Organizations { get; set; }
+            public IEnumerable<IContactAssociation> Relationships { get; set; }
+            public IEnumerable<IContactAssociation> EmailAddresses { get; set; }
+            public IEnumerable<IContactAssociation> PhoneNumbers { get; set; }
+        }
+
+        public class ContactAssociation : IContactAssociation
+        {
+            public string Name { get; set; }
+            public string Association { get; set; }
+        }
     }
-}
+} 

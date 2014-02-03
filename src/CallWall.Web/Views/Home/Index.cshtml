@@ -1,7 +1,6 @@
 ﻿@{
     ViewBag.Title = "My Contacts";
 }
-
 <hgroup>
     <h2>@ViewBag.Title</h2>
     <label for="q" style="display: inline">Filter:</label>
@@ -26,7 +25,7 @@
         <table>
             <tr>
                 <td rowspan="2" class="avatar-cell">
-                    <img data-bind="attr: { src: primaryAvatar, alt: title }" class="avatar-img" />
+                    <img data-bind="attr: { src: primaryAvatar, alt: title }" class="avatar-img" onload="OnImageLoad(event);" />
                 </td>
                 <td class="title">
                     <h3 data-bind="text: title"></h3>
@@ -35,7 +34,7 @@
             <tr>
                 <td style="background: #808080;">
                     <!-- ko foreach: tags -->
-                    <span class="badge" data-bind="text: $data"></span>
+                    <span class="tag" data-bind="text: $data, attr: { title: $data }"></span>
                     <!-- /ko -->
                 </td>
             </tr>

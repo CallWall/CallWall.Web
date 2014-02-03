@@ -69,6 +69,7 @@
 (function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
+    //TODO: Rename to ContactSummariesAdapter -LC
     callWall.SignalR.ContactAdapter = function (contactsHub, model) {
         var self = this;
         self.StartHub = function () {
@@ -78,6 +79,7 @@
                     model.addContact(contactRecord.doc);
                 });
             });
+            //TODO: SHould this not be 'contactsHub.start().done...' instead of reaching out to $.connection.hub? -LC
             //check for updates
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');
