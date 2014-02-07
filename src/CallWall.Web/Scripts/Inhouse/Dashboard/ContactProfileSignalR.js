@@ -55,24 +55,24 @@ function SignalRx.ObserveHub(hub, subscriptionPayload) {
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');
                 try {
-                    contactProfileHub.server.requestContactProfile(contactKeys);
+                    contactProfileHub.server.subscribe(contactKeys);
                 } catch (ex) {
                     console.log(ex);
                 }
             });
         };
 
-        contactProfileHub.client.ReceivedContactProfileDelta = function (profile) {
-            console.log('ReceivedContactProfileDelta(..)');
+        contactProfileHub.client.OnNext = function (profile) {
+            console.log('contactProfileHub.client.OnNext(..)');
             model.aggregate(profile);
         };
 
-        contactProfileHub.client.ReceiveError = function (error) {
+        contactProfileHub.client.OnError = function (error) {
             console.error(error);
             model.isProcessing(false);
         };
 
-        contactProfileHub.client.ReceiveComplete = function () {
+        contactProfileHub.client.OnCompleted = function () {
             console.log('OnComplete');
             model.isProcessing(false);
             contactProfileHub.stop();
