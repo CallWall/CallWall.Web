@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -10,6 +11,9 @@ using Microsoft.AspNet.SignalR.Hubs;
 
 namespace CallWall.Web.Hubs
 {
+    //TODO: As each request to a Hub will create a new Hub, move to a pattern where a Hub has a single method 'Subscribe(?)'
+    //  Each client will then be simply an Observer eg. only have OnNext, OnError, OnCompleted methods.
+
     [HubName("contactSummaries")]
     public class ContactSummariesHub : Hub
     {
@@ -20,6 +24,7 @@ namespace CallWall.Web.Hubs
 
         public ContactSummariesHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
         {
+            Debug.Print("ContactSummariesHub.ctor()");
             _contactsProviders = contactsProviders;
             _sessionProvider = sessionProvider;
             _logger = loggerFactory.CreateLogger(GetType());
@@ -27,6 +32,7 @@ namespace CallWall.Web.Hubs
 
         public void RequestContactSummaryStream(ClientLastUpdated[] lastUpdatedDetails)
         {
+            Debug.Print("ContactSummariesHub.RequestContactSummaryStream(...)");
             var sessions = _sessionProvider.GetSessions(Context.User);
             var subscription = _contactsProviders
                                 .ToObservable()
@@ -49,6 +55,7 @@ namespace CallWall.Web.Hubs
         
         public override Task OnDisconnected()
         {
+            Debug.Print("ContactSummariesHub.OnDisconnected()");
             _contactsSummarySubsription.Dispose();
             return base.OnDisconnected();
         }
