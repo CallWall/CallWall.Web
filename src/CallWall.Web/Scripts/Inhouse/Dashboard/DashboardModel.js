@@ -101,17 +101,8 @@
         self.add = function (message) {
             self.messages.push(new Message(message));
         };
-        //var n = now();
-        //setTimeout(function() { self.messages.push(new Message(n.addMinutes(-10), false, 'On my way', null, hangoutsProvider)); }, 500);
-        //setTimeout(function() { self.messages.push(new Message(n.addMinutes(-13), true, 'Dude, where are you?', null, hangoutsProvider)); }, 1000);
-        //setTimeout(function() { self.messages.push(new Message(n.addDays(-2), false, 'Pricing a cross example', 'Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.', linkedinProvider)); }, 1500);
-        //setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, 'I will bring the food for the Rugby', 'From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard', gmailProvider)); }, 2000);
-        //setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, '#CallWall are recruiting engineers now!', 'Retweets : 7', twitterProvider)); }, 2500);
-        //setTimeout(function () { self.messages.push(new Message(n.addDays(-5), true, 'Rugby at my place on Saturday morning', 'To: James Alex, Simon Real + 3 others', gmailProvider)); }, 3000);
-        //setTimeout(function () { self.isProcessing(false); }, 3100);
     };
-
-
+    
     //Calendar
     var CalendarEntry = function (date, title) {
         var self = this;
