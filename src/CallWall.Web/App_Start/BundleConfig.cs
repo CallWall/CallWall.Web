@@ -26,9 +26,11 @@ namespace CallWall.Web
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/signalR").Include(
-                        "~/Scripts/jquery.signalR-{version}.js"));
+                        "~/Scripts/jquery.signalR-{version}.js",
+                        "~/Scripts/rx.js",
+                        "~/Scripts/Inhouse/SignalRx.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
+           bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                         "~/Scripts/knockout-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
