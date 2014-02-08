@@ -47,7 +47,7 @@ namespace CallWall.Web.Hubs
         private void PushContacts()
         {
 
-            Observable.Timer(TimeSpan.FromSeconds(2))
+            Observable.Timer(TimeSpan.FromSeconds(1))
                 .SubscribeOn(Scheduler.NewThread)
                 .Subscribe(_ =>
                 {
@@ -81,7 +81,7 @@ namespace CallWall.Web.Hubs
                     Clients.Caller.OnNext(profile);
                     //Clients.Caller.ReceiveError("Error receiving contacts");
 
-                    Thread.Sleep(TimeSpan.FromSeconds(3));
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
                     profile = new
                     {
                         //title = "Lee Campbell",

@@ -184,10 +184,7 @@
     //Location
     var ContactLocationViewModel = function () {
     };
-
-
-
-
+    
     var DashboardViewModel = function () {
         var self = this;
 
@@ -200,7 +197,6 @@
 
         self.LoadContactProfile = function () { };
     };
-
 
     //Publicly exposed object are attached to the callWall namespace
     callWall.DashboardViewModel = DashboardViewModel;

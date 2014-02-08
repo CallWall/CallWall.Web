@@ -10,6 +10,7 @@
         return '[' + result + ']';
     };
 
+
     SignalRx.ObserveHub = function (hub, subscriptionPayload) {
         if (hub == undefined)
             throw 'No hub provided. Available hubs are ' + availableHubNames();
@@ -52,19 +53,19 @@
                 console.log('[' + hub.hubName + '].OnError');
                 console.log(error);
                 observer.onError(error);
-                $.connection.hub.stop();
+                //$.connection.hub.stop(); //This kills all other hub connections
             };
             hub.client.OnCompleted = function () {
                 console.log('[' + hub.hubName + '].OnCompleted');
                 observer.onCompleted();
-                //$.connection.hub.stop();
+                //$.connection.hub.stop(); //This kills all other hub connections
             };
 
             subscribe(subscriptionPayload);
             console.log('END Creating ObserveHub');
             return function () {
                 console.log('[' + hub.hubName + '] subscription being disposed');
-                //$.connection.hub.stop();
+                //$.connection.hub.stop(); //This kills all other hub connections
                 console.log('Unsubscribed from hub [' + hub.hubName + '].');
             };
         });
