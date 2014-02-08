@@ -4,6 +4,7 @@ using CallWall.Web.Hubs;
 using CallWall.Web.Logging;
 using CallWall.Web.Providers;
 using CallWall.Web.Unity;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Practices.Unity;
 
 namespace CallWall.Web
@@ -31,10 +32,18 @@ namespace CallWall.Web
             container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<ISessionProvider, SessionProvider>();
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
-            container.RegisterType<ContactSummariesHub>();
-            container.RegisterType<ContactProfileHub>();
+            RegisterHubs(container);
 
             InitialiseModules(container);
+        }
+
+        private static void RegisterHubs(IUnityContainer container)
+        {
+            foreach (var hub in typeof(ContactSummariesHub).Assembly.GetTypes().Where(x => typeof(Hub).IsAssignableFrom(x)))
+            {
+                container.RegisterType(hub);
+            }
+
         }
 
         private static void InitialiseModules(IUnityContainer container)

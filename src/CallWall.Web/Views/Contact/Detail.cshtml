@@ -405,7 +405,12 @@
             
             // Start the connection
             var contactProfileAdapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
+            var contactCommunicationAdapter = new callWall.SignalR.ContactCommunicationAdapter($.connection.contactCommunications, model.communications);
+
             contactProfileAdapter.StartHub(["lee@mail.com"]);
+            contactCommunicationAdapter.StartHub(["lee@mail.com"]);
+            
+           
             //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
             //adapter.StartHub();
             //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactCommunications, model.communications);
