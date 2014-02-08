@@ -53,9 +53,6 @@
             }
         };
         var Aggregate = function (data) {
-            
-            //TODO: Check for duplicates. Actually no, if I check for dupes here, I will need to rewrite this in every client.
-            //TODO: Run a ObsEx.Scan on the server stream to only produce updates.
             if(data.title) self.title(data.title);
             if (data.fullName) self.fullName(data.fullName);
             if (data.dateOfBirth) {
@@ -85,7 +82,6 @@
     //Communication
     var Message = function (data) {
         var self = this;
-        console.log(data);
         //TODO - correct casing
         self.timestamp = new Date(data.Timestamp);
         self.isOutbound = data.IsOutbound;

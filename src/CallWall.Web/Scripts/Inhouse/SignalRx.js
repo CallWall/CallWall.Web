@@ -1,4 +1,25 @@
 ﻿/// <reference path="jquery.signalR.version.js" />
+
+Rx.Observable.prototype.log = function (sourceName, valueSelector) {
+    var source = this;
+
+    return Rx.Observable.create(function(observer) {
+        console.log(sourceName + '.Subscribe()');
+
+        var disposal = Rx.Disposable.create(function() {
+            console.log(sourceName + '.Dispose()');
+        });
+
+        var subscription = source.do(
+                function(x) { console.log(sourceName + '.onNext(' + valueSelector(x) + ')'); },
+                function(err) { console.log(sourceName + '.onError(' + err + ')'); },
+                function() { console.log(sourceName + '.onCompleted()'); }
+            )
+            .subscribe(observer);
+
+        return new Rx.CompositeDisposable(disposal, subscription);
+    });
+};
 //TODO: Enable intellisense for VS IDE. http://msdn.microsoft.com/en-us/library/bb385682.aspx
 (function ($, Rx, SignalRx) {
    
