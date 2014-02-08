@@ -3,34 +3,24 @@
 
     callWall.SignalR.ContactProfileAdapter = function (contactProfileHub, model) {
         var self = this;
+        self.contactProfileHub = contactProfileHub;
+        self.subscription = null;
         self.StartHub = function (contactKeys) {
-            $.connection.hub.start().done(function () {
-                console.log('Subscribe');
-                try {
-                    contactProfileHub.server.requestContactProfile(contactKeys);
-                } catch (ex) {
-                    console.log(ex);
-                }
-            });
+            self.subscription = SignalRx
+                .ObserveHub(self.contactProfileHub, contactKeys)
+                .subscribe(
+                    function(profile) { model.aggregate(profile); },
+                    function (error) {
+                         console.log(error);
+                         model.isProcessing(false);
+                    },
+                    function() { model.isProcessing(false); });
         };
-
-        contactProfileHub.client.ReceivedContactProfileDelta = function (profile) {
-            console.log('ReceivedContactProfileDelta(..)');
-            model.aggregate(profile);
-        };
-
-        contactProfileHub.client.ReceiveError = function (error) {
-            console.error(error);
-            model.isProcessing(false);
-        };
-
-        contactProfileHub.client.ReceiveComplete = function () {
-            console.log('OnComplete');
-            model.isProcessing(false);
-            contactProfileHub.stop();
-            //SHould that be $.connection.hub.stop()?
+        self.CloseHub = function() {
+            if(self.subscription)
+                self.subscription.dispose();
         };
     };
-    // ReSharper disable ThisInGlobalContext
+// ReSharper disable ThisInGlobalContext
 }(this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext

@@ -25,22 +25,21 @@ namespace CallWall.Web.Hubs
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        //TODO: How do I pass request/subscription parameters to a Hub? -LC
-        public void RequestContactProfile(string[] contactKeys)
+        public void Subscribe(string[] contactKeys)
         {
-            _logger.Debug("RequestContactProfile({0})", string.Join(",", contactKeys));
+            _logger.Debug("ContactProfile.Subscribe({0})", string.Join(",", contactKeys));
             dynamic profile = new
             {
                 title = "Lee HUB Campbell",
                 //fullName = "",
                 dateOfBirth = new DateTime(1979, 12, 25),
-                tags = new[] {"Family", "Dolphins", "London"},
-                organizations =new[]{new ContactAssociation("Consultant", "Adaptive"), new ContactAssociation("Triathlon", "Serpentine")},
-                relationships = new[]{new ContactAssociation("Wife","Erynne"),new ContactAssociation("Brother", "Rhys")},
-                phoneNumbers = new[]{new ContactAssociation("Mobile - UK", "07827743025"),new ContactAssociation("Mobile - NZ", "021 254 3824")},
-                emailAddresses = new[]{new ContactAssociation("Home", "lee.ryan.campbell@gmail.com"), new ContactAssociation("Work", "lee.campbell@callwall.com")},
+                tags = new[] { "Family", "Dolphins", "London" },
+                organizations = new[] { new ContactAssociation("Consultant", "Adaptive"), new ContactAssociation("Triathlon", "Serpentine") },
+                relationships = new[] { new ContactAssociation("Wife", "Erynne"), new ContactAssociation("Brother", "Rhys") },
+                phoneNumbers = new[] { new ContactAssociation("Mobile - UK", "07827743025"), new ContactAssociation("Mobile - NZ", "021 254 3824") },
+                emailAddresses = new[] { new ContactAssociation("Home", "lee.ryan.campbell@gmail.com"), new ContactAssociation("Work", "lee.campbell@callwall.com") },
             };
-            Clients.Caller.ReceivedContactProfileDelta(profile);
+            Clients.Caller.OnNext(profile);
             //Clients.Caller.ReceiveError("Error receiving contacts");
 
             Thread.Sleep(TimeSpan.FromSeconds(3));
@@ -53,9 +52,9 @@ namespace CallWall.Web.Hubs
                 organizations = new[] { new ContactAssociation("CEO", "CallWall") },
                 relationships = new[] { new ContactAssociation("CFO", "John Bell"), },
             };
-            Clients.Caller.ReceivedContactProfileDelta(profile);
+            Clients.Caller.OnNext(profile);
 
-            Clients.Caller.ReceiveComplete();
+            Clients.Caller.OnCompleted();
 
             //var sessions = _sessionProvider.GetSessions(Context.User);
             //var subscription = _contactsProviders

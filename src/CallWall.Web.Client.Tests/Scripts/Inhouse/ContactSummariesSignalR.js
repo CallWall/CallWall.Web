@@ -93,11 +93,19 @@
                                 Provider: dbObject.Provider,
                                 Revision: dbObject._rev
                             };
-                        });
+                        }); 
                         contactsHub.server.requestContactSummaryStream(formattedTimestamps);
                     });
                 } catch (ex) {
+                    console.log("failed on startup of ContactSummaries Hub");
                     console.log(ex);
+                    console.log("Attempting to stop ContactSummaries Hub");
+                    try {
+                        $.connection.hub.stop();    
+                    } catch (ex){
+                        console.log("failed to stop ContactSummaries Hub");
+                        console.log(ex);
+                    }
                 }
             });
         };
