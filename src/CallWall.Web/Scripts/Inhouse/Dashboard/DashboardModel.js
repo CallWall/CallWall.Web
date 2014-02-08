@@ -187,6 +187,6 @@
     //Publicly exposed object are attached to the callWall namespace
     callWall.DashboardViewModel = DashboardViewModel;
 
-    // ReSharper disable ThisInGlobalContext
+// ReSharper disable ThisInGlobalContext
 }(ko, this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext
