@@ -1,4 +1,5 @@
-﻿(function (callWall) {
+﻿/// <reference path="~/Scripts/Inhouse/SignalRx.js" />
+(function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
     callWall.SignalR.ContactProfileAdapter = function (contactProfileHub, model) {

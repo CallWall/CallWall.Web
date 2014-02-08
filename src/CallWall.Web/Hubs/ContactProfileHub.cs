@@ -30,7 +30,11 @@ namespace CallWall.Web.Hubs
         {
             _logger.Debug("ContactProfile.Subscribe({0})", string.Join(",", contactKeys));
 
-            PushContacts();
+            var subscription = Observable.Interval(TimeSpan.FromSeconds(1))
+               .Zip(Profiles(), (_, p) => p)
+               .Subscribe(profile => Clients.Caller.OnNext(profile),
+                          ex => Clients.Caller.OnError(ex),
+                          () => Clients.Caller.OnCompleted());
 
             //var sessions = _sessionProvider.GetSessions(Context.User);
             //var subscription = _contactsProviders
@@ -41,60 +45,47 @@ namespace CallWall.Web.Hubs
             //                               ex => Clients.Caller.ReceiveError("Error receiving contact profile"),
             //                               () => Clients.Caller.ReceiveComplete());
 
-            //_contactProfileSubscription.Disposable = subscription;
+            _contactProfileSubscription.Disposable = subscription;
         }
 
-        private void PushContacts()
+        private IEnumerable<object> Profiles()
         {
-
-            Observable.Timer(TimeSpan.FromSeconds(1))
-                .SubscribeOn(Scheduler.NewThread)
-                .Subscribe(_ =>
+            yield return new
                 {
-                    dynamic profile = new
-                    {
-                        title = "Lee HUB Campbell",
-                        //fullName = "",
-                        dateOfBirth = new DateTime(1979, 12, 25),
-                        tags = new[] { "Family", "Dolphins", "London" },
-                        organizations =
-                            new[]
-                                {
-                                    new ContactAssociation("Consultant", "Adaptive"),
-                                    new ContactAssociation("Triathlon", "Serpentine")
-                                },
-                        relationships =
-                            new[] { new ContactAssociation("Wife", "Erynne"), new ContactAssociation("Brother", "Rhys") },
-                        phoneNumbers =
-                            new[]
-                                {
-                                    new ContactAssociation("Mobile - UK", "07827743025"),
-                                    new ContactAssociation("Mobile - NZ", "021 254 3824")
-                                },
-                        emailAddresses =
-                            new[]
-                                {
-                                    new ContactAssociation("Home", "lee.ryan.campbell@gmail.com"),
-                                    new ContactAssociation("Work", "lee.campbell@callwall.com")
-                                },
-                    };
-                    Clients.Caller.OnNext(profile);
-                    //Clients.Caller.ReceiveError("Error receiving contacts");
-
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
-                    profile = new
-                    {
-                        //title = "Lee Campbell",
-                        fullName = "Mr. Lee Ryan Campbell",
-                        dateOfBirth = new DateTime(1979, 12, 27),
-                        tags = new[] { "Adaptive", "Serpentine", "ReactConf", "Amazon", "Turtle" },
-                        organizations = new[] { new ContactAssociation("CEO", "CallWall") },
-                        relationships = new[] { new ContactAssociation("CFO", "John Bell"), },
-                    };
-                    Clients.Caller.OnNext(profile);
-
-                    Clients.Caller.OnCompleted();
-                });
+                    title = "Lee HUB Campbell",
+                    //fullName = "",
+                    dateOfBirth = new DateTime(1979, 12, 25),
+                    tags = new[] { "Family", "Dolphins", "London" },
+                    organizations =
+                        new[]
+                            {
+                                new ContactAssociation("Consultant", "Adaptive"),
+                                new ContactAssociation("Triathlon", "Serpentine")
+                            },
+                    relationships =
+                        new[] { new ContactAssociation("Wife", "Erynne"), new ContactAssociation("Brother", "Rhys") },
+                    phoneNumbers =
+                        new[]
+                            {
+                                new ContactAssociation("Mobile - UK", "07827743025"),
+                                new ContactAssociation("Mobile - NZ", "021 254 3824")
+                            },
+                    emailAddresses =
+                        new[]
+                            {
+                                new ContactAssociation("Home", "lee.ryan.campbell@gmail.com"),
+                                new ContactAssociation("Work", "lee.campbell@callwall.com")
+                            },
+                };
+            yield return new
+                {
+                    //title = "Lee Campbell",
+                    fullName = "Mr. Lee Ryan Campbell",
+                    dateOfBirth = new DateTime(1979, 12, 27),
+                    tags = new[] { "Adaptive", "Serpentine", "ReactConf", "Amazon", "Turtle" },
+                    organizations = new[] { new ContactAssociation("CEO", "CallWall") },
+                    relationships = new[] { new ContactAssociation("CFO", "John Bell"), },
+                };
         }
 
         public override Task OnDisconnected()

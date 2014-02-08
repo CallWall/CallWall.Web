@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using Microsoft.AspNet.SignalR;
@@ -12,6 +13,7 @@ namespace CallWall.Web.Hubs
     public class ContactCommunicationsHub : Hub
     {
         private readonly ILogger _logger;
+        private readonly SerialDisposable _contactComunicationSubscription = new SerialDisposable();
 
         public ContactCommunicationsHub(ILoggerFactory loggerFactory)
         {
@@ -23,18 +25,7 @@ namespace CallWall.Web.Hubs
             try
             {
                 _logger.Debug("RequestContactProfile({0})", string.Join(",", contactKeys));
-                PushValues();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "RequestContactCommunications failure");
-                Clients.Caller.OnError("Unable to get communications");
-            }
-        }
-
-        private void PushValues()
-        {
-            GetMessages()
+                var subscription = GetMessages()
                 .ToObservable(Scheduler.ThreadPool)
                 .Subscribe(
                     message => Clients.Caller.OnNext(message),
@@ -44,6 +35,13 @@ namespace CallWall.Web.Hubs
                         Clients.Caller.OnError("Unable to get communications");
                     },
                     () => Clients.Caller.OnCompleted());
+                _contactComunicationSubscription.Disposable = subscription;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "RequestContactCommunications failure");
+                Clients.Caller.OnError("Unable to get communications");
+            }
         }
 
         private static IEnumerable<Message> GetMessages()

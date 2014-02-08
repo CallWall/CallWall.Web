@@ -1,4 +1,5 @@
 ﻿/// <reference path="jquery.signalR.version.js" />
+//TODO: Enable intellisense for VS IDE. http://msdn.microsoft.com/en-us/library/bb385682.aspx
 (function ($, Rx, SignalRx) {
    
     var availableHubNames = function () {
@@ -10,13 +11,16 @@
         return '[' + result + ']';
     };
 
-
+    ///
     SignalRx.ObserveHub = function (hub, subscriptionPayload) {
+        /// <summary>Subscribes to a SignalRx compliant Hub. Creates the SignalR connection if required.</summary>
+        /// <param name="hub" mayBeNull="false">The SignalR hub to subscribe to.</param>
+        /// <param name="subscriptionPayload" mayBeNull="false">The payload to send to the SignalR hub's subscribe method.</param>
+
         if (hub == undefined)
             throw 'No hub provided. Available hubs are ' + availableHubNames();
 
         return Rx.Observable.create(function (observer) {
-            console.log('Creating ObserveHub');
             var subscribe = function (payload) {
                 console.log('Creating SignalR connection');
 
@@ -45,27 +49,17 @@
             };
 
             hub.client.OnNext = function (data) {
-                console.log('[' + hub.hubName + '].OnNext');
-                console.log(data);
                 observer.onNext(data);
             };
             hub.client.OnError = function (error) {
-                console.log('[' + hub.hubName + '].OnError');
-                console.log(error);
                 observer.onError(error);
-                //$.connection.hub.stop(); //This kills all other hub connections
             };
             hub.client.OnCompleted = function () {
-                console.log('[' + hub.hubName + '].OnCompleted');
                 observer.onCompleted();
-                //$.connection.hub.stop(); //This kills all other hub connections
             };
 
             subscribe(subscriptionPayload);
-            console.log('END Creating ObserveHub');
             return function () {
-                console.log('[' + hub.hubName + '] subscription being disposed');
-                //$.connection.hub.stop(); //This kills all other hub connections
                 console.log('Unsubscribed from hub [' + hub.hubName + '].');
             };
         });
