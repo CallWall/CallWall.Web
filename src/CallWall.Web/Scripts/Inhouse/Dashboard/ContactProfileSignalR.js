@@ -21,6 +21,6 @@
                 self.subscription.dispose();
         };
     };
-    // ReSharper disable ThisInGlobalContext
+// ReSharper disable ThisInGlobalContext
 }(this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext
