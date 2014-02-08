@@ -15,6 +15,28 @@
     var microsoftProvider = new ProviderDescription('Microsoft', '/Content/Microsoft/images/Microsoft_64x64.png');
     var githubProvider = new ProviderDescription('GitHub', '/Content/Github/images/Github_64x64.png');
 
+    var providers = [
+       googleProvider,
+       gmailProvider,
+       hangoutsProvider,
+       googleDriveProvider,
+       linkedinProvider,
+       twitterProvider,
+       facebookProvider,
+       microsoftProvider,
+       githubProvider
+    ];
+
+    var getProvider = function (name) {
+        for (var i = 0; i < providers.length; i++) {
+            if (name.toLowerCase() === providers[i].name.toLowerCase()) {
+                return providers[i];
+            }
+        }
+        throw new Error("No providers found with name " + name);
+    };
+
+
     //Contact Profile
     var ContactAssociation = function (name, association) {
         var self = this;
@@ -61,27 +83,32 @@
     };
 
     //Communication
-    var Message = function (timestamp, isOutbound, subject, content, provider) {
+    var Message = function (data) {
         var self = this;
+        console.log(data);
+        //TODO - correct casing
+        self.timestamp = new Date(data.Timestamp);
+        self.isOutbound = data.IsOutbound;
+        self.subject = data.Subject;
+        self.content = data.Content;
 
-        self.timestamp = timestamp;
-        self.isOutbound = isOutbound;
-        self.subject = subject;
-        self.content = content;
-        self.provider = provider;
+        self.provider = getProvider(data.Provider);
     };
     var ContactCommunicationViewModel = function () {
         var self = this;
-        var n = now();
         self.isProcessing = ko.observable(true);
         self.messages = ko.observableArray();
-        setTimeout(function() { self.messages.push(new Message(n.addMinutes(-10), false, 'On my way', null, hangoutsProvider)); }, 500);
-        setTimeout(function() { self.messages.push(new Message(n.addMinutes(-13), true, 'Dude, where are you?', null, hangoutsProvider)); }, 1000);
-        setTimeout(function() { self.messages.push(new Message(n.addDays(-2), false, 'Pricing a cross example', 'Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.', linkedinProvider)); }, 1500);
-        setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, 'I will bring the food for the Rugby', 'From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard', gmailProvider)); }, 2000);
-        setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, '#CallWall are recruiting engineers now!', 'Retweets : 7', twitterProvider)); }, 2500);
-        setTimeout(function () { self.messages.push(new Message(n.addDays(-5), true, 'Rugby at my place on Saturday morning', 'To: James Alex, Simon Real + 3 others', gmailProvider)); }, 3000);
-        setTimeout(function () { self.isProcessing(false); }, 3100);
+        self.add = function (message) {
+            self.messages.push(new Message(message));
+        };
+        //var n = now();
+        //setTimeout(function() { self.messages.push(new Message(n.addMinutes(-10), false, 'On my way', null, hangoutsProvider)); }, 500);
+        //setTimeout(function() { self.messages.push(new Message(n.addMinutes(-13), true, 'Dude, where are you?', null, hangoutsProvider)); }, 1000);
+        //setTimeout(function() { self.messages.push(new Message(n.addDays(-2), false, 'Pricing a cross example', 'Here is the sample we were talking about the other day. It should cover the basic case, the complex multi-leg option case and all the variations in-between. If you have any questions, then just email me back on my home account.', linkedinProvider)); }, 1500);
+        //setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, 'I will bring the food for the Rugby', 'From: James Alex To: You, Lee FAKE Camplell, Simon Real, Brian Baxter, Josh Taylor and Sally Hubbard', gmailProvider)); }, 2000);
+        //setTimeout(function() { self.messages.push(new Message(n.addDays(-4), false, '#CallWall are recruiting engineers now!', 'Retweets : 7', twitterProvider)); }, 2500);
+        //setTimeout(function () { self.messages.push(new Message(n.addDays(-5), true, 'Rugby at my place on Saturday morning', 'To: James Alex, Simon Real + 3 others', gmailProvider)); }, 3000);
+        //setTimeout(function () { self.isProcessing(false); }, 3100);
     };
 
 
