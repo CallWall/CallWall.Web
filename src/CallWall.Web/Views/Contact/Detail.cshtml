@@ -1,6 +1,8 @@
 ﻿@{
     ViewBag.Title = "Detail";
 }
+<!-- TODO : we needs to supply an API key : https://developers.google.com/maps/documentation/javascript/tutorial -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <!--
     TODO : pass to the page the providers that should be used.
     TODO : for each provider call the signal R endpoint and render the VMs.
@@ -21,6 +23,7 @@
     h1, h2, h3 {
         margin-top: 20px;
     }
+
     h5 {
         line-height: 20px;
     }
@@ -176,24 +179,16 @@
     <h2 data-bind="text: contactProfile.title"></h2>
 </div>
 <div style="clear: both" />
-
 <div class="row">
     <div id="ContactDetailSection" data-bind="template: { name: 'ContactProfileTemplate', data: contactProfile }" class="span4"></div>
-
     <div id="CommunicationSection" data-bind="template: { name: 'CommunicationTemplate', data: communications }" class="span4"></div>
-
     <div id="CalendarSection" data-bind="template: { name: 'CalendarTemplate', data: calendar }" class="span4"></div>
 </div>
-
 <div class="row">
     <div id="GallerySection" data-bind="template: { name: 'GalleryTemplate', data: gallery }" class="span4"></div>
-
     <div id="CollborationSection" data-bind="template: { name: 'CollborationTemplate', data: collaboration }" class="span4"></div>
-
     <div id="LocationSection" data-bind="template: { name: 'LocationTemplate', data: location }" class="span4"></div>
 </div>
-
-
 
 <script type="text/html" id="ContactProfileTemplate">
     <h3>Details</h3>
@@ -207,7 +202,6 @@
         @*<span class="label" data-bind="text: $data"></span>*@
         <!-- /ko -->
     </div>
-
     <h4>Organizations</h4>
     <!-- ko foreach: organizations -->
     <div class="kvp">
@@ -215,7 +209,6 @@
         <div data-bind="text: association"></div>
     </div>
     <!-- /ko -->
-
     <h4>Relationships</h4>
     <!-- ko foreach: relationships -->
     <div class="kvp">
@@ -223,7 +216,6 @@
         <div data-bind="text: association"></div>
     </div>
     <!-- /ko -->
-
     <h4>Phone Numbers...</h4>
     <!-- ko foreach: phoneNumbers -->
     <div class="kvp">
@@ -231,7 +223,6 @@
         <div data-bind="text: association"></div>
     </div>
     <!-- /ko -->
-
     <h4>Email</h4>
     <!-- ko foreach: emailAddresses -->
     <div class="kvp">
@@ -240,7 +231,6 @@
     </div>
     <!-- /ko -->
 </script>
-
 <script type="text/html" id="CommunicationTemplate">
     <h3>Communication</h3>
     <div id="communicationProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
@@ -275,7 +265,6 @@
         <!-- /ko -->
     </ol>
 </script>
-
 <script type="text/html" id="CalendarTemplate">
     <!--TODO: Handle dates with multple entries. -->
     <!--TODO: Show day with 2 digits ie 02 Feb not 2 Feb-->
@@ -283,14 +272,15 @@
     <div id="calendarProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
     <dl class="calendar">
         <!-- ko foreach: entries -->
-        <dt data-bind="css: { today: date.isToday(), past: date.isPast() }"><span class="day" data-bind="text: date.getDate()"></span>
+        <dt data-bind="css: { today: date.isToday(), past: date.isPast() }">
+            <span class="day" data-bind="text: date.getDate()"></span>
             <br />
-            <span class="month" data-bind="text: date.getMonthName()"></span></dt>
+            <span class="month" data-bind="text: date.getMonthName()"></span>
+        </dt>
         <dd data-bind="css: { today: date.isToday(), past: date.isPast() }, text: title"></dd>
         <!-- /ko -->
     </dl>
 </script>
-
 <script type="text/html" id="GalleryTemplate">
     <h3>Pictures</h3>
     <div id="galleryProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
@@ -304,7 +294,6 @@
                   data-bind="text: lastModifiedDate.untilToday(), attr: { title: formatAction('Created', createdDate) + ', ' + formatAction('Modified', lastModifiedDate) }"></span>
         </div>
     </div>
-
     <!--TODO: Implement some sort of smart template selector-->
     <!-- 1-4 image rotator -->
     <!-- 5+ image rotator -->
@@ -342,7 +331,6 @@
     </table>
     <!-- /ko -->
 </script>
-
 <script>
     function formatAction(actionPerformed, actionDate) {
         return '' + actionPerformed + ' ' + actionDate.todayDeltaFormat();
@@ -363,22 +351,17 @@
         <!-- /ko -->
     </ol>
 </script>
-
 <script type="text/html" id="LocationTemplate">
     <h3 style="margin-bottom: 5px">Location</h3>
-    <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;output=embed"></iframe>
-    <br />
-    <small>
-        <a href="https://maps.google.co.uk/?ie=UTF8&amp;ll=51.512722,-0.088534&amp;spn=0.007812,0.021136&amp;t=h&amp;z=16&amp;source=embed" style="color: #0000FF; text-align: left">View Larger Map</a>
-    </small>
+        <div style="height: 350px; width:370px;">
+        <div id="map_canvas" style="width: 100%; height: 100%"></div>
+    </div>
 </script>
-
 <script type="text/html" id="ProgressBarTemplate">
     <div data-bind="visible: $data" class="progress progress-striped active">
         <div class="bar" style="width: 100%;"></div>
     </div>
 </script>
-
 @section scripts{
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
@@ -388,39 +371,44 @@
     @Scripts.Render("~/signalR/hubs")
     @Scripts.Render("~/bundles/dashboard")
 
-
     <script>
         $(function () {
-            // $.connection.contacts =  the generated client-side hub proxy
             model = new callWall.DashboardViewModel();
             model.LoadContactProfile();
-            //model.LoadCommunications();
-            //model.LoadCalendar();
-            //model.LoadGallery();
-            //model.LoadCollaborations();
-            //model.LoadLocations();
 
             callWall.createCustomProgressbarBindings();
             ko.applyBindings(model);
-            
-            // Start the connection
+
+            //NOTE the connection is started in the first subscription this may want to be pulled out to its own observable
+
+            // Define the adapters
             var contactProfileAdapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
             var contactCommunicationAdapter = new callWall.SignalR.ContactCommunicationAdapter($.connection.contactCommunications, model.communications);
             var contactCalendarAdapter = new callWall.SignalR.ContactCalendarAdapter($.connection.contactCalendarEvents, model.calendar);
+            var contactGalleryAlbumAdapter = new callWall.SignalR.ContactGalleryAlbumAdapter($.connection.contactGalleryAlbums, model.gallery);
+            var contactCollaborationAdapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollaborations, model.collaboration);
 
+            //start the subscriptions
             contactProfileAdapter.StartHub(["lee@mail.com"]);
             contactCommunicationAdapter.StartHub(["lee@mail.com"]);
             contactCalendarAdapter.StartHub(["lee@mail.com"]);
-            
-           
-            //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);
-            //adapter.StartHub();
-            //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactCommunications, model.communications);
-            //var adapter = new callWall.SignalR.ContactCalendarAdapter($.connection.contactCalendar, model.calendar);
-            //var adapter = new callWall.SignalR.ContactGalleryAdapter($.connection.contactGallery, model.gallery);
-            //var adapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollboration, model.collboration);
-            //var adapter = new callWall.SignalR.ContactLocationAdapter($.connection.contactLocation, model.location);
-            //adapter.StartHub();
+            contactGalleryAlbumAdapter.StartHub(["lee@mail.com"]);
+            contactCollaborationAdapter.StartHub(["lee@mail.com"]);
+            //Location View model?
+            (function () {
+
+                var latLng = new google.maps.LatLng(51.512722, -0.088534);
+                var mapOptions = {
+                    center: latLng,
+                    zoom: 14
+                };
+                var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map,
+                    title: 'Last position'
+                });
+            }());
         });
     </script>
 }

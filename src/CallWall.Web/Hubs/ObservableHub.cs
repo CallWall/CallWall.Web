@@ -20,7 +20,6 @@ namespace CallWall.Web.Hubs
         {
             try
             {
-                
                 var subscription = _provider.GetObservable()
                     .Log(_logger, string.Format("Subscribe({0})", string.Join(",", contactKeys)))
                     .Subscribe(

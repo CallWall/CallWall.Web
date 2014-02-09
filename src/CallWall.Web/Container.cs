@@ -38,7 +38,8 @@ namespace CallWall.Web
             container.RegisterType<IObservableHubDataProvider<CalendarEntry>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<IContactProfile>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
-
+            container.RegisterType<IObservableHubDataProvider<GalleryAlbum>, HubFakeDataProvider>();
+            container.RegisterType<IObservableHubDataProvider<ContactCollaboration>, HubFakeDataProvider>();
             InitialiseModules(container);
         }
 

@@ -1,7 +1,7 @@
 ﻿/// <reference path="~/Scripts/Inhouse/SignalRx.js" />
 (function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
-
+    //TODO - looks like a pattern here... log message is different and the onNext is differnt otherwise its pretty similar
     callWall.SignalR.ContactProfileAdapter = function (contactProfileHub, model) {
         var self = this;
         self.contactProfileHub = contactProfileHub;
@@ -62,6 +62,48 @@
         };
         self.CloseHub = function() {
             if(self.subscription)
+                self.subscription.dispose();
+        };
+    };
+    callWall.SignalR.ContactGalleryAlbumAdapter = function (contactGalleryAlbumHub, model) {
+        var self = this;
+        self.contactGalleryAlbumHub = contactGalleryAlbumHub;
+        self.subscription = null;
+        self.StartHub = function (contactKeys) {
+            self.subscription = SignalRx
+                .ObserveHub(self.contactGalleryAlbumHub, contactKeys)
+                .log('contactGalleryAlbumHub', function (data) { return data.Subject; })
+                .subscribe(
+                    function (album) { model.add(album); },
+                    function (error) {
+                        console.log(error);
+                        model.isProcessing(false);
+                    },
+                    function () { model.isProcessing(false); });
+        };
+        self.CloseHub = function () {
+            if (self.subscription)
+                self.subscription.dispose();
+        };
+    };
+    callWall.SignalR.ContactCollaborationAdapter = function (contactCollaborationHub, model) {
+        var self = this;
+        self.contactCollaborationHub = contactCollaborationHub;
+        self.subscription = null;
+        self.StartHub = function (contactKeys) {
+            self.subscription = SignalRx
+                .ObserveHub(self.contactCollaborationHub, contactKeys)
+                .log('contactCollaborationHub', function (data) { return data.Subject; })
+                .subscribe(
+                    function (collaboration) { model.add(collaboration); },
+                    function (error) {
+                        console.log(error);
+                        model.isProcessing(false);
+                    },
+                    function () { model.isProcessing(false); });
+        };
+        self.CloseHub = function () {
+            if (self.subscription)
                 self.subscription.dispose();
         };
     };
