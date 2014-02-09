@@ -408,11 +408,13 @@
             var contactCommunicationAdapter = new callWall.SignalR.ContactCommunicationAdapter($.connection.contactCommunications, model.communications);
             var contactCalendarAdapter = new callWall.SignalR.ContactCalendarAdapter($.connection.contactCalendarEvents, model.calendar);
             var contactGalleryAlbumAdapter = new callWall.SignalR.ContactGalleryAlbumAdapter($.connection.contactGalleryAlbums, model.gallery);
+            var contactCollaborationAdapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollaborations, model.collaboration);
 
             contactProfileAdapter.StartHub(["lee@mail.com"]);
             contactCommunicationAdapter.StartHub(["lee@mail.com"]);
             contactCalendarAdapter.StartHub(["lee@mail.com"]);
             contactGalleryAlbumAdapter.StartHub(["lee@mail.com"]);
+            contactCollaborationAdapter.StartHub(["lee@mail.com"]);
             
            
             //var adapter = new callWall.SignalR.ContactProfileAdapter($.connection.contactProfile, model.contactProfile);

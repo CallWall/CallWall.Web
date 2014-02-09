@@ -86,6 +86,27 @@
                 self.subscription.dispose();
         };
     };
+    callWall.SignalR.ContactCollaborationAdapter = function (contactCollaborationHub, model) {
+        var self = this;
+        self.contactCollaborationHub = contactCollaborationHub;
+        self.subscription = null;
+        self.StartHub = function (contactKeys) {
+            self.subscription = SignalRx
+                .ObserveHub(self.contactCollaborationHub, contactKeys)
+                .log('contactCollaborationHub', function (data) { return data.Subject; })
+                .subscribe(
+                    function (collaboration) { model.add(collaboration); },
+                    function (error) {
+                        console.log(error);
+                        model.isProcessing(false);
+                    },
+                    function () { model.isProcessing(false); });
+        };
+        self.CloseHub = function () {
+            if (self.subscription)
+                self.subscription.dispose();
+        };
+    };
 // ReSharper disable ThisInGlobalContext
 }(this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext

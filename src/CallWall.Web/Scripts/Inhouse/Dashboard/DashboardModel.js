@@ -28,8 +28,9 @@
     ];
 
     var getProvider = function (name) {
+        var whitespaceGlobalRegex = / /g;
         for (var i = 0; i < providers.length; i++) {
-            if (name.toLowerCase() === providers[i].name.toLowerCase()) {
+            if (name.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
                 return providers[i];
             }
         }
@@ -133,35 +134,30 @@
     };
     var ContactGalleryViewModel = function () {
         var self = this;
-        self.albums =  ko.observableArray();
+        self.albums = ko.observableArray();
         self.isProcessing = ko.observable(true);
-        self.add = function(galleryAlbum) {
+        self.add = function (galleryAlbum) {
             self.albums.push(new GalleryAlbum(galleryAlbum));
         };
     };
 
     //Collaboration
-    var CollaborationAction = function (title, actionDate, actionPerformed, isCompleted, provider) {
+    var CollaborationAction = function (data) {
         var self = this;
         //self.project = project;   //Maybe use project/projectName instead of name.
-        self.title = title;
-        self.actionDate = actionDate;
-        self.actionPerformed = actionPerformed;
-        self.isCompleted = isCompleted;
-        self.provider = provider;
+        self.title = data.Title;
+        self.actionDate = new Date(data.ActionDate);
+        self.actionPerformed = data.ActionPerformed;
+        self.isCompleted = data.IsCompleted;
+        self.provider = getProvider(data.Provider);
     };
     var ContactCollaborationViewModel = function () {
         var self = this;
-        var t = today();
-        self.entries = [
-                new CollaborationAction('Design KO Standards', t.addMinutes(-35), 'Created Document', false, googleDriveProvider),
-                new CollaborationAction('EOY 2013 Reports', t.addDays(-8), 'Modified Document', false, googleDriveProvider),
-                new CollaborationAction('Pricing a cross example', t.addDays(-37), 'Modified Document', false, googleDriveProvider),
-                new CollaborationAction('CallWall #122 - install Https', t.addDays(-40), 'Closed issue', true, githubProvider),
-                new CollaborationAction('Pricing a cross example', t.addDays(-45), 'Created document', false, googleDriveProvider)
-        ];
+        self.entries = ko.observableArray();
+        self.add = function (data) {
+            self.entries.push(new CollaborationAction(data));
+        };
         self.isProcessing = ko.observable(true);
-        setTimeout(function () { self.isProcessing(false); }, 1800);
     };
 
     //Location
