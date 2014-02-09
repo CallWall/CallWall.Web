@@ -1,4 +1,5 @@
-﻿(function (callWall) {
+﻿/// <reference path="~/Scripts/Inhouse/SignalRx.js" />
+(function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
     callWall.SignalR.ContactProfileAdapter = function (contactProfileHub, model) {
@@ -8,6 +9,7 @@
         self.StartHub = function (contactKeys) {
             self.subscription = SignalRx
                 .ObserveHub(self.contactProfileHub, contactKeys)
+                //.log('contactProfileHub', function (data) { return data.title; })
                 .subscribe(
                     function(profile) { model.aggregate(profile); },
                     function (error) {
@@ -28,6 +30,7 @@
         self.StartHub = function (contactKeys) {
             self.subscription = SignalRx
                 .ObserveHub(self.contactCommunicationHub, contactKeys)
+                .log('contactCommunicationHub', function (data) { return data.Subject; })
                 .subscribe(
                     function (message) { model.add(message); },
                     function (error) {
