@@ -46,21 +46,21 @@
     var ContactProfileViewModel = function () {
         var self = this;
         //TODO: Add this to the ko ObservableArray prototype.
-        var concat = function(target, source) {
+        var concat = function (target, source) {
             if (target == undefined || source == undefined) return;
             for (var i = 0; i < source.length; i++) {
                 target.push(source[i]);
             }
         };
         var Aggregate = function (data) {
-            if(data.title) self.title(data.title);
+            if (data.title) self.title(data.title);
             if (data.fullName) self.fullName(data.fullName);
             if (data.dateOfBirth) {
                 var dob = new Date(data.dateOfBirth);
                 self.dateOfBirth(dob);
             }
             concat(self.tags, data.tags);
-            
+
             concat(self.organizations, data.organizations);
             concat(self.relationships, data.relationships);
             concat(self.phoneNumbers, data.phoneNumbers);
@@ -98,24 +98,27 @@
             self.messages.push(new Message(message));
         };
     };
-    
+
     //Calendar
-    var CalendarEntry = function (date, title) {
+    var CalendarEntry = function (data) {
         var self = this;
-        self.date = date;
-        self.title = title;
+        self.date = new Date(data.Date);
+        self.title = data.Title;
     };
     var ContactCalendarViewModel = function () {
         var self = this;
-        var t = today();
         self.isProcessing = ko.observable(true);
         self.entries = ko.observableArray();
-        setTimeout(function() {self.entries.push(new CalendarEntry(t.addDays(2), 'Lunch KO with Lee'));}, 200);
-        setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(1), 'Training'));}, 500);
-        setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(0), 'Document Review'));}, 600);
-        setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(-2), 'Document design session'));}, 1200);
-        setTimeout(function () { self.entries.push(new CalendarEntry(t.addDays(-3), 'Lunch with Lee')); }, 1300);
-        setTimeout(function () { self.isProcessing(false); }, 1400);
+        self.add = function (message) {
+            self.entries.push(new CalendarEntry(message));
+        };
+        //var t = today();
+        //setTimeout(function () { self.entries.push(new CalendarEntry(t.addDays(2), 'Lunch KO with Lee')); }, 200);
+        //setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(1), 'Training'));}, 500);
+        //setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(0), 'Document Review'));}, 600);
+        //setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(-2), 'Document design session'));}, 1200);
+        //setTimeout(function () { self.entries.push(new CalendarEntry(t.addDays(-3), 'Lunch with Lee')); }, 1300);
+        //setTimeout(function () { self.isProcessing(false); }, 1400);
     };
 
     //Gallery
@@ -180,7 +183,7 @@
     //Location
     var ContactLocationViewModel = function () {
     };
-    
+
     var DashboardViewModel = function () {
         var self = this;
 
@@ -197,6 +200,6 @@
     //Publicly exposed object are attached to the callWall namespace
     callWall.DashboardViewModel = DashboardViewModel;
 
-// ReSharper disable ThisInGlobalContext
+    // ReSharper disable ThisInGlobalContext
 }(ko, this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext

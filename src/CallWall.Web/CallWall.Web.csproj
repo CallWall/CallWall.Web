@@ -208,6 +208,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Hubs\ContactCalendarEventsHub.cs" />
     <Compile Include="Hubs\ContactCommunicationsHub.cs" />
     <Compile Include="Hubs\ContactSummariesHub.cs" />
     <Compile Include="Hubs\ContactProfileHub.cs" />
