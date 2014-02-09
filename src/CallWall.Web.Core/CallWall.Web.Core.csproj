@@ -123,7 +123,7 @@
     <Compile Include="ResharperAnnotations.cs" />
     <Compile Include="IAccountAuthentication.cs" />
     <Compile Include="IAccountConfiguration.cs" />
-    <Compile Include="IContactsProvider.cs" />
+    <Compile Include="Providers\IContactsProvider.cs" />
     <Compile Include="IContactSummary.cs" />
     <Compile Include="IFeed.cs" />
     <Compile Include="ILogger.cs" />

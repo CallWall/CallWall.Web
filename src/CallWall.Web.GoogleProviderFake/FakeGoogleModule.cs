@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.GoogleProviderFake
+﻿using CallWall.Web.Providers;
+
+namespace CallWall.Web.GoogleProviderFake
 {
     public sealed class FakeGoogleModule : IModule
     {
