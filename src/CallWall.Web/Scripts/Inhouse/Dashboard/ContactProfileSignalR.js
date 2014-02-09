@@ -1,7 +1,7 @@
 ﻿/// <reference path="~/Scripts/Inhouse/SignalRx.js" />
 (function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
-
+    //TODO - looks like a pattern here... log message is different and the onNext is differnt otherwise its pretty similar
     callWall.SignalR.ContactProfileAdapter = function (contactProfileHub, model) {
         var self = this;
         self.contactProfileHub = contactProfileHub;
