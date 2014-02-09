@@ -378,6 +378,9 @@
     <Content Include="Views\Shared\DisplayTemplates\OAuthAccountListItem.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ResourceScope.cshtml" />
     <Content Include="Views\Contact\Detail.cshtml" />
+    <None Include="Web.Debug %28With Fakes%29.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -389,14 +392,6 @@
     <ProjectReference Include="..\CallWall.Web.Core\CallWall.Web.Core.csproj">
       <Project>{c7ce45a6-b602-4287-a3d8-ef91c0701dc9}</Project>
       <Name>CallWall.Web.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CallWall.Web.GoogleProvider\CallWall.Web.GoogleProvider.csproj">
-      <Project>{be00be07-f1c7-4998-b801-7fe1ab4d6b99}</Project>
-      <Name>CallWall.Web.GoogleProvider</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CallWall.Web.LinkedInProvider\CallWall.Web.LinkedInProvider.csproj">
-      <Project>{00269fff-9346-4a9c-bef7-113e311313cc}</Project>
-      <Name>CallWall.Web.LinkedInProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
@@ -445,6 +440,17 @@
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v12.0\Web\Microsoft.Web.Publishing.Tasks.dll" />
+  <Target Name="Transform">
+    <MakeDir Directories="obj\$(Configuration)" Condition="!Exists('obj\$(Configuration)')" />
+    <TransformXml Source="Web.Config" Transform="Web.$(Configuration).config" Destination="obj\$(Configuration)\Web.config" StackTrace="true" />
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>$(MSBUILDBINPATH)\msbuild $(ProjectPath) /t:Transform /p:Configuration="$(ConfigurationName)";Platform=AnyCPU
+xcopy "$(ProjectDir)obj\$(ConfigurationName)\Web.Config" "$(TargetPath).config" /F /R /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

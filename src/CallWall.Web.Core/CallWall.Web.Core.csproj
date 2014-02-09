@@ -111,6 +111,7 @@
     <Compile Include="CallWallModuleSection.cs" />
     <Compile Include="IContactAssociation.cs" />
     <Compile Include="IContactProfile.cs" />
+    <Compile Include="ITypeRegistry.cs" />
     <Compile Include="OAuth2Implementation\AuthState.cs" />
     <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
     <Compile Include="OAuth2Implementation\Outh2Session.cs" />

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using CallWall.Web.Hubs;
 using CallWall.Web.Logging;
 using CallWall.Web.Providers;
@@ -64,6 +65,7 @@ namespace CallWall.Web
             var typeRegistry = new TypeRegistry(container);
 
             var moduleConfig = CallWallModuleSection.GetConfig();
+
             var modules = from moduleType in moduleConfig.Modules.Cast<ModuleElement>().Select(m => m.Type)
                           select (IModule)Activator.CreateInstance(moduleType);
 
