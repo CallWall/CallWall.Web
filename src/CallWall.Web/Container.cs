@@ -33,17 +33,26 @@ namespace CallWall.Web
             container.RegisterType<ISessionProvider, SessionProvider>();
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
-
+            container.RegisterType<IObservableHubDataProvider<CalendarEntry>, HubFakeDataProvider>();
+            container.RegisterType<IObservableHubDataProvider<object>, HubFakeDataProvider>();
+            container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
             InitialiseModules(container);
         }
 
         private static void RegisterHubs(IUnityContainer container)
         {
-            foreach (var hub in typeof(ContactSummariesHub).Assembly.GetTypes().Where(x => typeof(Hub).IsAssignableFrom(x)))
+            var types = typeof(ContactSummariesHub).Assembly.GetTypes();
+            foreach (var hub in types.Where(IsAHub))
             {
                 container.RegisterType(hub);
             }
+        }
 
+        private static bool IsAHub(Type x)
+        {
+            return !x.IsAbstract &&
+                !x.IsInterface &&
+                typeof(Hub).IsAssignableFrom(x);
         }
 
         private static void InitialiseModules(IUnityContainer container)

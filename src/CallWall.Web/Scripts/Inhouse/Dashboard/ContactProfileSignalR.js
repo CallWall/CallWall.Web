@@ -44,6 +44,27 @@
                 self.subscription.dispose();
         };
     };
+    callWall.SignalR.ContactCalendarAdapter = function (contactCalendarEventsHub, model) {
+        var self = this;
+        self.contactCommunicationHub = contactCalendarEventsHub;
+        self.subscription = null;
+        self.StartHub = function (contactKeys) {
+            self.subscription = SignalRx
+                .ObserveHub(self.contactCommunicationHub, contactKeys)
+                .log('contactCalendarEventsHub', function (data) { return data.Subject; })
+                .subscribe(
+                    function (message) { model.add(message); },
+                    function (error) {
+                         console.log(error);
+                         model.isProcessing(false);
+                    },
+                    function() { model.isProcessing(false); });
+        };
+        self.CloseHub = function() {
+            if(self.subscription)
+                self.subscription.dispose();
+        };
+    };
 // ReSharper disable ThisInGlobalContext
 }(this.callWall = this.callWall || {}));
 // ReSharper restore ThisInGlobalContext

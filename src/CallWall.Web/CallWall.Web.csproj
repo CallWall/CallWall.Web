@@ -208,9 +208,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Hubs\ContactCalendarEventsHub.cs" />
     <Compile Include="Hubs\ContactCommunicationsHub.cs" />
     <Compile Include="Hubs\ContactSummariesHub.cs" />
     <Compile Include="Hubs\ContactProfileHub.cs" />
+    <Compile Include="Hubs\HubFakeDataProvider.cs" />
+    <Compile Include="Hubs\IObservableHubDataProvider.cs" />
+    <Compile Include="Hubs\ObservableHub.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
