@@ -3,9 +3,9 @@
 namespace CallWall.Web.Hubs
 {
     [HubName("contactProfile")]
-    public class ContactProfileHub : ObservableHub<object>//TODO Object???
+    public class ContactProfileHub : ObservableHub<IContactProfile>//TODO Object???
     {
-        public ContactProfileHub(ILoggerFactory loggerFactory, IObservableHubDataProvider<object> provider) 
+        public ContactProfileHub(ILoggerFactory loggerFactory, IObservableHubDataProvider<IContactProfile> provider) 
             : base(loggerFactory, provider)
         {}
     }

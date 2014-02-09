@@ -18,19 +18,16 @@ namespace CallWall.Web.Hubs
 
         public void Subscribe(string[] contactKeys)
         {
-            //TODO: Replace with Rx Logger --https://gist.github.com/LeeCampbell/3817281
             try
             {
-                _logger.Debug("{0}.Subscribe({1})", GetType(), string.Join(",", contactKeys));
+                
                 var subscription = _provider.GetObservable()
+                    .Log(_logger, string.Format("Subscribe({0})", string.Join(",", contactKeys)))
                     .Subscribe(
                         message => Clients.Caller.OnNext(message),
-                        ex =>
-                        {
-                            _logger.Error(ex, "Error in getting data with {0}", GetType());
-                            Clients.Caller.OnError("Error in data");
-                        },
+                        ex => Clients.Caller.OnError("Error in data"),
                         () => Clients.Caller.OnCompleted());
+
                 _contactComunicationSubscription.Disposable = subscription;
             }
             catch (Exception ex)

@@ -38,10 +38,10 @@
 
 
     //Contact Profile
-    var ContactAssociation = function (name, association) {
+    var ContactAssociation = function (data) {
         var self = this;
-        self.name = name;
-        self.association = association;
+        self.name = data.Name;
+        self.association = data.Association;
     };
     var ContactProfileViewModel = function () {
         var self = this;
@@ -52,19 +52,26 @@
                 target.push(source[i]);
             }
         };
+        var concatMap = function (target, source, selector) {
+            if (target == undefined || source == undefined) return;
+            for (var i = 0; i < source.length; i++) {
+                target.push(selector(source[i]));
+            }
+        };
+        
         var Aggregate = function (data) {
-            if (data.title) self.title(data.title);
-            if (data.fullName) self.fullName(data.fullName);
-            if (data.dateOfBirth) {
-                var dob = new Date(data.dateOfBirth);
+            if (data.title) self.title(data.Title);
+            if (data.fullName) self.fullName(data.FullName);
+            if (data.DateOfBirth) {
+                var dob = new Date(data.DateOfBirth);
                 self.dateOfBirth(dob);
             }
-            concat(self.tags, data.tags);
+            concat(self.tags, data.Tags);
 
-            concat(self.organizations, data.organizations);
-            concat(self.relationships, data.relationships);
-            concat(self.phoneNumbers, data.phoneNumbers);
-            concat(self.emailAddresses, data.emailAddresses);
+            concatMap(self.organizations, data.Organizations, function (d) { return new ContactAssociation(d); });
+            concatMap(self.relationships, data.Relationships, function (d) { return new ContactAssociation(d); });
+            concatMap(self.phoneNumbers, data.PhoneNumbers, function (d) { return new ContactAssociation(d); });
+            concatMap(self.emailAddresses, data.EmailAddresses, function (d) { return new ContactAssociation(d); });
         };
 
         self.aggregate = Aggregate;
