@@ -122,38 +122,22 @@
     };
 
     //Gallery
-    var GalleryAlbum = function (createdDate, lastModifiedDate, title, provider, imageUrls) {
+    var GalleryAlbum = function (data) {
         var self = this;
-        self.createdDate = createdDate;
-        self.lastModifiedDate = lastModifiedDate;
-        self.title = title;
-        self.provider = provider;
-        self.imageUrls = imageUrls;
+        console.log(data);
+        self.createdDate = new Date(data.CreatedDate);
+        self.lastModifiedDate = new Date(data.LastModifiedDate);
+        self.title = data.Title;
+        self.provider = data.Provider;
+        self.imageUrls = data.ImageUrls;
     };
     var ContactGalleryViewModel = function () {
         var self = this;
-        var t = today();
-        self.albums = [
-            new GalleryAlbum(t.addDays(-1), t.addDays(-1), 'Interlaken Cycle', facebookProvider,
-                [
-                    '/Content/images/pictures/Interlaken1.jpg',
-                    '/Content/images/pictures/Interlaken2.jpg',
-                    '/Content/images/pictures/Interlaken3.jpg',
-                    '/Content/images/pictures/Interlaken4.jpg',
-                    '/Content/images/pictures/Interlaken5.jpg'
-
-                ]),
-            new GalleryAlbum(t.addDays(-2), t.addDays(-2), 'Landscape shots', microsoftProvider,
-                [
-                    '/Content/images/pictures/Landscape1.jpg',
-                    '/Content/images/pictures/Landscape2.jpg',
-                    '/Content/images/pictures/Landscape3.jpg',
-                    '/Content/images/pictures/Landscape4.jpg',
-                    '/Content/images/pictures/Landscape5.jpg'
-                ])
-        ];
+        self.albums =  ko.observableArray();
         self.isProcessing = ko.observable(true);
-        setTimeout(function () { self.isProcessing(false); }, 1100);
+        self.add = function(galleryAlbum) {
+            self.albums.push(new GalleryAlbum(galleryAlbum));
+        };
     };
 
     //Collaboration

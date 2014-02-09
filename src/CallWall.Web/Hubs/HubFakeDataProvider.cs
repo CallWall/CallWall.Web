@@ -6,7 +6,8 @@ namespace CallWall.Web.Hubs
 {
     public class HubFakeDataProvider : IObservableHubDataProvider<CalendarEntry>,
                                        IObservableHubDataProvider<IContactProfile>,
-                                       IObservableHubDataProvider<Message>
+                                       IObservableHubDataProvider<Message>,
+                                       IObservableHubDataProvider<GalleryAlbum>
     {
 
         private static IObservable<T> Pump<T>(Func<IEnumerable<T>> func)
@@ -28,6 +29,30 @@ namespace CallWall.Web.Hubs
         {
             return Pump(GetMessages);
         }
+        public IObservable<GalleryAlbum> GetObservable()
+        {
+            return Pump(GetAlbums);
+        }
+
+        private IEnumerable<GalleryAlbum> GetAlbums()
+        {
+            var t = DateTime.Now.Date;
+            return new []{
+            new GalleryAlbum(t.AddDays(-1), t.AddDays(-1), "Interlaken Cycle", "facebook", new []{ "/Content/images/pictures/Interlaken1.jpg",
+                    "/Content/images/pictures/Interlaken2.jpg",
+                    "/Content/images/pictures/Interlaken3.jpg",
+                    "/Content/images/pictures/Interlaken4.jpg",
+                    "/Content/images/pictures/Interlaken5.jpg"}),
+            new GalleryAlbum(t.AddDays(-2), t.AddDays(-2), "Landscape shots", "microsoft", new[]{
+                    "/Content/images/pictures/Landscape1.jpg",
+                    "/Content/images/pictures/Landscape2.jpg",
+                    "/Content/images/pictures/Landscape3.jpg",
+                    "/Content/images/pictures/Landscape4.jpg",
+                    "/Content/images/pictures/Landscape5.jpg"
+                })
+            };
+        }
+
         private static IEnumerable<CalendarEntry> GetCalendarEvents()
         {
             var t = DateTime.Now.Date;
@@ -86,6 +111,27 @@ namespace CallWall.Web.Hubs
                 Organizations = new[] { new ContactAssociation("CEO", "CallWall") },
                 Relationships = new[] { new ContactAssociation("CFO", "John Bell"), },
             };
+        }
+
+        
+    }
+
+    public class GalleryAlbum
+    {
+        public string[] ImageUrls { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime LastModifiedDate { get; set; }
+        public string Title { get; set; }
+        public string Provider { get; set; }
+
+        public GalleryAlbum(){}
+        public GalleryAlbum(DateTime createdDate, DateTime lastModifiedDate, string title, string provider, string[] imageUrls)
+        {
+            ImageUrls = imageUrls;
+            CreatedDate = createdDate;
+            LastModifiedDate = lastModifiedDate;
+            Title = title;
+            Provider = provider;
         }
     }
 
