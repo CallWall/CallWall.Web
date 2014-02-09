@@ -33,9 +33,12 @@ namespace CallWall.Web
             container.RegisterType<ISessionProvider, SessionProvider>();
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
+            
+            //HACK: Register Fakes. Move to fakes module. (Fix Fakes Module and Build target) -LC
             container.RegisterType<IObservableHubDataProvider<CalendarEntry>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<object>, HubFakeDataProvider>();
+            container.RegisterType<IObservableHubDataProvider<IContactProfile>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
+
             InitialiseModules(container);
         }
 
