@@ -112,13 +112,6 @@
         self.add = function (message) {
             self.entries.push(new CalendarEntry(message));
         };
-        //var t = today();
-        //setTimeout(function () { self.entries.push(new CalendarEntry(t.addDays(2), 'Lunch KO with Lee')); }, 200);
-        //setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(1), 'Training'));}, 500);
-        //setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(0), 'Document Review'));}, 600);
-        //setTimeout(function() { self.entries.push(new CalendarEntry(t.addDays(-2), 'Document design session'));}, 1200);
-        //setTimeout(function () { self.entries.push(new CalendarEntry(t.addDays(-3), 'Lunch with Lee')); }, 1300);
-        //setTimeout(function () { self.isProcessing(false); }, 1400);
     };
 
     //Gallery
