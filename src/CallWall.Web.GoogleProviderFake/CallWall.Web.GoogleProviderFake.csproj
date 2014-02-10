@@ -74,6 +74,7 @@
     <Compile Include="FakeGoogleAuthentication.cs" />
     <Compile Include="FakeGoogleCalendarProvider.cs" />
     <Compile Include="FakeGoogleCommunicationProvider.cs" />
+    <Compile Include="FakeGoogleContactCollaborationProvider.cs" />
     <Compile Include="FakeGoogleContactsProvider.cs" />
     <Compile Include="FakeGoogleGalleryProvider.cs" />
     <Compile Include="FakeGoogleModule.cs" />

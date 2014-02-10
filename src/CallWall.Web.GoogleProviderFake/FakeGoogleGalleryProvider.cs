@@ -33,15 +33,14 @@ namespace CallWall.Web.GoogleProviderFake
             };
         }
 
-        class GalleryAlbum : IGalleryAlbum
+        sealed class GalleryAlbum : IGalleryAlbum
         {
-            public string[] ImageUrls { get; set; }
-            public DateTime CreatedDate { get; set; }
-            public DateTime LastModifiedDate { get; set; }
-            public string Title { get; set; }
-            public string Provider { get; set; }
+            public string[] ImageUrls { get; private set; }
+            public DateTime CreatedDate { get; private set; }
+            public DateTime LastModifiedDate { get; private set; }
+            public string Title { get; private set; }
+            public string Provider { get; private set; }
 
-            public GalleryAlbum() { }
             public GalleryAlbum(DateTime createdDate, DateTime lastModifiedDate, string title, string provider, string[] imageUrls)
             {
                 ImageUrls = imageUrls;
