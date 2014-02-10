@@ -354,6 +354,21 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <None Include="Web.Debug %28With Fakes%29.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <Content Include="Modules.template.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Modules.Debug.config">
+      <DependentUpon>Modules.template.config</DependentUpon>
+    </Content>
+    <Content Include="Modules.Debug (With Fakes).config">
+      <DependentUpon>Modules.template.config</DependentUpon>
+    </Content>
+    <None Include="Modules.Release.config">
+      <DependentUpon>Modules.template.config</DependentUpon>
+    </None>
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -378,9 +393,6 @@
     <Content Include="Views\Shared\DisplayTemplates\OAuthAccountListItem.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ResourceScope.cshtml" />
     <Content Include="Views\Contact\Detail.cshtml" />
-    <None Include="Web.Debug %28With Fakes%29.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -432,7 +444,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>rd /s /q Providers</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" />
@@ -448,8 +461,7 @@
   <Target Name="AfterBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>$(MSBUILDBINPATH)\msbuild $(ProjectPath) /t:Transform /p:Configuration="$(ConfigurationName)";Platform=AnyCPU
-xcopy "$(ProjectDir)obj\$(ConfigurationName)\Web.Config" "$(TargetPath).config" /F /R /Y</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(ProjectDir)Modules.$(ConfigurationName).Config" "$(ProjectDir)\Modules.config"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

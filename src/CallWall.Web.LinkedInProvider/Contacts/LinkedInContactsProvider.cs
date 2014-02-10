@@ -33,6 +33,12 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             });
         }
 
+        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
+        {
+            //TODO: Implement LinkedIn GetContactDetails
+            return Observable.Empty<IContactProfile>();
+        }
+
         private sealed class ContactFeed : IFeed<IContactSummary>
         {
             private readonly int _totalResults;

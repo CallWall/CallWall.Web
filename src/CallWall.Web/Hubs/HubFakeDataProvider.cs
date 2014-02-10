@@ -184,6 +184,7 @@ namespace CallWall.Web.Hubs
         public IEnumerable<IContactAssociation> EmailAddresses { get; set; }
         
     }
+
     public class CalendarEntry
     {
         public DateTime Date { get; set; }
