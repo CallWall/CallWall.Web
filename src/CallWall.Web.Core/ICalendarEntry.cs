@@ -5,7 +5,7 @@ namespace CallWall.Web
     //TODO: This really should be able to represent a timespan/period not just a point in time -LC
     public interface ICalendarEntry
     {
-        DateTime Date { get;  }
+        DateTime Date { get; }
         string Title { get; }
     }
 }

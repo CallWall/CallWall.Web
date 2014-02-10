@@ -112,6 +112,7 @@
     <Compile Include="ICalendarEntry.cs" />
     <Compile Include="IContactAssociation.cs" />
     <Compile Include="IContactProfile.cs" />
+    <Compile Include="IGalleryAlbum.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="ITypeRegistry.cs" />
     <Compile Include="OAuth2Implementation\AuthState.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
     <Compile Include="Providers\ICalendarProvider.cs" />
     <Compile Include="Providers\ICommunicationProvider.cs" />
+    <Compile Include="Providers\IGalleryProvider.cs" />
     <Compile Include="Providers\ISessionProvider.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Providers\UriExtensions.cs" />

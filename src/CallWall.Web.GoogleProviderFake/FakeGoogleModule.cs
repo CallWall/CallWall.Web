@@ -8,7 +8,8 @@ namespace CallWall.Web.GoogleProviderFake
         {
             registry.RegisterType<IContactsProvider, FakeGoogleContactsProvider>();
             registry.RegisterType<ICommunicationProvider, FakeGoogleCommunicationProvider>();
-            registry.RegisterType<ICalendarProvider, FakeGoogleCalendarProvider>(); 
+            registry.RegisterType<ICalendarProvider, FakeGoogleCalendarProvider>();
+            registry.RegisterType<IGalleryProvider, FakeGoogleGalleryProvider>(); 
             registry.RegisterType<IAccountAuthentication, FakeGoogleAuthentication>("FakeGoogleAuthentication");
         }
     }
