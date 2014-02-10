@@ -5,6 +5,7 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
 {
+    //TODO: MOve all referenced images to Fake's content path. Have it copied on build to correct path as per other modules. -LC
     public class FakeGoogleGalleryProvider : IGalleryProvider
     {
         public IObservable<IGalleryAlbum> GetGalleryAlbums(IEnumerable<ISession> session, string[] contactKeys)

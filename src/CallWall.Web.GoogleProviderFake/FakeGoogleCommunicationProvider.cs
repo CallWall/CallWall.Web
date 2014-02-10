@@ -5,6 +5,8 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
 {
+    //TODO: MOve all referenced images to Fake's content path. Have it copied on build to correct path as per other modules. -LC
+    // This means passing the uri instead of a handle like "hangouts" as the client wont know what that means esp when we add 100s' more providers. -LC
     public class FakeGoogleCommunicationProvider : ICommunicationProvider
     {
         public IObservable<IMessage> GetMessages(IEnumerable<ISession> session, string[] contactKeys)
