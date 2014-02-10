@@ -63,7 +63,8 @@ Global
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug (With Fakes)|Any CPU.Build.0 = Debug (With Fakes)|Any CPU
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug (With Fakes)|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug|Any CPU
+		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug (With Fakes)|Any CPU.Build.0 = Debug|Any CPU
 		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00269FFF-9346-4A9C-BEF7-113E311313CC}.Release|Any CPU.ActiveCfg = Release|Any CPU

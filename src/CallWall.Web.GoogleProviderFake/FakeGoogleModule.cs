@@ -7,6 +7,7 @@ namespace CallWall.Web.GoogleProviderFake
         public void Initialise(ITypeRegistry registry)
         {
             registry.RegisterType<IContactsProvider, FakeGoogleContactsProvider>();
+            registry.RegisterType<ICommunicationProvider, FakeGoogleCommunicationProvider>(); 
             registry.RegisterType<IAccountAuthentication, FakeGoogleAuthentication>("FakeGoogleAuthentication");
         }
     }

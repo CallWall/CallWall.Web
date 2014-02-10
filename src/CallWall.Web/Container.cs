@@ -36,7 +36,6 @@ namespace CallWall.Web
             
             //HACK: Register Fakes. Move to fakes module. (Fix Fakes Module and Build target) -LC
             container.RegisterType<IObservableHubDataProvider<CalendarEntry>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<GalleryAlbum>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<ContactCollaboration>, HubFakeDataProvider>();
             InitialiseModules(container);
