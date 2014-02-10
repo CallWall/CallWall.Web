@@ -109,6 +109,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CallWallModuleSection.cs" />
+    <Compile Include="ICalendarEntry.cs" />
     <Compile Include="IContactAssociation.cs" />
     <Compile Include="IContactProfile.cs" />
     <Compile Include="IMessage.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="IAccount.cs" />
     <Compile Include="Providers\AuthenticationProviderGateway.cs" />
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
+    <Compile Include="Providers\ICalendarProvider.cs" />
     <Compile Include="Providers\ICommunicationProvider.cs" />
     <Compile Include="Providers\ISessionProvider.cs" />
     <Compile Include="Providers\SessionProvider.cs" />

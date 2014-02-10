@@ -6,8 +6,7 @@ namespace CallWall.Web.Hubs
 {
     //TODO: Now that we know this works, all of this code needs to be pushed to the fakes module. -LC
     //  e.g FakeGoogleContactsProvider.GetContactDetails(...)
-    public class HubFakeDataProvider : IObservableHubDataProvider<CalendarEntry>,
-                                       IObservableHubDataProvider<GalleryAlbum>,
+    public class HubFakeDataProvider : IObservableHubDataProvider<GalleryAlbum>,
                                        IObservableHubDataProvider<ContactCollaboration>
     {
 
@@ -15,11 +14,6 @@ namespace CallWall.Web.Hubs
         {
             return Observable.Interval(TimeSpan.FromSeconds(1))
                              .Zip(func(), (_, msg) => msg);
-        }
-
-        IObservable<CalendarEntry> IObservableHubDataProvider<CalendarEntry>.GetObservable()
-        {
-            return Pump(GetCalendarEvents);
         }
 
         public IObservable<GalleryAlbum> GetObservable()
@@ -63,16 +57,7 @@ namespace CallWall.Web.Hubs
             };
         }
 
-        private static IEnumerable<CalendarEntry> GetCalendarEvents()
-        {
-            var t = DateTime.Now.Date;
-
-            yield return new CalendarEntry(t.AddDays(2), "Lunch KO with Lee");
-            yield return new CalendarEntry(t.AddDays(1), "Training");
-            yield return new CalendarEntry(t.AddDays(0), "Document Review");
-            yield return new CalendarEntry(t.AddDays(-2), "Document design session");
-            yield return new CalendarEntry(t.AddDays(-3), "Lunch with Lee");
-        }
+        
     }
 
     public class ContactCollaboration
@@ -114,16 +99,5 @@ namespace CallWall.Web.Hubs
         }
     }
 
-    public class CalendarEntry
-    {
-        public DateTime Date { get; set; }
-        public string Title { get; set; }
-
-        public CalendarEntry() { }
-        public CalendarEntry(DateTime date, string title)
-        {
-            Date = date;
-            Title = title;
-        }
-    }
+    
 }
