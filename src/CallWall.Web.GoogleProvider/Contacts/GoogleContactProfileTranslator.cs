@@ -7,12 +7,11 @@ using System.Xml.XPath;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
+    //TODO - CLEAN UP lots of duplication here with CallWall.Web.GoogleProvider.Providers.Contacts.GoogleContactProfileTranslator
     internal sealed class GoogleContactProfileTranslator
     {
         private static readonly XmlNamespaceManager Ns;
         private const string AnonContactAvatar = "/Content/images/AnonContact.svg";
-
-        #region xml namespace resovers
 
         static GoogleContactProfileTranslator()
         {
@@ -45,7 +44,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
             public static XName ItemsPerPage { get; private set; }
             public static XName StartIndex { get; private set; }
         }
-
         private static class Atom
         {
             static Atom()
@@ -57,7 +55,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
             public static XName Entry { get; private set; }
             public static XName Title { get; private set; }
         }
-
         private static class Gd
         {
             static Gd()
@@ -70,30 +67,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             public static XName Email { get; private set; }
         }
 
-        #endregion
-
-        public int CalculateNextPageStartIndex(string response)
-        {
-            var xDoc = XDocument.Parse(response);
-            if (xDoc.Root == null)
-                return 0;
-            var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
-            var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
-            var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
-            //var totalResults = xDoc.Root.Element(ToXName("openSearch", "totalResults"));
-            //var startIndex = xDoc.Root.Element(ToXName("openSearch", "startIndex"));
-            //var itemsPerPage = xDoc.Root.Element(ToXName("openSearch", "itemsPerPage"));
-            if (startIndex == null || itemsPerPage == null || totalResults == null)
-                return -1;
-
-            var nextIndex = int.Parse(startIndex.Value) + int.Parse(itemsPerPage.Value);
-            if (nextIndex > int.Parse(totalResults.Value))
-                return -1;
-            return nextIndex;
-
-        }
-
-        public BatchOperationPage<IContactSummary> Translate(string response, string accessToken)
+        public BatchOperationPage<IContactSummary> TranslateToPagedContactSummaries(string response, string accessToken)
         {
             //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
             var xDoc = XDocument.Parse(response);
@@ -137,7 +111,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         private static string GetTitle(XElement xContactEntry)
         {
             var title = XPathString(xContactEntry, "x:title", Ns);
-            if(string.IsNullOrWhiteSpace(title))
+            if (string.IsNullOrWhiteSpace(title))
                 title = XPathString(xContactEntry, "gd:name/gd:fullName", Ns);
             if (string.IsNullOrWhiteSpace(title))
             {
@@ -154,7 +128,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         {
             //<gd:email rel='http://schemas.google.com/g/2005#home' address='danrowe1978@gmail.com' primary='true'/>
             var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", Ns)
-                         orderby (xElement.Attribute("primary")!=null) descending 
+                         orderby (xElement.Attribute("primary") != null) descending
                          select xElement.Attribute("address").Value;
             return emails;
         }

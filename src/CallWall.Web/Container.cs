@@ -1,5 +1,10 @@
 using System;
 using System.Linq;
+using CallWall.Web.Contracts;
+using CallWall.Web.Contracts.Communication;
+using CallWall.Web.Contracts.Contact;
+using CallWall.Web.GoogleProvider.Providers.Gmail;
+using CallWall.Web.Http;
 using CallWall.Web.Hubs;
 using CallWall.Web.Logging;
 using CallWall.Web.Providers;
@@ -31,9 +36,15 @@ namespace CallWall.Web
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<ISessionProvider, SessionProvider>();
+            //Core
+            container.RegisterType<IHttpClient, HttpClient>();
+            container.RegisterType<ISchedulerProvider, SchedulerProvider>();
+
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
-            
+
+            container.RegisterType<IObservableHubDataProvider<IMessage>, ObservableHubIMessageProvider>();
+
             InitialiseModules(container);
         }
 

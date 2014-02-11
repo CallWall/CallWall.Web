@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CallWall.Web
+namespace CallWall.Web.Contracts.Contact
 {
     public interface IContactProfile
     {
@@ -32,7 +32,7 @@ namespace CallWall.Web
         /// <summary>
         /// Any tags a.k.a groups that the contact belongs to. e.g. Friends, Family, Co-workers etc.
         /// </summary>
-        IEnumerable<string> Tags { get; }
+        IEnumerable<string> Tags { get; } 
 
         IEnumerable<IContactAssociation> Organizations { get; }
 

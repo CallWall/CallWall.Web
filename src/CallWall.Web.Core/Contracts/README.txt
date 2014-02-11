@@ -1,0 +1,1 @@
+﻿These classes are stolen from The windows core project - we need to consider what is really core contract and what is web/windows contracts
