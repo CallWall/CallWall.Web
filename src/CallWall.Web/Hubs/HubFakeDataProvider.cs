@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using CallWall.Web.Contracts;
+using CallWall.Web.Contracts.Communication;
+using CallWall.Web.Contracts.Contact;
+using CallWall.Web.GoogleProvider.Providers.Gmail;
 
 namespace CallWall.Web.Hubs
 {
     public class HubFakeDataProvider : IObservableHubDataProvider<CalendarEntry>,
                                        IObservableHubDataProvider<IContactProfile>,
-                                       IObservableHubDataProvider<Message>,
+                                      // IObservableHubDataProvider<Message>,
                                        IObservableHubDataProvider<GalleryAlbum>,
                                        IObservableHubDataProvider<ContactCollaboration>
     {
@@ -26,10 +30,10 @@ namespace CallWall.Web.Hubs
         {
             return Pump(Profiles);
         }
-        IObservable<Message> IObservableHubDataProvider<Message>.GetObservable()
-        {
-            return Pump(GetMessages);
-        }
+        //IObservable<Message> IObservableHubDataProvider<Message>.GetObservable()
+        //{
+        //    return Pump(GetMessages);
+        //}
         public IObservable<GalleryAlbum> GetObservable()
         {
             return Pump(GetAlbums);
@@ -208,13 +212,15 @@ namespace CallWall.Web.Hubs
 
         public string Association { get; private set; }
     }
-    public class Message
+    public class Message : IMessage
     {
-        public DateTime Timestamp { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
+        public MessageDirection Direction { get; private set; }
         public bool IsOutbound { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
-        public string Provider { get; set; }
+        public IProviderDescription Provider { get; set; }
+        public MessageType MessageType { get; private set; }
 
         public Message() { }
         public Message(DateTime timestamp, bool isOutbound, string subject, string content, string provider)
@@ -223,7 +229,7 @@ namespace CallWall.Web.Hubs
             IsOutbound = isOutbound;
             Subject = subject;
             Content = content;
-            Provider = provider;
+            Provider = GmailProviderDescription.Instance;//
         }
     }
 }

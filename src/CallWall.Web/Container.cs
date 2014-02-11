@@ -1,5 +1,10 @@
 using System;
 using System.Linq;
+using CallWall.Web.Contracts;
+using CallWall.Web.Contracts.Communication;
+using CallWall.Web.Contracts.Contact;
+using CallWall.Web.GoogleProvider.Providers.Gmail;
+using CallWall.Web.Http;
 using CallWall.Web.Hubs;
 using CallWall.Web.Logging;
 using CallWall.Web.Providers;
@@ -31,13 +36,19 @@ namespace CallWall.Web
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
             container.RegisterType<ISessionProvider, SessionProvider>();
+            //Core
+            container.RegisterType<IHttpClient, HttpClient>();
+            container.RegisterType<ISchedulerProvider, SchedulerProvider>();
+
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
-            
+
             //HACK: Register Fakes. Move to fakes module. (Fix Fakes Module and Build target) -LC
+            container.RegisterType<IObservableHubDataProvider<IMessage>, ObservableHubIMessageProvider>();
+
             container.RegisterType<IObservableHubDataProvider<CalendarEntry>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<IContactProfile>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
+            //container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<GalleryAlbum>, HubFakeDataProvider>();
             container.RegisterType<IObservableHubDataProvider<ContactCollaboration>, HubFakeDataProvider>();
             InitialiseModules(container);

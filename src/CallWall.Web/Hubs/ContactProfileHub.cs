@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR.Hubs;
+﻿using CallWall.Web.Contracts.Contact;
+using Microsoft.AspNet.SignalR.Hubs;
 
 namespace CallWall.Web.Hubs
 {

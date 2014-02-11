@@ -27,10 +27,15 @@
        githubProvider
     ];
 
-    var getProvider = function (name) {
+    var getProvider = function (provider) {
+        //Provider is IProviderDescription
+        if (provider.Name) {
+            return new ProviderDescription(provider.Name, provider.Image);
+        }
+        //provider is a string
         var whitespaceGlobalRegex = / /g;
         for (var i = 0; i < providers.length; i++) {
-            if (name.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
+            if (provider.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
                 return providers[i];
             }
         }
