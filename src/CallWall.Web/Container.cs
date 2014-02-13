@@ -34,12 +34,6 @@ namespace CallWall.Web
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
             
-            //HACK: Register Fakes. Move to fakes module. (Fix Fakes Module and Build target) -LC
-            container.RegisterType<IObservableHubDataProvider<CalendarEntry>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<IContactProfile>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<Message>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<GalleryAlbum>, HubFakeDataProvider>();
-            container.RegisterType<IObservableHubDataProvider<ContactCollaboration>, HubFakeDataProvider>();
             InitialiseModules(container);
         }
 
@@ -64,13 +58,18 @@ namespace CallWall.Web
             var typeRegistry = new TypeRegistry(container);
 
             var moduleConfig = CallWallModuleSection.GetConfig();
+
             var modules = from moduleType in moduleConfig.Modules.Cast<ModuleElement>().Select(m => m.Type)
                           select (IModule)Activator.CreateInstance(moduleType);
 
+            var logger = new LoggerFactory().CreateLogger(typeof(Bootstrapper));
+            logger.Trace("Initialising modules...");
             foreach (var module in modules)
             {
+                logger.Trace("Initialising module : {0}", module.GetType().Name);
                 module.Initialise(typeRegistry);
             }
+            logger.Trace("Modules Initialised");
         }
 
         public static bool IsModule(Type type)

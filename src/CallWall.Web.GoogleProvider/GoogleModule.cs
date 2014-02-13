@@ -1,5 +1,6 @@
 ﻿using CallWall.Web.GoogleProvider.Auth;
 using CallWall.Web.GoogleProvider.Contacts;
+using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProvider
 {

@@ -1,5 +1,6 @@
 ﻿using CallWall.Web.LinkedInProvider.Auth;
 using CallWall.Web.LinkedInProvider.Contacts;
+using CallWall.Web.Providers;
 
 namespace CallWall.Web.LinkedInProvider
 {

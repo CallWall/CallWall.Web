@@ -2,6 +2,7 @@
 ## CallWall specific
 #################
 logs/
+src/CallWall.Web/modules.config
 
 #################
 ## Eclipse
