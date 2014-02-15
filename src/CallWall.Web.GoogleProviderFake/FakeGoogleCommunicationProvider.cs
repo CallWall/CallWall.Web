@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using CallWall.Web.Contracts;
+using CallWall.Web.Contracts.Communication;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
@@ -28,19 +30,32 @@ namespace CallWall.Web.GoogleProviderFake
 
         class Message : IMessage
         {
-            public DateTime Timestamp { get; private set; }
-            public bool IsOutbound { get; private set; }
+            public DateTimeOffset Timestamp { get; private set; }
+            public MessageDirection Direction { get; private set; }
             public string Subject { get; private set; }
             public string Content { get; private set; }
-            public string Provider { get; private set; }
+            public IProviderDescription Provider { get; private set; }
+            public MessageType MessageType { get; private set; }
 
             public Message(DateTime timestamp, bool isOutbound, string subject, string content, string provider)
             {
                 Timestamp = timestamp;
-                IsOutbound = isOutbound;
+                Direction = isOutbound ? MessageDirection.Outbound : MessageDirection.Inbound;
                 Subject = subject;
                 Content = content;
-                Provider = provider;
+                Provider = new FakeProviderDescription();
+            }
+
+            private class FakeProviderDescription : IProviderDescription
+            {
+                public string Name
+                {
+                    get { return "FakeProvider"; }
+                }
+                public Uri Image
+                {
+                    get { return null; }
+                }
             }
         }
     }

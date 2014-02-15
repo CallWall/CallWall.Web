@@ -12,14 +12,15 @@ using Microsoft.AspNet.SignalR.Hubs;
 namespace CallWall.Web.Hubs
 {
     [HubName("contactCommunications")]
-    public class ContactCommunicationsHub : Hub
+    public class ContactCommunicationsHub : Hub//ObservableHub<IMessage>
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
-        private readonly IEnumerable<ICommunicationProvider> _communicationProviders;
         private readonly ISessionProvider _sessionProvider;
         private readonly ILogger _logger;
+        private readonly ICommunicationProvider[] _communicationProviders;
 
-        public ContactCommunicationsHub(IEnumerable<ICommunicationProvider> communicationProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactCommunicationsHub(IEnumerable<ICommunicationProvider> communicationProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory) 
+            : base()
         {
             Debug.Print("ContactCommunicationsHub.ctor()");
             _communicationProviders = communicationProviders.ToArray();

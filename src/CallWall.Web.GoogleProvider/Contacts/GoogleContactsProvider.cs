@@ -7,6 +7,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using CallWall.Web.Contracts.Contact;
+using CallWall.Web.GoogleProvider.Providers.Contacts;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProvider.Contacts
@@ -107,8 +109,8 @@ namespace CallWall.Web.GoogleProvider.Contacts
                             return r.Result.Content.ReadAsStringAsync();
                         }).Unwrap().Result;
 
-                    var translator = new GoogleContactProfileTranslator();
-                    var contacts = translator.Translate(contactResponse, session.AccessToken);
+                    var translator = new GoogleContactProfileTranslator();//TODO - ioc??
+                    var contacts = translator.TranslateToPagedContactSummaries(contactResponse, session.AccessToken);
 
                     return contacts;
                 }
