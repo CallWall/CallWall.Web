@@ -1,9 +1,6 @@
 using System;
 using System.Linq;
 using CallWall.Web.Contracts;
-using CallWall.Web.Contracts.Communication;
-using CallWall.Web.Contracts.Contact;
-using CallWall.Web.GoogleProvider.Providers.Gmail;
 using CallWall.Web.Http;
 using CallWall.Web.Hubs;
 using CallWall.Web.Logging;
@@ -43,7 +40,7 @@ namespace CallWall.Web
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
 
-            container.RegisterType<IObservableHubDataProvider<IMessage>, ObservableHubIMessageProvider>();
+            //container.RegisterType<IObservableHubDataProvider<IMessage>, ObservableHubIMessageProvider>();
 
             InitialiseModules(container);
         }

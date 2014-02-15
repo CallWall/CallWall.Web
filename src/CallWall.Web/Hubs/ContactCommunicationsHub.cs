@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -11,14 +12,15 @@ using Microsoft.AspNet.SignalR.Hubs;
 namespace CallWall.Web.Hubs
 {
     [HubName("contactCommunications")]
-    public class ContactCommunicationsHub : ObservableHub<Message>
+    public class ContactCommunicationsHub : Hub//ObservableHub<IMessage>
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
-        public ContactCommunicationsHub(ILoggerFactory loggerFactory, IObservableHubDataProvider<Message> provider) : 
         private readonly ISessionProvider _sessionProvider;
         private readonly ILogger _logger;
+        private readonly ICommunicationProvider[] _communicationProviders;
 
-        public ContactCommunicationsHub(IEnumerable<ICommunicationProvider> communicationProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactCommunicationsHub(IEnumerable<ICommunicationProvider> communicationProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory) 
+            : base()
         {
             Debug.Print("ContactCommunicationsHub.ctor()");
             _communicationProviders = communicationProviders.ToArray();

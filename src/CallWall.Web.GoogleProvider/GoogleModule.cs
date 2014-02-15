@@ -1,10 +1,11 @@
 ﻿using CallWall.Web.Contracts;
-using CallWall.Web.Contracts.Communication;
 using CallWall.Web.Contracts.Contact;
 using CallWall.Web.GoogleProvider.Auth;
 using CallWall.Web.GoogleProvider.Contacts;
 using CallWall.Web.GoogleProvider.Providers.Contacts;
+using CallWall.Web.GoogleProvider.Providers.Gmail;
 using CallWall.Web.GoogleProvider.Providers.Gmail.Imap;
+using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProvider
 {
@@ -15,7 +16,7 @@ namespace CallWall.Web.GoogleProvider
             registry.RegisterType<IContactsProvider, GoogleContactsProvider>("GoogleContactsProvider");
             registry.RegisterType<IAccountAuthentication, GoogleAuthentication>("GoogleAuthentication");
 
-            registry.RegisterType<ICommunicationQueryProvider, GmailCommunicationQueryProvider>();
+            registry.RegisterType<ICommunicationProvider, GmailCommunicationQueryProvider>();
             registry.RegisterType<IImapClient, ImapClient>();
             registry.RegisterType<IImapDateTranslator, ImapDateTranslator>();
             registry.RegisterType<IGoogleContactProfileTranslator, Providers.Contacts.GoogleContactProfileTranslator>();

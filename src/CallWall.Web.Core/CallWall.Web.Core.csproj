@@ -113,11 +113,8 @@
     </Compile>
     <Compile Include="CallWallModuleSection.cs" />
     <Compile Include="ICalendarEntry.cs" />
-    <Compile Include="IContactAssociation.cs" />
     <Compile Include="IContactCollaboration.cs" />
-    <Compile Include="IContactProfile.cs" />
     <Compile Include="IGalleryAlbum.cs" />
-    <Compile Include="IMessage.cs" />
     <Compile Include="ITypeRegistry.cs" />
     <Compile Include="Contracts\Communication\ICommunicationQueryProvider.cs" />
     <Compile Include="Contracts\Communication\IMessage.cs" />
