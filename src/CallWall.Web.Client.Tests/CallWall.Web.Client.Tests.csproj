@@ -60,6 +60,9 @@
     <Content Include="..\CallWall.Web\Scripts\Inhouse\ContactSummariesSignalR.js">
       <Link>Scripts\Inhouse\ContactSummariesSignalR.js</Link>
     </Content>
+    <Content Include="..\CallWall.Web\Scripts\Inhouse\Dashboard\DashboardModel.js">
+      <Link>Scripts\Inhouse\Dashboard\DashboardModel.js</Link>
+    </Content>
     <Content Include="..\CallWall.Web\Scripts\Inhouse\ProgressbarBindings.js">
       <Link>Scripts\Inhouse\ProgressbarBindings.js</Link>
     </Content>
@@ -137,6 +140,7 @@
     <Content Include="Scripts\jasmine\jasmine-html.js" />
     <Content Include="Scripts\jasmine\jasmine.js" />
     <Content Include="Scripts\specs\ContactSpec.js" />
+    <Content Include="Scripts\specs\Dashboard\DashboardModelSpec.js" />
     <Content Include="SpecRunner.html" />
   </ItemGroup>
   <ItemGroup>
