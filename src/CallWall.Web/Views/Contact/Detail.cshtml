@@ -237,7 +237,7 @@
     <!--TODO: VisualClue for read/unread messages-->
     <!--TODO: Still not great UX for received/Sent/broadcast(Tweeted)-->
     <ol class="messages">
-        <!-- ko foreach: messages -->
+        <!-- ko foreach: entries -->
         <li>
             <table style="float: left; margin: 5px">
                 <tr>
@@ -284,7 +284,7 @@
 <script type="text/html" id="GalleryTemplate">
     <h3>Pictures</h3>
     <div id="galleryProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
-    <!-- ko foreach: albums -->
+    <!-- ko foreach: entries -->
     <div>
         <img data-bind="attr: { src: provider.imageUrl, alt: provider.name }" style="float: left; max-width: 32px; max-height: 32px; margin: 5px" />
         <div>

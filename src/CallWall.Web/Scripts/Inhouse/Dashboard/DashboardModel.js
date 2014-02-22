@@ -1,4 +1,6 @@
-﻿(function (ko, callWall) {
+﻿/// <reference path="../../knockout-3.0.0.debug.js" />
+
+(function (ko, callWall) {
     //Provider
     var ProviderDescription = function (name, imageUrl) {
         var self = this;
@@ -53,18 +55,13 @@
         var self = this;
         //TODO: Add this to the ko ObservableArray prototype.
         var concat = function (target, source) {
-            if (target == undefined || source == undefined) return;
-            for (var i = 0; i < source.length; i++) {
-                target.push(source[i]);
-            }
+            concatMap(target, source, function (item) { return item; });
         };
         var concatMap = function (target, source, selector) {
             if (target == undefined || source == undefined) return;
-            for (var i = 0; i < source.length; i++) {
-                target.push(selector(source[i]));
-            }
+            ko.utils.arrayForEach(source, function (item) { target.push(selector(item)); });
         };
-               
+
         self.title = ko.observable('');
         self.fullName = ko.observable('');
         self.dateOfBirth = ko.observable();
@@ -91,7 +88,6 @@
         };
     };
 
-    //Communication
     var Message = function (data) {
         var self = this;
         //TODO - correct casing
@@ -102,31 +98,13 @@
 
         self.provider = getProvider(data.Provider);
     };
-    var ContactCommunicationViewModel = function () {
-        var self = this;
-        self.isProcessing = ko.observable(true);
-        self.messages = ko.observableArray();
-        self.add = function (message) {
-            self.messages.push(new Message(message));
-        };
-    };
-
-    //Calendar
+    
     var CalendarEntry = function (data) {
         var self = this;
         self.date = new Date(data.Date);
         self.title = data.Title;
     };
-    var ContactCalendarViewModel = function () {
-        var self = this;
-        self.isProcessing = ko.observable(true);
-        self.entries = ko.observableArray();
-        self.add = function (message) {
-            self.entries.push(new CalendarEntry(message));
-        };
-    };
-
-    //Gallery
+    
     var GalleryAlbum = function (data) {
         var self = this;
         console.log(data);
@@ -136,16 +114,7 @@
         self.provider = data.Provider;
         self.imageUrls = data.ImageUrls;
     };
-    var ContactGalleryViewModel = function () {
-        var self = this;
-        self.albums = ko.observableArray();
-        self.isProcessing = ko.observable(true);
-        self.add = function (galleryAlbum) {
-            self.albums.push(new GalleryAlbum(galleryAlbum));
-        };
-    };
-
-    //Collaboration
+    
     var CollaborationAction = function (data) {
         var self = this;
         //self.project = project;   //Maybe use project/projectName instead of name.
@@ -155,27 +124,29 @@
         self.isCompleted = data.IsCompleted;
         self.provider = getProvider(data.Provider);
     };
-    var ContactCollaborationViewModel = function () {
+   
+    var ListViewModel = function (map) {
         var self = this;
         self.entries = ko.observableArray();
         self.add = function (data) {
-            self.entries.push(new CollaborationAction(data));
+            self.entries.push(map(data));
         };
-        self.isProcessing = ko.observable(true);
+        self.isProcessing = ko.observable(true);         
     };
 
     //Location
     var ContactLocationViewModel = function () {
+        //TODO - What do i do?
     };
 
     var DashboardViewModel = function () {
         var self = this;
 
         self.contactProfile = new ContactProfileViewModel();
-        self.communications = new ContactCommunicationViewModel();
-        self.calendar = new ContactCalendarViewModel();
-        self.gallery = new ContactGalleryViewModel();
-        self.collaboration = new ContactCollaborationViewModel();
+        self.communications = new ListViewModel(Message);//todo entries vs messages
+        self.calendar = new ListViewModel(CalendarEntry);
+        self.gallery = new ListViewModel(GalleryAlbum);//todo entities vs albums
+        self.collaboration = new ListViewModel(CollaborationAction);
         self.location = new ContactLocationViewModel();
 
         self.LoadContactProfile = function () { };

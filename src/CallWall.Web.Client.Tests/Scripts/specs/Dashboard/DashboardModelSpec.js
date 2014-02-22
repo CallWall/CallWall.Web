@@ -50,6 +50,24 @@ describe("Dashboard Models", function () {
                 expect(contactProfile.fullName()).toBe(data.FullName);
                 expect(contactProfile.dateOfBirth().getTime()).toBe(new Date(data.DateOfBirth).getTime());
             });
+            it("Aggregate can be called multiple times with deltas", function () {
+                var data = {
+                    Title: 'My title',
+                    FullName: 'my fullname',
+                    DateOfBirth: '2011-12-31T16:00:00.000Z'
+                };
+                contactProfile.aggregate(data);
+                contactProfile.aggregate({ Title: 'My title again' });
+                expect(contactProfile.title()).toBe('My title again');
+
+                contactProfile.aggregate({ FullName: 'My fullname again' });
+                expect(contactProfile.fullName()).toBe('My fullname again');
+
+                contactProfile.aggregate({ DateOfBirth: '2001-06-06T16:00:00.000Z' });
+                expect(contactProfile.dateOfBirth().getTime()).toBe(new Date('2001-06-06T16:00:00.000Z').getTime());
+                expect(contactProfile.fullName()).toBe('My fullname again');
+                expect(contactProfile.title()).toBe('My title again');
+            });
         });
     });
 });
