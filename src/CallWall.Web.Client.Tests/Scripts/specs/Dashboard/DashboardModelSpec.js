@@ -140,7 +140,6 @@ describe("Dashboard Models", function () {
                 }
                 communications.add(item1);
                 communications.add(item2);
-                console.log(communications);
                 //TODO - Need to get my expected object matcher from mercury.... RC
                 var x1 = communications.entries()[0];
                 expect(x1.timestamp.getTime()).toBe(new Date(item1.Timestamp).getTime());
@@ -157,6 +156,38 @@ describe("Dashboard Models", function () {
                 expect(x2.content).toBe(item2.Content);
                 expect(x2.provider.name).toBe(item2.Provider.Name);
                 expect(x2.provider.imageUrl).toBe(item2.Provider.Image);
+            });
+        });
+
+        describe("calendar", function () {
+            var calendar;
+
+            beforeEach(function () {
+                calendar = viewModel.calendar;
+            });
+            it('should have values defaulted', function () {
+                expect(calendar.isProcessing()).toBeTruthy();
+                expect(calendar.entries().length).toBe(0);
+            });
+            it('should be able to add calendar items', function () {
+                var item1 = {
+                    Date: '2014-02-23T09:23:30.335Z',
+                    Title: 'My subject 1'                    
+                }
+                var item2 = {
+                    Date: '2012-04-23T09:23:30.335Z',
+                    Title: 'My title 2'
+                }
+                calendar.add(item1);
+                calendar.add(item2);
+                //TODO - Need to get my expected object matcher from mercury.... RC
+                var x1 = calendar.entries()[0];
+                expect(x1.date.getTime()).toBe(new Date(item1.Date).getTime());
+                expect(x1.title).toBe(item1.Title);
+               
+                var x2 = calendar.entries()[1];
+                expect(x2.date.getTime()).toBe(new Date(item2.Date).getTime());
+                expect(x2.title).toBe(item2.Title);
             });
         });
     });
