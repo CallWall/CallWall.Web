@@ -214,9 +214,6 @@
     <Compile Include="Hubs\ContactGalleryAlbumsHub.cs" />
     <Compile Include="Hubs\ContactSummariesHub.cs" />
     <Compile Include="Hubs\ContactProfileHub.cs" />
-    <Compile Include="Hubs\IObservableHubDataProvider.cs" />
-    <Compile Include="Hubs\ObservableHub.cs" />
-    <Compile Include="Hubs\ObservableHubIMessageProvider.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />

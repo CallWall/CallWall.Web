@@ -7,15 +7,13 @@ namespace CallWall.Web
         // For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
         public static void RegisterBundles(BundleCollection bundles)
         {
-            //TODO - there are too many bundles here - need to figure out what the sensible sepeartion is - RC
-
             bundles.Add(new ScriptBundle("~/bundles/base").Include(
-                        "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/jquery-ui-{version}.js",
-                        "~/Scripts/jquery.color-{version}.js",
-                        "~/Scripts/jquery.unobtrusive*",
-                        "~/Scripts/jquery.validate*",
-                        "~/Scripts/knockout-{version}.js"));
+                       "~/Scripts/jquery-{version}.js",
+                       "~/Scripts/jquery-ui-{version}.js",
+                       "~/Scripts/jquery.color-{version}.js",
+                       "~/Scripts/jquery.unobtrusive*",
+                       "~/Scripts/jquery.validate*",
+                       "~/Scripts/knockout-{version}.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
@@ -43,15 +41,12 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/Dashboard/ContactProfileSignalR.js"
                        ));
 
-            //bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
-            //           "~/Scripts/pouchdb-nightly-{version}.js"));
-
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 //"~/Content/bootstrap.css",
-                "~/Content/bootstrap.metro.css",
-                "~/Content/site.css",
-                "~/Content/bootstrap-responsive.css"
-                ));
+               "~/Content/bootstrap.metro.css",
+               "~/Content/site.css",
+               "~/Content/bootstrap-responsive.css"
+               ));
 
             bundles.Add(new StyleBundle("~/Content/contactdetails").Include(
                 "~/Content/ContactDetails.css"));

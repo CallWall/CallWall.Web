@@ -1,13 +1,13 @@
 ﻿@{
     ViewBag.Title = "My Contacts";
 }
-<!-- TODO Move to header section-->
-@Styles.Render("~/Content/themes/base/css")
-
+@section header{
+    @Styles.Render("~/Content/themes/base/css")
+}
 <hgroup>
     <h2>@ViewBag.Title</h2>
     <label for="q" style="display: inline">Filter:</label>
-    <input id="q" name="q" type="search" autofocus="true" data-bind="value: filterText, valueUpdate: 'afterkeydown'"  />
+    <input id="q" name="q" type="search" autofocus="truedata "-bind="value: filterText, valueUpdate: 'afterkeydown'"  />
 </hgroup>
 
 <!--TODO: ensure that the progress bar is briefly animated red onError, before it is hidden -->
@@ -58,7 +58,7 @@
             callWall.createCustomProgressbarBindings();
             ko.applyBindings(model);
             // Start the connection
-            var adapter = new callWall.SignalR.ContactAdapter($.connection.contactSummaries, model);
+            var adapter = new callWall.SignalR.ContactSummariesAdapter($.connection.contactSummaries, model);
             adapter.StartHub();
         });
     </script>
