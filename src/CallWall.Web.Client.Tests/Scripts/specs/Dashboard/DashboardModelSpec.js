@@ -237,5 +237,51 @@ describe("Dashboard Models", function () {
             });
         });
 
+        describe("collaboration", function () {
+            var collaboration;
+
+            beforeEach(function () {
+                collaboration = viewModel.collaboration;
+            });
+            it('should have values defaulted', function () {
+                expect(collaboration.isProcessing()).toBeTruthy();
+                expect(collaboration.entries().length).toBe(0);
+            });
+            it('should be able to add collaboration items', function () {
+                var item1 = {
+                    ActionDate: '2014-01-23T10:39:31.095Z',
+                    ActionPerformed: 'integrated like a boss',
+                    Title: 'synergy',
+                    Provider: { Name: 'Github', Image: 'octocat.jpg' },               
+                    IsCompleted: true
+                }
+                var item2 = {
+                    ActionDate: '2012-01-23T10:39:31.095Z',
+                    ActionPerformed: 'you sketch, i colour',
+                    Title: 'cartooning',
+                    Provider: { Name: 'Marvel', Image: 'cptUsa.jpg' },
+                    IsCompleted: false
+                }
+                collaboration.add(item1);
+                collaboration.add(item2);
+                //TODO - Need to get my expected object matcher from mercury.... RC
+                var x1 = collaboration.entries()[0];
+                expect(x1.actionDate.getTime()).toBe(new Date(item1.ActionDate).getTime());
+                expect(x1.title).toBe(item1.Title);
+                expect(x1.actionPerformed).toBe(item1.ActionPerformed);
+                expect(x1.provider.name).toBe(item1.Provider.Name);
+                expect(x1.provider.imageUrl).toBe(item1.Provider.Image);
+                expect(x1.isCompleted).toBe(item1.IsCompleted);
+
+                var x2 = collaboration.entries()[1];
+                expect(x2.actionDate.getTime()).toBe(new Date(item2.ActionDate).getTime());
+                expect(x2.title).toBe(item2.Title);
+                expect(x2.actionPerformed).toBe(item2.ActionPerformed);
+                expect(x2.provider.name).toBe(item2.Provider.Name);
+                expect(x2.provider.imageUrl).toBe(item2.Provider.Image);
+                expect(x2.isCompleted).toBe(item2.IsCompleted);
+            });
+        });
+
     });
 });
