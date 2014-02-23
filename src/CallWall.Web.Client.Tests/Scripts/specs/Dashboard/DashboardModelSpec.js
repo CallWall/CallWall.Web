@@ -112,5 +112,52 @@ describe("Dashboard Models", function () {
                 expect(contactProfile.emailAddresses()[1].association).toBe('emailAssoc2');
             });
         });
+
+        describe("communications", function () {
+            var communications;
+
+            beforeEach(function () {
+                communications = viewModel.communications;
+            });
+            it('should have values defaulted', function () {
+                expect(communications.isProcessing()).toBeTruthy();
+                expect(communications.entries().length).toBe(0);
+            });
+            it('should be able to add communication items', function () {
+                var item1 = {
+                    Timestamp: '2014-02-23T09:23:30.335Z',
+                    IsOutbound: false,
+                    Subject: 'My subject 1',
+                    Content: 'lorum ipsumtastic',
+                    Provider: { Name: 'Provider A', Image: 'My image url for this provider' }
+                }
+                var item2 = {
+                    Timestamp: '2014-01-23T09:23:30.335Z',
+                    IsOutbound: true,
+                    Subject: 'OMG - LOL!!!!111!!!!One!11!',
+                    Content: 'Look a cat playing the piano! I have no hobbies!',
+                    Provider: { Name: 'Retardfeed', Image: 'lolkatz.jpg' }
+                }
+                communications.add(item1);
+                communications.add(item2);
+                console.log(communications);
+                //TODO - Need to get my expected object matcher from mercury.... RC
+                var x1 = communications.entries()[0];
+                expect(x1.timestamp.getTime()).toBe(new Date(item1.Timestamp).getTime());
+                expect(x1.isOutbound).toBe(item1.IsOutbound);
+                expect(x1.subject).toBe(item1.Subject);
+                expect(x1.content).toBe(item1.Content);
+                expect(x1.provider.name).toBe(item1.Provider.Name);
+                expect(x1.provider.imageUrl).toBe(item1.Provider.Image);
+
+                var x2 = communications.entries()[1];
+                expect(x2.timestamp.getTime()).toBe(new Date(item2.Timestamp).getTime());
+                expect(x2.isOutbound).toBe(item2.IsOutbound);
+                expect(x2.subject).toBe(item2.Subject);
+                expect(x2.content).toBe(item2.Content);
+                expect(x2.provider.name).toBe(item2.Provider.Name);
+                expect(x2.provider.imageUrl).toBe(item2.Provider.Image);
+            });
+        });
     });
 });

@@ -35,6 +35,7 @@
             return new ProviderDescription(provider.Name, provider.Image);
         }
         //provider is a string
+        console.error('We should not require this provider mapping funcitonality. It means this client js file is tightly coupled to providers. We should be suppling all we ned via the providers (incluing fakes)')
         var whitespaceGlobalRegex = / /g;
         for (var i = 0; i < providers.length; i++) {
             if (provider.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
@@ -53,7 +54,7 @@
     };
     var ContactProfileViewModel = function () {
         var self = this;
-        //TODO: Add this to the ko ObservableArray prototype.
+        //TODO: Add this to the ko ObservableArray prototype. RHYS - or create new prototype that inherits from the KO obs Array. We shouldnt really modify prototypes we dont own
         var concat = function (target, source) {
             concatMap(target, source, function (item) { return item; });
         };
@@ -125,11 +126,11 @@
         self.provider = getProvider(data.Provider);
     };
    
-    var ListViewModel = function (map) {
+    var ListViewModel = function (ctor) {
         var self = this;
         self.entries = ko.observableArray();
         self.add = function (data) {
-            self.entries.push(map(data));
+            self.entries.push(new ctor(data));
         };
         self.isProcessing = ko.observable(true);         
     };
