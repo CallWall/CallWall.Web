@@ -108,7 +108,6 @@
     
     var GalleryAlbum = function (data) {
         var self = this;
-        console.log(data);
         self.createdDate = new Date(data.CreatedDate);
         self.lastModifiedDate = new Date(data.LastModifiedDate);
         self.title = data.Title;

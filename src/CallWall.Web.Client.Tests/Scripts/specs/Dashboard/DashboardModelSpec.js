@@ -190,5 +190,52 @@ describe("Dashboard Models", function () {
                 expect(x2.title).toBe(item2.Title);
             });
         });
+
+        describe("gallery", function () {
+            var gallery;
+
+            beforeEach(function () {
+                gallery = viewModel.gallery;
+            });
+            it('should have values defaulted', function () {
+                expect(gallery.isProcessing()).toBeTruthy();
+                expect(gallery.entries().length).toBe(0);
+            });
+            it('should be able to add gallery items', function () {
+                var item1 = {
+                    CreatedDate: '2014-01-23T10:39:31.095Z',
+                    LastModifiedDate: '2014-02-23T10:39:31.095Z',
+                    Title : 'Gallery One',
+                    Provider : 'Windows Live',
+                    ImageUrls : ['live.com/image1.png','live.com/image2.gif']
+                }
+                var item2 = {
+                    CreatedDate: '2012-01-23T10:39:31.095Z',
+                    LastModifiedDate: '2012-02-23T10:39:31.095Z',
+                    Title: 'Fun in the sun',
+                    Provider: 'Picassa',
+                    ImageUrls: ['http://imageland.com/myuniqueid.png', 'google.com/images/1']
+                }
+                gallery.add(item1);
+                gallery.add(item2);
+                //TODO - Need to get my expected object matcher from mercury.... RC
+                var x1 = gallery.entries()[0];
+                expect(x1.createdDate.getTime()).toBe(new Date(item1.CreatedDate).getTime());
+                expect(x1.lastModifiedDate.getTime()).toBe(new Date(item1.LastModifiedDate).getTime());
+                expect(x1.title).toBe(item1.Title);
+                expect(x1.provider).toBe(item1.Provider);
+                expect(x1.imageUrls[0]).toBe(item1.ImageUrls[0]);
+                expect(x1.imageUrls[1]).toBe(item1.ImageUrls[1]);
+
+                var x2 = gallery.entries()[1];
+                expect(x2.createdDate.getTime()).toBe(new Date(item2.CreatedDate).getTime());
+                expect(x2.lastModifiedDate.getTime()).toBe(new Date(item2.LastModifiedDate).getTime());
+                expect(x2.title).toBe(item2.Title);
+                expect(x2.provider).toBe(item2.Provider);
+                expect(x2.imageUrls[0]).toBe(item2.ImageUrls[0]);
+                expect(x2.imageUrls[1]).toBe(item2.ImageUrls[1]);
+            });
+        });
+
     });
 });
