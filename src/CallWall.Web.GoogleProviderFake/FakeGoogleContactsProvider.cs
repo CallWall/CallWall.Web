@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
 using CallWall.Web.Providers;
+using CallWall.Web.Contracts.Contact;
 
 namespace CallWall.Web.GoogleProviderFake
 {

@@ -64,18 +64,8 @@
                 target.push(selector(source[i]));
             }
         };
-               
-        self.title = ko.observable('');
-        self.fullName = ko.observable('');
-        self.dateOfBirth = ko.observable();
-        self.tags = ko.observableArray();
-        self.organizations = ko.observableArray();
-        self.relationships = ko.observableArray();
-        self.phoneNumbers = ko.observableArray();
-        self.emailAddresses = ko.observableArray();
-        self.isProcessing = ko.observable(true);
-
-        self.aggregate = function (data) {
+        
+        var Aggregate = function (data) {
             if (data.Title) self.title(data.Title);
             if (data.FullName) self.fullName(data.FullName);
             if (data.DateOfBirth) {
@@ -89,6 +79,17 @@
             concatMap(self.phoneNumbers, data.PhoneNumbers, function (d) { return new ContactAssociation(d); });
             concatMap(self.emailAddresses, data.EmailAddresses, function (d) { return new ContactAssociation(d); });
         };
+
+        self.aggregate = Aggregate;
+        self.title = ko.observable('');
+        self.fullName = ko.observable('');
+        self.dateOfBirth = ko.observable();
+        self.tags = ko.observableArray();
+        self.organizations = ko.observableArray();
+        self.relationships = ko.observableArray();
+        self.phoneNumbers = ko.observableArray();
+        self.emailAddresses = ko.observableArray();
+        self.isProcessing = ko.observable(true);
     };
 
     //Communication
