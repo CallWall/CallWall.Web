@@ -9,6 +9,7 @@
     TODO : custom dashboard CSS
     TODO : Change the Header bar to have the Avatar+Name on left, and CallWall+Help+Close on the right.
 -->
+<!-- TODO move to Header section -->
 <style>
     /* -- Overrides --*/
     h1, h2, h3, h4, h5, h6 {
@@ -174,6 +175,8 @@
             position: absolute;
         }
 </style>
+@Styles.Render("~/Content/themes/base/css")
+
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" data-bind="attr: { alt: contactProfile.title }" height="80" style="float: left" />
     <h2 data-bind="text: contactProfile.title"></h2>
@@ -363,10 +366,6 @@
     </div>
 </script>
 @section scripts{
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryui")
-    @Scripts.Render("~/bundles/jquerycolor")
-    @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/bundles/signalR")
     @Scripts.Render("~/signalR/hubs")
     @Scripts.Render("~/bundles/dashboard")
@@ -412,4 +411,3 @@
         });
     </script>
 }
-@Styles.Render("~/Content/themes/base/css")
