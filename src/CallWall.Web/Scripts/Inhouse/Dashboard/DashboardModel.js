@@ -44,8 +44,7 @@
         }
         throw new Error("No providers found with name " + name);
     };
-
-
+    
     //Contact Profile
     var ContactAssociation = function (data) {
         var self = this;

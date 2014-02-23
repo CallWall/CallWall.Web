@@ -312,6 +312,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Inhouse\ContactSummaryPersistence.js" />
     <Content Include="Scripts\Inhouse\Dashboard\ContactProfileSignalR.js" />
     <Content Include="Scripts\Inhouse\ImageScaling.js" />
     <Content Include="Scripts\Inhouse\ProgressbarBindings.js" />
