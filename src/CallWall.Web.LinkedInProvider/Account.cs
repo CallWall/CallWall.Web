@@ -1,4 +1,5 @@
-﻿namespace CallWall.Web.LinkedInProvider
+﻿using CallWall.Web.Account;
+namespace CallWall.Web.LinkedInProvider
 {
     public sealed class Account : IAccount
     {

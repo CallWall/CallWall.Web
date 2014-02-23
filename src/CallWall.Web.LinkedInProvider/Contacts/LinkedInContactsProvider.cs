@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
 using CallWall.Web.Providers;
 using Newtonsoft.Json;

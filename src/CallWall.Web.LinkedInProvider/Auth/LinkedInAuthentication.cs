@@ -1,6 +1,7 @@
 ﻿using System.Security.Authentication;
 using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
+using CallWall.Web.Account;
 
 namespace CallWall.Web.LinkedInProvider.Auth
 {
