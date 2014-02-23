@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "Detail";
 }
+@section header{
+    @Styles.Render("~/Content/contactdetails") @*if this is for overrides it should be last?!?!*@
+    @Styles.Render("~/Content/themes/base/css")
+}
 <!-- TODO : we needs to supply an API key : https://developers.google.com/maps/documentation/javascript/tutorial -->
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <!--
@@ -9,173 +13,6 @@
     TODO : custom dashboard CSS
     TODO : Change the Header bar to have the Avatar+Name on left, and CallWall+Help+Close on the right.
 -->
-<!-- TODO move to Header section -->
-<style>
-    /* -- Overrides --*/
-    h1, h2, h3, h4, h5, h6 {
-        margin-bottom: 0px;
-        padding-bottom: 0px;
-    }
-
-    h1, h2, h3 {
-        margin-top: 20px;
-    }
-
-    h1, h2, h3 {
-        margin-top: 20px;
-    }
-
-    h5 {
-        line-height: 20px;
-    }
-
-    body {
-        background-color: #373737; /*CallWall.Windows has #F5303030, but assuming a white background then it becomes #373737 with the alpha channel removed.;*/
-        color: #FFFFFF;
-    }
-
-    .navbar-inverse .navbar-inner {
-        background-color: #800080;
-        background-image: none;
-    }
-
-
-    /* --New values --*/
-
-    .kvp {
-        padding: 2px 0px 2px 10px;
-    }
-
-    .key {
-        font-size: 12px; /*TODO: Convert this to a scaling measure that will approximate to the windows font size -LC*/
-        color: #A7A7A7;
-        margin: 0;
-        padding: 0;
-        line-height: normal;
-    }
-
-    .value {
-    }
-
-    ol.messages, ol.collaborations {
-        margin-left: 0;
-    }
-
-        ol.messages li, ol.collaborations li {
-            list-style-position: inside;
-            list-style-type: none;
-            margin-left: 0;
-            padding-left: 0;
-            border-bottom: 1px solid #545354;
-            height: 60px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-
-            ol.messages li p, ol.collaborations li p {
-                color: #A7A7A7;
-                font-size: 12px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                -o-text-overflow: ellipsis;
-                -ms-text-overflow: ellipsis;
-            }
-
-            ol.messages li h5, ol.collaborations li h5 {
-                margin-top: 0;
-                padding-top: 0;
-            }
-
-            ol.collaborations li.completedItem h5 {
-                text-decoration: line-through;
-            }
-
-    dl.calendar {
-        margin-top: 0;
-    }
-
-        dl.calendar dt {
-            float: left;
-            margin: 0;
-            padding: 5px;
-            width: 55px;
-            height: 55px;
-            font-weight: 100;
-            font-size: 26px;
-            line-height: 26px;
-            text-align: center;
-            color: #A7A7A7;
-            border-bottom: 1px solid #545354;
-        }
-
-        dl.calendar dd {
-            padding: 5px;
-            margin: 0;
-            height: 55px;
-            border-bottom: 1px solid #545354;
-        }
-
-        dl.calendar dt .day {
-            letter-spacing: 2px;
-        }
-
-        dl.calendar dt .month {
-            font-size: 22px;
-            line-height: 22px;
-        }
-
-        dl.calendar dt.today {
-            background: #503C50;
-        }
-
-        dl.calendar dd.today {
-            background: #503C50;
-        }
-
-        dl.calendar dt.past {
-            color: #A7A7A7;
-        }
-
-        dl.calendar dd.past {
-            color: #A7A7A7;
-        }
-
-    .symbol {
-        font-family: "Segoe UI Symbol";
-        font-size: 18px;
-        line-height: 18px;
-    }
-
-    .gallery {
-        width: 300px;
-        height: 150px;
-        clear: both;
-    }
-
-    .mainPicture {
-        overflow: hidden;
-        width: 150px;
-        height: 150px;
-        position: relative;
-    }
-
-        .mainPicture img {
-            position: absolute;
-        }
-
-    .miniPicture {
-        height: 75px;
-        width: 75px;
-        overflow: hidden;
-        position: relative;
-    }
-
-        .miniPicture img {
-            position: absolute;
-        }
-</style>
-@Styles.Render("~/Content/themes/base/css")
 
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" data-bind="attr: { alt: contactProfile.title }" height="80" style="float: left" />
@@ -356,7 +193,7 @@
 </script>
 <script type="text/html" id="LocationTemplate">
     <h3 style="margin-bottom: 5px">Location</h3>
-        <div style="height: 350px; width:370px;">
+    <div style="height: 350px; width:370px;">
         <div id="map_canvas" style="width: 100%; height: 100%"></div>
     </div>
 </script>

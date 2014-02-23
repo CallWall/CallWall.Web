@@ -26,7 +26,7 @@ namespace CallWall.Web
                         "~/Scripts/jquery.signalR-{version}.js",
                         "~/Scripts/rx.js",
                         "~/Scripts/Inhouse/SignalRx.js"));
-                       
+
             bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
                        "~/Scripts/Inhouse/ImageScaling.js",
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
@@ -52,6 +52,9 @@ namespace CallWall.Web
                 "~/Content/site.css",
                 "~/Content/bootstrap-responsive.css"
                 ));
+
+            bundles.Add(new StyleBundle("~/Content/contactdetails").Include(
+                "~/Content/ContactDetails.css"));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",
