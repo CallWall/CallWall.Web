@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using CallWall.Web.Contracts;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake

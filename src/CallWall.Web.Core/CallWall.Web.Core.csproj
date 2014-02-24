@@ -112,9 +112,9 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CallWallModuleSection.cs" />
-    <Compile Include="ICalendarEntry.cs" />
-    <Compile Include="IContactCollaboration.cs" />
-    <Compile Include="IGalleryAlbum.cs" />
+    <Compile Include="Contracts\ICalendarEntry.cs" />
+    <Compile Include="Contracts\IContactCollaboration.cs" />
+    <Compile Include="Contracts\IGalleryAlbum.cs" />
     <Compile Include="ITypeRegistry.cs" />
     <Compile Include="Contracts\Communication\ICommunicationQueryProvider.cs" />
     <Compile Include="Contracts\Communication\IMessage.cs" />
@@ -133,7 +133,7 @@
     <Compile Include="OAuth2Implementation\AuthState.cs" />
     <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
     <Compile Include="OAuth2Implementation\Outh2Session.cs" />
-    <Compile Include="IAccount.cs" />
+    <Compile Include="Contracts\Account\IAccount.cs" />
     <Compile Include="Providers\AuthenticationProviderGateway.cs" />
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
     <Compile Include="Providers\ICalendarProvider.cs" />
@@ -144,11 +144,11 @@
     <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Providers\UriExtensions.cs" />
     <Compile Include="ResharperAnnotations.cs" />
-    <Compile Include="IAccountAuthentication.cs" />
-    <Compile Include="IAccountConfiguration.cs" />
+    <Compile Include="Contracts\Account\IAccountAuthentication.cs" />
+    <Compile Include="Contracts\Account\IAccountConfiguration.cs" />
     <Compile Include="Providers\IContactsProvider.cs" />
-    <Compile Include="IContactSummary.cs" />
-    <Compile Include="IFeed.cs" />
+    <Compile Include="Contracts\IContactSummary.cs" />
+    <Compile Include="Contracts\IFeed.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="ILoggerFactory.cs" />
     <Compile Include="IModule.cs" />

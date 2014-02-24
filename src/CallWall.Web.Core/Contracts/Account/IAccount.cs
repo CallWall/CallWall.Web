@@ -1,4 +1,4 @@
-﻿namespace CallWall.Web
+﻿namespace CallWall.Web.Account
 {
     public interface IAccount
     {

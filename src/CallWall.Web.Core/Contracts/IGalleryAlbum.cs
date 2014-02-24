@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CallWall.Web
+namespace CallWall.Web.Contracts
 {
     public interface IGalleryAlbum
     {

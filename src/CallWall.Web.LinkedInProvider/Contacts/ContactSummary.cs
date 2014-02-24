@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CallWall.Web.Contracts;
 
 namespace CallWall.Web.LinkedInProvider.Contacts
 {
