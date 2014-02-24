@@ -7,8 +7,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
-using CallWall.Web.GoogleProvider.Providers.Contacts;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProvider.Contacts
