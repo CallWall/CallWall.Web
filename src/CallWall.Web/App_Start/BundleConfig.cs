@@ -9,18 +9,13 @@ namespace CallWall.Web
         {
             //TODO - there are too many bundles here - need to figure out what the sensible sepeartion is - RC
 
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
-                        "~/Scripts/jquery-ui-{version}.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/jquerycolor").Include(
-                "~/Scripts/jquery.color-{version}.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
+            bundles.Add(new ScriptBundle("~/bundles/base").Include(
+                        "~/Scripts/jquery-{version}.js",
+                        "~/Scripts/jquery-ui-{version}.js",
+                        "~/Scripts/jquery.color-{version}.js",
                         "~/Scripts/jquery.unobtrusive*",
-                        "~/Scripts/jquery.validate*"));
+                        "~/Scripts/jquery.validate*",
+                        "~/Scripts/knockout-{version}.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
@@ -32,13 +27,11 @@ namespace CallWall.Web
                         "~/Scripts/rx.js",
                         "~/Scripts/Inhouse/SignalRx.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                         "~/Scripts/knockout-{version}.js"));
-
             bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
                        "~/Scripts/Inhouse/ImageScaling.js",
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactSummariesModels.js",
+                       "~/Scripts/pouchdb-nightly-{version}.js",
                        "~/Scripts/Inhouse/ContactSummaryPersistence.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
 
@@ -50,8 +43,8 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/Dashboard/ContactProfileSignalR.js"
                        ));
 
-            bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
-                       "~/Scripts/pouchdb-nightly-{version}.js"));
+            //bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
+            //           "~/Scripts/pouchdb-nightly-{version}.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 //"~/Content/bootstrap.css",
@@ -59,6 +52,9 @@ namespace CallWall.Web
                 "~/Content/site.css",
                 "~/Content/bootstrap-responsive.css"
                 ));
+
+            bundles.Add(new StyleBundle("~/Content/contactdetails").Include(
+                "~/Content/ContactDetails.css"));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",

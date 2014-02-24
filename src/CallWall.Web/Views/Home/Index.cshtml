@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "My Contacts";
 }
+<!-- TODO Move to header section-->
+@Styles.Render("~/Content/themes/base/css")
+
 <hgroup>
     <h2>@ViewBag.Title</h2>
     <label for="q" style="display: inline">Filter:</label>
@@ -43,13 +46,9 @@
 </script>
 
 @section scripts{
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryui")
-    @Scripts.Render("~/bundles/jquerycolor")
-    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/base")
     @Scripts.Render("~/bundles/signalR")
     @Scripts.Render("~/signalR/hubs")
-    @Scripts.Render("~/bundles/pouchdb")
     @Scripts.Render("~/bundles/contacts")
     <script>
         $(function () {
@@ -64,4 +63,3 @@
         });
     </script>
 }
-@Styles.Render("~/Content/themes/base/css")

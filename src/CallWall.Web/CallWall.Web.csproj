@@ -234,6 +234,7 @@
     <Content Include="Content\bootstrap.metro.css" />
     <Content Include="Content\bootstrap.default.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\ContactDetails.css" />
     <Content Include="Content\images\AnonContact.svg" />
     <Content Include="Content\images\Browser.svg" />
     <Content Include="Content\images\Desktop.svg" />

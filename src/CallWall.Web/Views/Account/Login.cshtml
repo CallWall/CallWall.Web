@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in - CallWall</title>
     @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -45,7 +46,5 @@
             <p>&copy; @DateTime.Now.Year - CallWall</p>
         </footer>
     </div>
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryval")
+     @Scripts.Render("~/bundles/base")
 </html>
