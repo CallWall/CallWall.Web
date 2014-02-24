@@ -1,8 +1,7 @@
 ﻿(function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
-    //TODO: Rename to ContactSummariesAdapter -LC
-    callWall.SignalR.ContactAdapter = function (contactsHub, model) {
+    callWall.SignalR.ContactSummariesAdapter = function (contactsHub, model) {
         var self = this;
         self.StartHub = function () {
             //Load existing contacts

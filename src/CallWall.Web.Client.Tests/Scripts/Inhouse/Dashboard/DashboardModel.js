@@ -1,6 +1,22 @@
 ﻿/// <reference path="../../knockout-3.0.0.debug.js" />
 
 (function (ko, callWall) {
+    var observableArrayExtensions = {
+        'concat': function (source, selector) {
+            var target = this();
+            if (source == undefined) return;
+            if (!selector) {
+                selector = function (i) { return i; };
+            }
+            ko.utils.arrayForEach(source, function (item) { target.push(selector(item)); });
+        }
+    };
+    var customObservableArray = function () {
+        var obsArray = ko.observableArray();
+        ko.utils.extend(obsArray, observableArrayExtensions);
+        return obsArray;
+    };
+    
     //Provider
     var ProviderDescription = function (name, imageUrl) {
         var self = this;
@@ -44,7 +60,7 @@
         }
         throw new Error("No providers found with name " + name);
     };
-    
+
     //Contact Profile
     var ContactAssociation = function (data) {
         var self = this;
@@ -53,23 +69,15 @@
     };
     var ContactProfileViewModel = function () {
         var self = this;
-        //TODO: Add this to the ko ObservableArray prototype. RHYS - or create new prototype that inherits from the KO obs Array. We shouldnt really modify prototypes we dont own
-        var concat = function (target, source) {
-            concatMap(target, source, function (item) { return item; });
-        };
-        var concatMap = function (target, source, selector) {
-            if (target == undefined || source == undefined) return;
-            ko.utils.arrayForEach(source, function (item) { target.push(selector(item)); });
-        };
-
+        
         self.title = ko.observable('');
         self.fullName = ko.observable('');
         self.dateOfBirth = ko.observable();
-        self.tags = ko.observableArray();
-        self.organizations = ko.observableArray();
-        self.relationships = ko.observableArray();
-        self.phoneNumbers = ko.observableArray();
-        self.emailAddresses = ko.observableArray();
+        self.tags = customObservableArray();
+        self.organizations = customObservableArray();
+        self.relationships = customObservableArray();
+        self.phoneNumbers = customObservableArray();
+        self.emailAddresses = customObservableArray();
         self.isProcessing = ko.observable(true);
 
         self.aggregate = function (data) {
@@ -79,12 +87,12 @@
                 var dob = new Date(data.DateOfBirth);
                 self.dateOfBirth(dob);
             }
-            concat(self.tags, data.Tags);
+            self.tags.concat(data.Tags);
 
-            concatMap(self.organizations, data.Organizations, function (d) { return new ContactAssociation(d); });
-            concatMap(self.relationships, data.Relationships, function (d) { return new ContactAssociation(d); });
-            concatMap(self.phoneNumbers, data.PhoneNumbers, function (d) { return new ContactAssociation(d); });
-            concatMap(self.emailAddresses, data.EmailAddresses, function (d) { return new ContactAssociation(d); });
+            self.organizations.concat(data.Organizations, function (d) { return new ContactAssociation(d); });
+            self.relationships.concat(data.Relationships, function (d) { return new ContactAssociation(d); });
+            self.phoneNumbers.concat(data.PhoneNumbers, function (d) { return new ContactAssociation(d); });
+            self.emailAddresses.concat(data.EmailAddresses, function (d) { return new ContactAssociation(d); });
         };
     };
 
@@ -98,13 +106,13 @@
 
         self.provider = getProvider(data.Provider);
     };
-    
+
     var CalendarEntry = function (data) {
         var self = this;
         self.date = new Date(data.Date);
         self.title = data.Title;
     };
-    
+
     var GalleryAlbum = function (data) {
         var self = this;
         self.createdDate = new Date(data.CreatedDate);
@@ -113,7 +121,7 @@
         self.provider = data.Provider;
         self.imageUrls = data.ImageUrls;
     };
-    
+
     var CollaborationAction = function (data) {
         var self = this;
         //self.project = project;   //Maybe use project/projectName instead of name.
@@ -123,14 +131,14 @@
         self.isCompleted = data.IsCompleted;
         self.provider = getProvider(data.Provider);
     };
-   
+
     var ListViewModel = function (ctor) {
         var self = this;
         self.entries = ko.observableArray();
         self.add = function (data) {
             self.entries.push(new ctor(data));
         };
-        self.isProcessing = ko.observable(true);         
+        self.isProcessing = ko.observable(true);
     };
 
     //Location
@@ -142,9 +150,9 @@
         var self = this;
 
         self.contactProfile = new ContactProfileViewModel();
-        self.communications = new ListViewModel(Message);//todo entries vs messages
+        self.communications = new ListViewModel(Message);
         self.calendar = new ListViewModel(CalendarEntry);
-        self.gallery = new ListViewModel(GalleryAlbum);//todo entities vs albums
+        self.gallery = new ListViewModel(GalleryAlbum);
         self.collaboration = new ListViewModel(CollaborationAction);
         self.location = new ContactLocationViewModel();
 

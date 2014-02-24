@@ -40,8 +40,6 @@ namespace CallWall.Web
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
 
-            //container.RegisterType<IObservableHubDataProvider<IMessage>, ObservableHubIMessageProvider>();
-
             InitialiseModules(container);
         }
 
