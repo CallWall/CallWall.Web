@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.GoogleProvider
+﻿using CallWall.Web.Account;
+
+namespace CallWall.Web.GoogleProvider
 {
     internal sealed class Account : IAccount
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using CallWall.Web.Contracts;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
