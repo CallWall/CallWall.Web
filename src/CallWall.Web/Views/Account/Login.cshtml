@@ -1,6 +1,6 @@
 ﻿@using CallWall.Web
 @{
-    Layout = null;
+    Layout = null; //TODO all pages should have a layout
 }
 <!DOCTYPE html>
 <html>
@@ -9,9 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in - CallWall</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jqueryval")
-
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -48,4 +45,7 @@
             <p>&copy; @DateTime.Now.Year - CallWall</p>
         </footer>
     </div>
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
 </html>

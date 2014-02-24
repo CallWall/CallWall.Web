@@ -7,6 +7,8 @@ namespace CallWall.Web
         // For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
         public static void RegisterBundles(BundleCollection bundles)
         {
+            //TODO - there are too many bundles here - need to figure out what the sensible sepeartion is - RC
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -30,13 +32,14 @@ namespace CallWall.Web
                         "~/Scripts/rx.js",
                         "~/Scripts/Inhouse/SignalRx.js"));
 
-           bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                        "~/Scripts/knockout-{version}.js"));
+            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
+                         "~/Scripts/knockout-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/contacts").Include(
                        "~/Scripts/Inhouse/ImageScaling.js",
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactSummariesModels.js",
+                       "~/Scripts/Inhouse/ContactSummaryPersistence.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/dashboard").Include(
@@ -46,7 +49,7 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/Dashboard/DashboardModel.js",
                        "~/Scripts/Inhouse/Dashboard/ContactProfileSignalR.js"
                        ));
-            
+
             bundles.Add(new ScriptBundle("~/bundles/pouchdb").Include(
                        "~/Scripts/pouchdb-nightly-{version}.js"));
 
