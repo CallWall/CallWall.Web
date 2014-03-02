@@ -3,7 +3,7 @@
     var contactDb = new PouchDB('callwall.contacts');
     var providerContactDb = new PouchDB('callwall.providerContacts');
     var persistContact = function (contact) {
-        contact._id = contact.Provider + '-' + contact.ProviderId;
+        contact._id = contact.Title + '-' + contact.Provider + '-' + contact.ProviderId;
         contactDb.put(contact, function (err, result) {
             if (err) {
                 console.log('Could not save contact');
