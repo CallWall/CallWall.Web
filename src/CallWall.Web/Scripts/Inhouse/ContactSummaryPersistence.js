@@ -1,7 +1,22 @@
-﻿(function (callWall) {
+﻿/// <reference path="rx.js" />
+(function (callWall) {
     callWall.Db = {};
     var contactDb = new PouchDB('callwall.contacts');
     var providerContactDb = new PouchDB('callwall.providerContacts');
+
+    var allContacts = Rx.Observable.create(function (observer) {
+        var changes = contactDb.changes({
+            since: 0,
+            continuous: true,
+            include_docs: true,
+            onChange: function (change) {
+                observer.onNext(change.doc);
+            }
+        });
+
+        return Rx.Disposable.create(function () { changes.cancel(); });
+    });
+
     var persistContact = function (contact) {
         contact._id = contact.Title + '-' + contact.Provider + '-' + contact.ProviderId;
         contactDb.put(contact, function (err, result) {
@@ -56,6 +71,7 @@
     callWall.Db.contactsDatabase = contactDb;
     callWall.Db.persistContact = persistContact;
     callWall.Db.getAllContacts = getAllContacts;
+    callWall.Db.allContacts = allContacts;
     callWall.Db.getProvidersLastUpdateTimestamps = getProvidersLastUpdateTimestamps;
     callWall.Db.setProvidersLastUpdateTimestamps = setProvidersLastUpdateTimestamps;
     callWall.Db.NukeDbs = function () {

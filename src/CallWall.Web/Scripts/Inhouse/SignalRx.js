@@ -1,4 +1,5 @@
 ﻿/// <reference path="jquery.signalR.version.js" />
+/// <reference path="rx.js" />
 
 Rx.Observable.prototype.log = function (sourceName, valueSelector) {
     var source = this;

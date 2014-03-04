@@ -5,10 +5,8 @@
         var self = this;
         self.StartHub = function () {
             //Load existing contacts
-            callWall.Db.getAllContacts(function (contactRecords) {
-                contactRecords.forEach(function (contactRecord) {
-                    model.addContact(contactRecord.doc);
-                });
+            callWall.Db.allContacts.subscribe(function(contact) {
+                model.addContact(contact);
             });
             
             //check for updates
@@ -50,8 +48,7 @@
 
         contactsHub.client.ReceiveContactSummary = function (contact) {
             callWall.Db.persistContact(contact);
-            model.addContact(contact);
-            model.IncrementProgress();
+            model.IncrementProgress();//TODO: Refactor to be part of the db write through -LC
         };
 
         contactsHub.client.ReceiveError = function (error) {
