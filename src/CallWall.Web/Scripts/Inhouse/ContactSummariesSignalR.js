@@ -5,9 +5,12 @@
         var self = this;
         self.StartHub = function () {
             //Load existing contacts
-            callWall.Db.allContacts.subscribe(function(contact) {
-                model.addContact(contact);
-            });
+            callWall.Db.allContacts
+                .log("PouchDB Contacts", function(x){return x.Title;})
+                .observeOn(observeOnScheduler)
+                .subscribe(function (contact) {
+                    model.addContact(contact);
+                });
             
             //check for updates
             $.connection.hub.start().done(function () {

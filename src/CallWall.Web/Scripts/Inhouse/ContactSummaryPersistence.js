@@ -22,8 +22,8 @@
         contactDb.put(contact, function (err, result) {
             if (err) {
                 console.log('Could not save contact');
-                console.log(contact);
-                console.log(err);
+                //console.log(contact);
+                //console.error(err);
             }
         });
     };

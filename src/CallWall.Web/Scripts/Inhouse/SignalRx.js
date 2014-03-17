@@ -13,7 +13,7 @@ Rx.Observable.prototype.log = function (sourceName, valueSelector) {
 
         var subscription = source.do(
                 function(x) { console.log(sourceName + '.onNext(' + valueSelector(x) + ')'); },
-                function(err) { console.log(sourceName + '.onError(' + err + ')'); },
+                function(err) { console.error(sourceName + '.onError(' + err + ')'); },
                 function() { console.log(sourceName + '.onCompleted()'); }
             )
             .subscribe(observer);
