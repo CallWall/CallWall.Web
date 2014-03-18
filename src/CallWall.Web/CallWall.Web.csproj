@@ -343,6 +343,10 @@
     <Content Include="Scripts\modernizr-2.7.1.js" />
     <Content Include="Scripts\pouchdb-nightly-2014.1.2.js" />
     <Content Include="Scripts\pouchdb-nightly-2014.1.2.min.js" />
+    <Content Include="Scripts\rx.compat.js" />
+    <Content Include="Scripts\rx.compat.min.js" />
+    <Content Include="Scripts\rx.js" />
+    <Content Include="Scripts\rx.min.js" />
     <Content Include="Unity.Mvc4.README.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

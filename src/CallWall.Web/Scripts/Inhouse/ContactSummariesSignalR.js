@@ -1,6 +1,7 @@
 ﻿(function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
+    var observeOnScheduler = Rx.Scheduler.timeout;
     callWall.SignalR.ContactSummariesAdapter = function (contactsHub, model) {
         var self = this;
         self.StartHub = function () {

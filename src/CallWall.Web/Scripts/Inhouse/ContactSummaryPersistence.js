@@ -19,6 +19,7 @@
 
     var persistContact = function (contact) {
         contact._id = contact.Title + '-' + contact.Provider + '-' + contact.ProviderId;
+        //TODO: Make an Observable<Unit> that can error i.e. a 'Try' -LC
         contactDb.put(contact, function (err, result) {
             if (err) {
                 console.log('Could not save contact');
