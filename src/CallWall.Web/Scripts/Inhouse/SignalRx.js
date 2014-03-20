@@ -12,7 +12,8 @@ Rx.Observable.prototype.log = function (sourceName, valueSelector) {
         });
 
         var subscription = source.do(
-                function(x) { console.log(sourceName + '.onNext(' + valueSelector(x) + ')'); },
+                //function(x) { console.log(sourceName + '.onNext(' + valueSelector(x) + ')'); },   //Turn on if required, but this can hammer the logs. Maybe check if the value selector is provided? -LC
+                function(x) { },   //Turn on if required, but this can hammer the logs. Maybe check if the value selector is provided? -LC
                 function(err) { console.error(sourceName + '.onError(' + err + ')'); },
                 function() { console.log(sourceName + '.onCompleted()'); }
             )

@@ -73,6 +73,15 @@
         self.currentState = ko.observable('Initialising');
         self.isProcessing = ko.observable(true);
 
+        var incrementProgress = function () {
+            var i = self.receivedResults();
+            i += 1;
+            self.receivedResults(i);
+            if (i == self.totalResults()) {
+                self.isProcessing(false);
+            }
+        };
+
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {
             var cgs = self.contactGroups();
             for (var i = 0; i < cgs.length; i++) {
@@ -98,16 +107,21 @@
                 var cg = self.contactGroups()[j];
                 if (cg.isValid(contact)) {
                     cg.addContact(contact);
+
                     break;
                 }
             }
+            incrementProgress();
         };
 
-        self.IncrementProgress = function() {
-            var i = self.receivedResults();
-            i += 1;
-            self.receivedResults(i);
+        self.IncrementCount = function(addition) {
+            console.log('append to count = ' + addition);
+            var aggregateCount = self.totalResults() + addition;
+            console.log('new count = ' + aggregateCount);
+            self.totalResults(aggregateCount);
         };
+
+        
     };
     //Publicly exposed object are attached to the callWall namespace
     callWall.ContactSummariesViewModel = ContactSummariesViewModel;

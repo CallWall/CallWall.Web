@@ -6,6 +6,10 @@
         var self = this;
         self.StartHub = function () {
             //Load existing contacts
+            callWall.Db.getContactCount
+                .observeOn(observeOnScheduler)
+                .subscribe(model.IncrementCount);
+
             callWall.Db.allContacts
                 .log("PouchDB Contacts", function(x){return x.Title;})
                 .observeOn(observeOnScheduler)
@@ -43,28 +47,23 @@
             });
         };
 
-        contactsHub.client.ReceivedExpectedCount = function (count) {
-            console.log('append to count = ' + count);
-            var aggregateCount = model.totalResults() + count;
-            console.log('new count = ' + aggregateCount);
-            model.totalResults(aggregateCount);
-        };
+        contactsHub.client.ReceivedExpectedCount = model.IncrementCount;
 
         contactsHub.client.ReceiveContactSummary = function (contact) {
-            callWall.Db.persistContact(contact);
-            model.IncrementProgress();//TODO: Refactor to be part of the db write through -LC
+            observeOnScheduler.scheduleWithState(contact, function (c) { callWall.Db.persistContact(c); });
         };
 
         contactsHub.client.ReceiveError = function (error) {
             console.error(error);
-            model.isProcessing(false);
+            //TODO: Some sort of visual indicator should be shown to the user to indicate an error -LC
+            //TODO: Some sort of retry or resilience should be put in place here -LC
+            //TODO: Some how we need know now how to hide the progress bar at some point -LC
+            //model.isProcessing(false);
+            $.connection.hub.stop();
         };
 
         contactsHub.client.ReceiveComplete = function (completionData) {
-            console.log('OnComplete');
-            var i = model.receivedResults();
-            console.log(i);
-            model.isProcessing(false);
+            console.log('contactsHub.client.OnComplete()');
             $.connection.hub.stop();
             callWall.Db.setProvidersLastUpdateTimestamps(completionData);
         };
