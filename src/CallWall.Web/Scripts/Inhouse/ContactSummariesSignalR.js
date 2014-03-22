@@ -2,6 +2,7 @@
     callWall.SignalR = callWall.SignalR || {};
 
     var observeOnScheduler = Rx.Scheduler.timeout;
+
     callWall.SignalR.ContactSummariesAdapter = function (contactsHub, model) {
         var self = this;
         self.StartHub = function () {
@@ -11,12 +12,16 @@
                 .subscribe(model.IncrementCount);
 
             callWall.Db.allContacts
-                .log("PouchDB Contacts", function(x){return x.Title;})
+                .log("PouchDB Contacts", function (x) { return x.Title; })
+                .bufferWithCount(50)
                 .observeOn(observeOnScheduler)
-                .subscribe(function (contact) {
-                    model.addContact(contact);
+                .subscribe(function (buffer) {
+                    for (var i = 0; i < buffer.length; i++) {
+                        var contact = buffer[i];
+                        model.addContact(contact);
+                    }
                 });
-            
+
             //check for updates
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');
@@ -30,7 +35,7 @@
                                 Provider: dbObject.Provider,
                                 Revision: dbObject._rev
                             };
-                        }); 
+                        });
                         contactsHub.server.requestContactSummaryStream(formattedTimestamps);
                     });
                 } catch (ex) {
@@ -38,8 +43,8 @@
                     console.log(ex);
                     console.log("Attempting to stop ContactSummaries Hub");
                     try {
-                        $.connection.hub.stop();    
-                    } catch (ex){
+                        $.connection.hub.stop();
+                    } catch (ex) {
                         console.log("failed to stop ContactSummaries Hub");
                         console.log(ex);
                     }
