@@ -41,14 +41,18 @@ namespace CallWall.Web.Hubs
                                 .SelectMany(feed => feed.Values)
                                 .Log(_logger, "GetContactsFeed")
                                 .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
-                                           ex => Clients.Caller.ReceiveError("Error receiving contacts"),
-                                           () => Clients.Caller.ReceiveComplete(sessions.Select(s => new ClientLastUpdated{
-                                                Provider = s.Provider,
-                                                LastUpdated = DateTime.UtcNow, 
-                                                Revision = lastUpdatedDetails.Where(l=>l.Provider == s.Provider)
-                                                                             .Select(l=>l.Revision)
-                                                                             .FirstOrDefault() 
-                                           })));
+                                    ex =>
+                                    {
+                                        Clients.Caller.ReceiveError("Error receiving contacts");
+                                        _logger.Error(ex, "Error retrieving contacts");
+                                    },
+                                    () => Clients.Caller.ReceiveComplete(sessions.Select(s => new ClientLastUpdated{
+                                        Provider = s.Provider,
+                                        LastUpdated = DateTime.UtcNow, 
+                                        Revision = lastUpdatedDetails.Where(l=>l.Provider == s.Provider)
+                                                                        .Select(l=>l.Revision)
+                                                                        .FirstOrDefault() 
+                                    })));
 
             _contactsSummarySubsription.Disposable = subscription;
         }
