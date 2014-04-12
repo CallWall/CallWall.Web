@@ -1,14 +1,41 @@
-﻿(function (callWall) {
+﻿/// <reference path="~/Scripts/pouchdb-nightly-2014.1.2.js" />
+/// <reference path="~/Scripts/rx.js" />
+(function (callWall) {
     callWall.Db = {};
     var contactDb = new PouchDB('callwall.contacts');
     var providerContactDb = new PouchDB('callwall.providerContacts');
+    var contactCount = Rx.Observable.create(function(observer) {
+        contactDb.info(function (err, info) {
+            if (err) {
+                observer.onError(err);
+            } else {
+                var count = info.doc_count;
+                observer.onNext(count);
+                observer.onCompleted();
+            }
+        });
+    });
+    var allContacts = Rx.Observable.create(function (observer) {
+        var changes = contactDb.changes({
+            since: 0,
+            continuous: true,
+            include_docs: true,
+            onChange: function (change) {
+                observer.onNext(change.doc);
+            }
+        });
+
+        return Rx.Disposable.create(function () { changes.cancel(); });
+    });
+
     var persistContact = function (contact) {
-        contact._id = contact.Provider + '-' + contact.ProviderId;
+        contact._id = contact.Title + '-' + contact.Provider + '-' + contact.ProviderId;
+        //TODO: Make an Observable<Unit> that can error i.e. a 'Try' -LC
         contactDb.put(contact, function (err, result) {
             if (err) {
                 console.log('Could not save contact');
-                console.log(contact);
-                console.log(err);
+                //console.log(contact);
+                //console.error(err);
             }
         });
     };
@@ -55,7 +82,9 @@
     callWall.Db.providerDatabase = providerContactDb;
     callWall.Db.contactsDatabase = contactDb;
     callWall.Db.persistContact = persistContact;
+    callWall.Db.getContactCount = contactCount;
     callWall.Db.getAllContacts = getAllContacts;
+    callWall.Db.allContacts = allContacts;
     callWall.Db.getProvidersLastUpdateTimestamps = getProvidersLastUpdateTimestamps;
     callWall.Db.setProvidersLastUpdateTimestamps = setProvidersLastUpdateTimestamps;
     callWall.Db.NukeDbs = function () {

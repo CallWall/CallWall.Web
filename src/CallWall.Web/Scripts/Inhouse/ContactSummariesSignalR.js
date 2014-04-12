@@ -1,16 +1,27 @@
 ﻿(function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
+    var observeOnScheduler = Rx.Scheduler.timeout;
+
     callWall.SignalR.ContactSummariesAdapter = function (contactsHub, model) {
         var self = this;
         self.StartHub = function () {
             //Load existing contacts
-            callWall.Db.getAllContacts(function (contactRecords) {
-                contactRecords.forEach(function (contactRecord) {
-                    model.addContact(contactRecord.doc);
+            callWall.Db.getContactCount
+                .observeOn(observeOnScheduler)
+                .subscribe(model.IncrementCount);
+
+            callWall.Db.allContacts
+                .log("PouchDB Contacts", function (x) { return x.Title; })
+                .bufferWithCount(50)
+                .observeOn(observeOnScheduler)
+                .subscribe(function (buffer) {
+                    for (var i = 0; i < buffer.length; i++) {
+                        var contact = buffer[i];
+                        model.addContact(contact);
+                    }
                 });
-            });
-            //TODO: SHould this not be 'contactsHub.start().done...' instead of reaching out to $.connection.hub? -LC
+
             //check for updates
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');
@@ -24,7 +35,7 @@
                                 Provider: dbObject.Provider,
                                 Revision: dbObject._rev
                             };
-                        }); 
+                        });
                         contactsHub.server.requestContactSummaryStream(formattedTimestamps);
                     });
                 } catch (ex) {
@@ -32,8 +43,8 @@
                     console.log(ex);
                     console.log("Attempting to stop ContactSummaries Hub");
                     try {
-                        $.connection.hub.stop();    
-                    } catch (ex){
+                        $.connection.hub.stop();
+                    } catch (ex) {
                         console.log("failed to stop ContactSummaries Hub");
                         console.log(ex);
                     }
@@ -41,29 +52,23 @@
             });
         };
 
-        contactsHub.client.ReceivedExpectedCount = function (count) {
-            console.log('append to count = ' + count);
-            var aggregateCount = model.totalResults() + count;
-            console.log('new count = ' + aggregateCount);
-            model.totalResults(aggregateCount);
-        };
+        contactsHub.client.ReceivedExpectedCount = model.IncrementCount;
 
         contactsHub.client.ReceiveContactSummary = function (contact) {
-            callWall.Db.persistContact(contact);
-            model.addContact(contact);
-            model.IncrementProgress();
+            observeOnScheduler.scheduleWithState(contact, function (c) { callWall.Db.persistContact(c); });
         };
 
         contactsHub.client.ReceiveError = function (error) {
             console.error(error);
-            model.isProcessing(false);
+            //TODO: Some sort of visual indicator should be shown to the user to indicate an error -LC
+            //TODO: Some sort of retry or resilience should be put in place here -LC
+            //TODO: Some how we need know now how to hide the progress bar at some point -LC
+            //model.isProcessing(false);
+            $.connection.hub.stop();
         };
 
         contactsHub.client.ReceiveComplete = function (completionData) {
-            console.log('OnComplete');
-            var i = model.receivedResults();
-            console.log(i);
-            model.isProcessing(false);
+            console.log('contactsHub.client.OnComplete()');
             $.connection.hub.stop();
             callWall.Db.setProvidersLastUpdateTimestamps(completionData);
         };

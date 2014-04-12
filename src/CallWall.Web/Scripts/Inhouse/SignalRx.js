@@ -1,4 +1,5 @@
 ﻿/// <reference path="jquery.signalR.version.js" />
+/// <reference path="rx.js" />
 
 Rx.Observable.prototype.log = function (sourceName, valueSelector) {
     var source = this;
@@ -11,8 +12,9 @@ Rx.Observable.prototype.log = function (sourceName, valueSelector) {
         });
 
         var subscription = source.do(
-                function(x) { console.log(sourceName + '.onNext(' + valueSelector(x) + ')'); },
-                function(err) { console.log(sourceName + '.onError(' + err + ')'); },
+                //function(x) { console.log(sourceName + '.onNext(' + valueSelector(x) + ')'); },   //Turn on if required, but this can hammer the logs. Maybe check if the value selector is provided? -LC
+                function(x) { },   //Turn on if required, but this can hammer the logs. Maybe check if the value selector is provided? -LC
+                function(err) { console.error(sourceName + '.onError(' + err + ')'); },
                 function() { console.log(sourceName + '.onCompleted()'); }
             )
             .subscribe(observer);

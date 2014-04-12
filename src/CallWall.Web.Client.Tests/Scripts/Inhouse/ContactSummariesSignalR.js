@@ -10,7 +10,7 @@
                     model.addContact(contactRecord.doc);
                 });
             });
-            //TODO: SHould this not be 'contactsHub.start().done...' instead of reaching out to $.connection.hub? -LC
+            
             //check for updates
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');

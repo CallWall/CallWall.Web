@@ -9,7 +9,7 @@
         self.StartHub = function (contactKeys) {
             self.subscription = SignalRx
                 .ObserveHub(self.contactProfileHub, contactKeys)
-                //.log('contactProfileHub', function (data) { return data.title; })
+                .log('contactProfileHub', function (data) { return data.Title; })
                 .subscribe(
                     function(profile) { model.aggregate(profile); },
                     function (error) {
@@ -51,7 +51,7 @@
         self.StartHub = function (contactKeys) {
             self.subscription = SignalRx
                 .ObserveHub(self.contactCommunicationHub, contactKeys)
-                .log('contactCalendarEventsHub', function (data) { return data.Subject; })
+                .log('contactCalendarEventsHub', function (data) { return data.Title; })
                 .subscribe(
                     function (message) { model.add(message); },
                     function (error) {
@@ -72,7 +72,7 @@
         self.StartHub = function (contactKeys) {
             self.subscription = SignalRx
                 .ObserveHub(self.contactGalleryAlbumHub, contactKeys)
-                .log('contactGalleryAlbumHub', function (data) { return data.Subject; })
+                .log('contactGalleryAlbumHub', function (data) { return data.Title; })
                 .subscribe(
                     function (album) { model.add(album); },
                     function (error) {
@@ -93,7 +93,7 @@
         self.StartHub = function (contactKeys) {
             self.subscription = SignalRx
                 .ObserveHub(self.contactCollaborationHub, contactKeys)
-                .log('contactCollaborationHub', function (data) { return data.Subject; })
+                .log('contactCollaborationHub', function (data) { return data.Title; })
                 .subscribe(
                     function (collaboration) { model.add(collaboration); },
                     function (error) {
