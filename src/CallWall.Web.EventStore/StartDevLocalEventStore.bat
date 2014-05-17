@@ -1,0 +1,1 @@
+"C:\Program Files\eventstore\EventStore-NET-v3.0.0rc2\EventStore.SingleNode.exe" --db .\ESData --log .\ESLogs

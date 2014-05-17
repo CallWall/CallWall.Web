@@ -15,12 +15,10 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 {
     public class LinkedInContactsProvider : IContactsProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions, IEnumerable<IClientLastUpdated> lastUpdatedDetails)
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session, DateTime lastUpdated)
         {
-            var session = sessions.SingleOrDefault(s => s.Provider == "LinkedIn");
-            if (session == null)
+            if (session.Provider != "LinkedIn")
                 return Observable.Empty<ContactFeed>();
-            var lastUpdated = lastUpdatedDetails.Where(s => s.Provider == "LinkedIn").Select(s => s.LastUpdated).FirstOrDefault();
             return Observable.Create<ContactFeed>(o =>
             {
                 try

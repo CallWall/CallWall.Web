@@ -115,6 +115,13 @@
     <Compile Include="Contracts\ICalendarEntry.cs" />
     <Compile Include="Contracts\IContactCollaboration.cs" />
     <Compile Include="Contracts\IGalleryAlbum.cs" />
+    <Compile Include="ICalendarEntry.cs" />
+    <Compile Include="IContactAssociation.cs" />
+    <Compile Include="IContactCollaboration.cs" />
+    <Compile Include="IContactProfile.cs" />
+    <Compile Include="IContactSummaryRepository.cs" />
+    <Compile Include="IGalleryAlbum.cs" />
+    <Compile Include="IMessage.cs" />
     <Compile Include="ITypeRegistry.cs" />
     <Compile Include="Contracts\Communication\ICommunicationQueryProvider.cs" />
     <Compile Include="Contracts\Communication\IMessage.cs" />

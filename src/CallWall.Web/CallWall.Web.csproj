@@ -357,9 +357,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <None Include="Web.Debug %28With Fakes%29.config">
+    <Content Include="Web.Debug %28With Fakes%29.config">
       <DependentUpon>Web.config</DependentUpon>
-    </None>
+    </Content>
     <Content Include="Modules.template.config">
       <SubType>Designer</SubType>
     </Content>
@@ -369,9 +369,21 @@
     <Content Include="Modules.Debug (With Fakes).config">
       <DependentUpon>Modules.template.config</DependentUpon>
     </Content>
-    <None Include="Modules.Release.config">
+    <Content Include="Modules.Release.config">
       <DependentUpon>Modules.template.config</DependentUpon>
-    </None>
+    </Content>
+    <Content Include="CallWallEventStore.template.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="CallWallEventStore.Debug %28With Fakes%29.config">
+      <DependentUpon>CallWallEventStore.template.config</DependentUpon>
+    </Content>
+    <Content Include="CallWallEventStore.Debug.config">
+      <DependentUpon>CallWallEventStore.template.config</DependentUpon>
+    </Content>
+    <Content Include="CallWallEventStore.Release.config">
+      <DependentUpon>CallWallEventStore.template.config</DependentUpon>
+    </Content>
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -407,6 +419,10 @@
     <ProjectReference Include="..\CallWall.Web.Core\CallWall.Web.Core.csproj">
       <Project>{c7ce45a6-b602-4287-a3d8-ef91c0701dc9}</Project>
       <Name>CallWall.Web.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CallWall.Web.EventStore\CallWall.Web.EventStore.csproj">
+      <Project>{191b20f0-2e16-4075-83fd-7a151ee2820d}</Project>
+      <Name>CallWall.Web.EventStore</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
@@ -464,7 +480,8 @@
   <Target Name="AfterBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(ProjectDir)Modules.$(ConfigurationName).Config" "$(ProjectDir)\Modules.config"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(ProjectDir)Modules.$(ConfigurationName).Config" "$(ProjectDir)\Modules.config"
+copy /Y "$(ProjectDir)CallWallEventStore.$(ConfigurationName).Config" "$(ProjectDir)\CallWallEventStore.config"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

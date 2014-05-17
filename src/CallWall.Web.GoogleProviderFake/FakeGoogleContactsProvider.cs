@@ -10,7 +10,7 @@ namespace CallWall.Web.GoogleProviderFake
 {
     public class FakeGoogleContactsProvider : IContactsProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IEnumerable<ISession> sessions, IEnumerable<IClientLastUpdated> lastUpdatedDetails)
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session, DateTime lastUpdated)
         {
             return Observable.Return(new ContactFeed());
         }

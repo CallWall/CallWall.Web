@@ -3,6 +3,9 @@
 #################
 logs/
 src/CallWall.Web/modules.config
+src/CallWall.Web/CallWallEventStore.config
+src/CallWall.Web.EventStore/ESData
+src/CallWall.Web.EventStore/ESLogs
 
 #################
 ## Eclipse
