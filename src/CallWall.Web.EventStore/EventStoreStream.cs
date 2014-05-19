@@ -1,7 +1,10 @@
 using System;
+using System.Data;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Common.Utils;
 using Newtonsoft.Json;
@@ -14,6 +17,7 @@ namespace CallWall.Web.EventStore
         void SaveEvent(string streamName, string eventType, string jsonData, string jsonMetaData = null);
         IObservable<string> GetNewEvents(string streamName);
         IObservable<string> GetAllEvents(string streamName);
+        Task<string> GetHead(string streamName);
     }
 
     public static class EventStoreEx
@@ -31,6 +35,13 @@ namespace CallWall.Web.EventStore
         public static IObservable<T> GetAllEvents<T>(this IEventStore eventStore, string streamName)
         {
             return eventStore.GetAllEvents(streamName)
+                             .Select(JsonConvert.DeserializeObject<T>);
+        }
+
+        public static IObservable<T> GetHead<T>(this IEventStore eventStore, string streamName)
+        {
+            return eventStore.GetHead(streamName)
+                             .ToObservable()
                              .Select(JsonConvert.DeserializeObject<T>);
         }
     }
@@ -67,11 +78,27 @@ namespace CallWall.Web.EventStore
 
                     Action<EventStoreCatchUpSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2.OriginalEvent.Data);
 
-                    var subscription = conn.SubscribeToStreamFrom(streamName, 0, false, callback);
+                    var subscription = conn.SubscribeToStreamFrom(streamName, StreamPosition.Start, false, callback);
                 
                     return new CompositeDisposable(Disposable.Create(()=>subscription.Stop(TimeSpan.FromSeconds(2))), conn);
                 })
                 .Select(Encoding.UTF8.GetString);
+        }
+
+        public async Task<string> GetHead(string streamName)
+        {
+            using (var conn = _connectionFactory.CreateConnection())
+            {
+                var slice = await conn.ReadStreamEventsBackwardAsync(streamName, StreamPosition.End, 1, false);
+                if (slice.Status == SliceReadStatus.Success && slice.Events.Length == 1)
+                {
+                    var binData = slice.Events[0].OriginalEvent.Data;
+                    var json = Encoding.UTF8.GetString(binData);
+                    return json;
+                }
+            }
+            var error = string.Format("Failed to read from the head of the stream '{0}' : {1}", slice.Stream, slice.Status);
+            throw new MissingPrimaryKeyException(error);
         }
 
         public void SaveEvent(string streamName, string eventType, string jsonData, string jsonMetaData = null)
@@ -83,6 +110,5 @@ namespace CallWall.Web.EventStore
                 conn.AppendToStream(streamName, ExpectedVersion.Any, new EventData(Guid.NewGuid(), eventType, true, payload, metadata));    
             }            
         }
-
     }
 }

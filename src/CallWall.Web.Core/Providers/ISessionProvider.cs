@@ -10,5 +10,6 @@ namespace CallWall.Web.Providers
         IEnumerable<ISession> GetSessions(IPrincipal user);
         void SetPrincipal(Controller controller, ISession session);
         void LogOff();
+        int GetUserId(IPrincipal user);
     }
 }

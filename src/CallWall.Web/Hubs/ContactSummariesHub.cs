@@ -20,7 +20,7 @@ namespace CallWall.Web.Hubs
     {
         private readonly IContactSummaryRepository _contactSummaryRepository;
         private readonly ISessionProvider _sessionProvider;
-        private readonly ILogger _logger;
+        private readonly ILogger _logger;   //TODO: Replace Debug.Print with logger + ConsoleListener
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
         public ContactSummariesHub(IContactSummaryRepository contactSummaryRepository, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
@@ -57,11 +57,7 @@ namespace CallWall.Web.Hubs
         public void RequestContactSummaryStream(int fromEventId)
         {
             Debug.Print("ContactSummariesHub.RequestContactSummaryStream(...)");
-
-            //var sessions = _sessionProvider.GetSessions(Context.User.);
-            //HACK: Get a userId from somewhere -LC
-            var userId = Context.User.GetHashCode();
-
+            var userId = _sessionProvider.GetUserId(Context.User);
             var subscription = _contactSummaryRepository.GetContactUpdates(userId, fromEventId)
                                                         .Subscribe(
                                                                contactUpdate => Clients.Caller.ReceiveContactSummary(contactUpdate),
@@ -78,6 +74,4 @@ namespace CallWall.Web.Hubs
             return base.OnDisconnected();
         }
     }
-
-    
 }

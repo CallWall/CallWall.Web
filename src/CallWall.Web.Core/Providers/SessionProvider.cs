@@ -49,7 +49,13 @@ namespace CallWall.Web.Providers
         {
             FormsAuthentication.SignOut();
         }
-        
+
+        //HACK: Get a userId from somewhere -LC
+        public int GetUserId(IPrincipal user)
+        {
+            throw new NotImplementedException();
+        }
+
         private IEnumerable<ISession> GetSessions(HttpCookieCollection cookies)
         {
             if (!FormsAuthentication.CookiesSupported) return null;
