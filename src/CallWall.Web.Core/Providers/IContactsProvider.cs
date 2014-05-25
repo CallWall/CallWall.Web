@@ -5,6 +5,7 @@ using CallWall.Web.Contracts.Contact;
 
 namespace CallWall.Web.Providers
 {
+    //TODO: Rename to IAccountContactsProvider -LC
     public interface IContactsProvider
     {
         IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session, DateTime lastUpdated);

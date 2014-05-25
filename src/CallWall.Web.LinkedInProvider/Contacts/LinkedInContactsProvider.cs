@@ -50,6 +50,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                 //TODO - this shouldnt be in a ctor - but it doesnt need to complexity of the Google provider - review with Lee - RC
                 var client = new HttpClient();
                 var requestUriBuilder = new UriBuilder("https://api.linkedin.com/v1/people/~/connections");
+                
                 requestUriBuilder.AddQuery("oauth2_access_token", HttpUtility.UrlEncode(session.AccessToken));
                 if (lastUpdated != default(DateTime))
                 {
@@ -70,7 +71,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                 var contacts = JsonConvert.DeserializeObject<ContactsResponse>(contactResponse);
                 _totalResults = contacts.Total;
                 if (_totalResults > 0 && contacts.Contacts != null)
-                    _values = contacts.Contacts.Select(TranslateToContactSummary).ToObservable();
+                    _values = contacts.Contacts.Select(c => TranslateToContactSummary(session.AccountDetails.Username, c)).ToObservable();
                 else
                     _values = Observable.Empty<IContactSummary>();
             }
@@ -79,9 +80,9 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 
             public IObservable<IContactSummary> Values { get { return _values; } }
 
-            private static IContactSummary TranslateToContactSummary(Contact c)
+            private static IContactSummary TranslateToContactSummary(string accountId, Contact c)
             {
-                return new ContactSummary(c.Id, c.FirstName, c.LastName, c.PictureUrl, new []{c.Industry, c.Headline});
+                return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new []{c.Industry, c.Headline});
             }
         }
     }
