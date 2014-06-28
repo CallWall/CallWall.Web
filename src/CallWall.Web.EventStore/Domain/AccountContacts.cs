@@ -12,7 +12,7 @@ namespace CallWall.Web.EventStore.Domain
         void RequestRefresh();
     }
 
-    public class AccountContacts : IAccountContacts
+    internal class AccountContacts : IAccountContacts
     {
         #region Private fields
 

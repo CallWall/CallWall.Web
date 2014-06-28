@@ -1,11 +1,7 @@
 namespace CallWall.Web.EventStore.Domain
 {
-    public class User
+    internal class User : IUser
     {
-        //Login?
-        //AccountAdded
-        //AccountRemoved        
-
         public static class EventType
         {
             /// <summary>

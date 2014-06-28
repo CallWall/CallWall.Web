@@ -39,12 +39,26 @@ namespace CallWall.Web.EventStore
                 var conn = _connectionFactory.CreateConnection();
 
                 Action<EventStoreCatchUpSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2.OriginalEvent.Data);
-
+                
                 var subscription = conn.SubscribeToStreamFrom(streamName, StreamPosition.Start, false, callback);
 
                 return new CompositeDisposable(Disposable.Create(() => subscription.Stop(TimeSpan.FromSeconds(2))), conn);
             })
             .Select(Encoding.UTF8.GetString);
+        }
+
+        public IObservable<ResolvedEvent> GetEvents(string streamName, int? fromEventId)
+        {
+            return Observable.Create<ResolvedEvent>(o =>
+            {
+                var conn = _connectionFactory.CreateConnection();
+
+                Action<EventStoreCatchUpSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2);
+
+                var subscription = conn.SubscribeToStreamFrom(streamName, fromEventId, true, callback);
+
+                return new CompositeDisposable(Disposable.Create(() => subscription.Stop(TimeSpan.FromSeconds(2))), conn);
+            });
         }
 
         public async Task<string> GetHead(string streamName)

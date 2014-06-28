@@ -2,21 +2,23 @@ using System;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
+using EventStore.ClientAPI;
 using EventStore.ClientAPI.Common.Utils;
 using Newtonsoft.Json;
 
 namespace CallWall.Web.EventStore
 {
     //No doubt this will have to change as we discover our requirements.
-    public interface IEventStore
+    internal interface IEventStore
     {
         void SaveEvent(string streamName, string eventType, string jsonData, string jsonMetaData = null);
         IObservable<string> GetNewEvents(string streamName);
         IObservable<string> GetAllEvents(string streamName);
+        IObservable<ResolvedEvent> GetEvents(string streamName, int? fromEventId);
         Task<string> GetHead(string streamName);
     }
 
-    public static class EventStoreEx
+    internal static class EventStoreEx
     {
         public static void SaveEvent<T>(this IEventStore eventStore, string streamName, T data)
         {
