@@ -15,15 +15,15 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 {
     public class LinkedInContactsProvider : IContactsProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session, DateTime lastUpdated)
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
-            if (session.Provider != "LinkedIn")
+            if (account.Provider != "LinkedIn")
                 return Observable.Empty<ContactFeed>();
             return Observable.Create<ContactFeed>(o =>
             {
                 try
                 {
-                    var feed = new ContactFeed(session, lastUpdated);
+                    var feed = new ContactFeed(account, lastUpdated);
                     return Observable.Return(feed).Subscribe(o);
                 }
                 catch (Exception ex)
@@ -45,13 +45,13 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             private readonly IObservable<IContactSummary> _values;
             private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 
-            public ContactFeed(ISession session, DateTime lastUpdated)
+            public ContactFeed(IAccount account, DateTime lastUpdated)
             {
                 //TODO - this shouldnt be in a ctor - but it doesnt need to complexity of the Google provider - review with Lee - RC
                 var client = new HttpClient();
                 var requestUriBuilder = new UriBuilder("https://api.linkedin.com/v1/people/~/connections");
                 
-                requestUriBuilder.AddQuery("oauth2_access_token", HttpUtility.UrlEncode(session.AccessToken));
+                requestUriBuilder.AddQuery("oauth2_access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken));
                 if (lastUpdated != default(DateTime))
                 {
                     var lastModifedAsUnixTimestamp = (lastUpdated - UnixEpoch).TotalMilliseconds.ToString(CultureInfo.InvariantCulture)
@@ -71,7 +71,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                 var contacts = JsonConvert.DeserializeObject<ContactsResponse>(contactResponse);
                 _totalResults = contacts.Total;
                 if (_totalResults > 0 && contacts.Contacts != null)
-                    _values = contacts.Contacts.Select(c => TranslateToContactSummary(session.AccountDetails.Username, c)).ToObservable();
+                    _values = contacts.Contacts.Select(c => TranslateToContactSummary(account.Username, c)).ToObservable();
                 else
                     _values = Observable.Empty<IContactSummary>();
             }

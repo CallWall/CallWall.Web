@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace CallWall.Web.EventStore
 {
-    public class ContactSummaryRepository : IContactSummaryRepository
+    class ContactSummaryRepository : IContactSummaryRepository
     {
         private readonly IEventStore _eventStore;
 
@@ -35,7 +35,7 @@ namespace CallWall.Web.EventStore
 
     //TODO: Create an IModule implementation (for when being hosted by Web)
 
-    public class ContactSummaryRefreshProcessor : IDisposable
+    class ContactSummaryRefreshProcessor : IDisposable
     {
         private readonly IEventStore _eventStore;
         private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
@@ -80,7 +80,7 @@ namespace CallWall.Web.EventStore
         }
     }
 
-    public class ContactSummaryProviderRefreshProcessor : IDisposable
+    class ContactSummaryProviderRefreshProcessor : IDisposable
     {
         private readonly IEventStore _eventStore;
         private readonly IEnumerable<IContactsProvider> _providers;
@@ -95,6 +95,8 @@ namespace CallWall.Web.EventStore
 
         public void Run()
         {
+            throw new NotImplementedException(); //Throwing until I get the new arch done. -LC
+
             if (_isRunning)
                 return;
             _isRunning = true;
@@ -105,19 +107,19 @@ namespace CallWall.Web.EventStore
             var lastUpdate = new DateTime();
 
 
-            var query =
-                from session in _eventStore.GetNewEvents<ISession>(StreamNames.ContactSummaryProviderRefreshRequest)
-                from provider in _providers
-                from feed in provider.GetContactsFeed(session, lastUpdate)
-                from contact in feed.Values
-                select new
-                {
-                    ContactSummary = contact,
-                    Session = session
-                };
+            //var query =
+            //    from session in _eventStore.GetNewEvents<ISession>(StreamNames.ContactSummaryProviderRefreshRequest)
+            //    from provider in _providers
+            //    from feed in provider.GetContactsFeed(session, lastUpdate)
+            //    from contact in feed.Values
+            //    select new
+            //    {
+            //        ContactSummary = contact,
+            //        Session = session
+            //    };
 
-            _subscription.Disposable = query.ObserveOn(Scheduler.Default)
-                                            .Subscribe(i => OnContactSummaryRecieved(userId, i.Session.Provider, i.ContactSummary));
+            //_subscription.Disposable = query.ObserveOn(Scheduler.Default)
+            //                                .Subscribe(i => OnContactSummaryRecieved(userId, i.Session.Provider, i.ContactSummary));
 
 
         }

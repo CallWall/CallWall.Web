@@ -35,14 +35,16 @@ namespace CallWall.Web.Providers
 
         public void SetPrincipal(Controller controller, ISession session)
         {
-            var sessions = GetSessions(controller.Request.Cookies).ToDictionary(x => x.Provider);
-            sessions.Add(session.Provider, session);
-            var jObject = JObject.FromObject(sessions);
-            var json = jObject.ToString(Formatting.None);
-            var authTicket = new FormsAuthenticationTicket(1, session.AccountDetails.DisplayName, DateTime.UtcNow, DateTime.MaxValue, true, json, "CallWallAuth");
-            var encTicket = FormsAuthentication.Encrypt(authTicket);
-            var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
-            controller.Response.Cookies.Add(faCookie);
+            //TODO: Rationalise and re-implement -LC
+            throw new NotImplementedException();
+            //var sessions = GetSessions(controller.Request.Cookies).ToDictionary(x => x.Provider);
+            //sessions.Add(session.Provider, session);
+            //var jObject = JObject.FromObject(sessions);
+            //var json = jObject.ToString(Formatting.None);
+            //var authTicket = new FormsAuthenticationTicket(1, session.AccountDetails.DisplayName, DateTime.UtcNow, DateTime.MaxValue, true, json, "CallWallAuth");
+            //var encTicket = FormsAuthentication.Encrypt(authTicket);
+            //var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+            //controller.Response.Cookies.Add(faCookie);
         }
 
         public void LogOff()

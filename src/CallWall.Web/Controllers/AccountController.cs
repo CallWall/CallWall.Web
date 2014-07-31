@@ -43,9 +43,11 @@ namespace CallWall.Web.Controllers
         [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            var activeProviders = _sessionProvider.GetSessions(User).Select(s => s.Provider);
-            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
-                                                                 .Select(ap => new OAuthAccountListItem(ap, activeProviders.Contains(ap.Name)));
+            //TODO : Need to be able to get a list of Providers that a User already has registered with. -LC
+            //var activeProviders = _sessionProvider.GetSessions(User).Select(s => s.Provider);
+            //var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
+            //                                                     .Select(ap => new OAuthAccountListItem(ap, activeProviders.Contains(ap.Name)));
+            var accountProviders = Enumerable.Empty<OAuthAccountListItem>();
             return PartialView("_OAuthAccountListPartial", accountProviders);
         }
 

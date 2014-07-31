@@ -9,20 +9,30 @@ namespace CallWall.Web.GoogleProvider.Contacts
         private readonly IEnumerable<string> _tags;
         private readonly string _primaryAvatar;
         private readonly string _providerId;
+        private readonly string _accountId;
 
-        public ContactSummary(string id, string title, string primaryAvatar, IEnumerable<string> tags)
+        public ContactSummary(string providerId, string accountId, string title, string primaryAvatar, IEnumerable<string> tags)
         {
-            _providerId = id;
+            _providerId = providerId;
             _title = title;
             _primaryAvatar = primaryAvatar;
             _tags = tags;
+            _accountId = accountId;
         }
 
-        public string Provider {get { return "Google"; }}
+        public string Provider
+        {
+            get { return "Google"; }
+        }
 
         public string ProviderId
         {
             get { return _providerId; }
+        }
+
+        public string AccountId
+        {
+            get { return _accountId; }
         }
 
         /// <summary>

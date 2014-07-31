@@ -168,6 +168,7 @@
     <Compile Include="Unity\GenericSupportExtension.cs" />
     <Compile Include="Unity\LazyResolveBuildPlanPolicy.cs" />
     <Compile Include="Unity\UnityContainerExtensions.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CallWall.Web.Core.nuspec" />

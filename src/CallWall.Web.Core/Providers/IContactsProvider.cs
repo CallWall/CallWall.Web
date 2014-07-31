@@ -8,7 +8,7 @@ namespace CallWall.Web.Providers
     //TODO: Rename to IAccountContactsProvider -LC
     public interface IContactsProvider
     {
-        IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session, DateTime lastUpdated);
+        IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated);
 
         IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys);
     }

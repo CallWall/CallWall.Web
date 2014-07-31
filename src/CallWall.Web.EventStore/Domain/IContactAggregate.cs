@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace CallWall.Web.EventStore.Domain
 {
+    /// <summary>
+    /// Represents an aggregated view of a single contact with data from multiple accounts.
+    /// </summary>
     public interface IContactAggregate
     {
         int Id { get; }

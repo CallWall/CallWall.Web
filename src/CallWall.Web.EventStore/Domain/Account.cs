@@ -2,7 +2,7 @@
 
 namespace CallWall.Web.EventStore.Domain
 {
-    //Represents on of potentially many Accounts a user can have. An account is associated to a provider. ie. lee@gmail.com would be an Account with the Gmail provider. A user may have many accounts from the same or different providers.
+    //Represents oen of potentially many Accounts a user can have. An account is associated to a provider. ie. lee@gmail.com would be an Account with the Gmail provider. A user may have many accounts from the same or different providers.
     internal class Account : IAccount
     {
         private readonly string _provider;

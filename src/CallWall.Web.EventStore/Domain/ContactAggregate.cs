@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace CallWall.Web.EventStore.Domain
 {
+
     internal sealed class ContactAggregate : IContactAggregate
     {
         private static int _nextId = 0;
