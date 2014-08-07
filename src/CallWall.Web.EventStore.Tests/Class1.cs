@@ -1,37 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using TestStack.BDDfy;
 
 namespace CallWall.Web.EventStore.Tests
 {
-    [TestFixture]
-    [Story(Title = "New User registers",
-           AsA = "As an anon user",
-           IWant = "I want to register with CallWall",
-           SoThat = "So that I can use the system")]
-    public class NewUserRegistration
-    {
-        [Test]
-        public void UserRegistersSuccussfully()
-        {
-            new NewUserScenario()
-                .Given(s => s.GivenAnAnonUser())
-                .When(s => s.WhenTheUserRegistersWithAnUnrecongisedAccount())
-                .Then(s => s.ThenAUserIsCreated())
-                .Then(s => s.ThenAnAccountIsCreatedWithAnAccountIdentifier())
-                .Then(s => s.ThenAnAccountIsCreatedWithTheProvider())
-                .Then(s => s.ThenAnAccountIsCreatedWithPermissionsMappedToProviderScopes())
-                //        .Then(s => s.ThenTheNewAccountIsAssociatedToTheNewUser())
-                .Then(s => s.ThenAnAccountContactRefreshCommandIsIssuedForTheAccount())
-                .BDDfy();
-        }
-    }
-
     //CallWall has Users
     //Users have registered Accounts
     //Accounts have a PK of an internally generated integer
@@ -51,126 +22,16 @@ namespace CallWall.Web.EventStore.Tests
     //UserFactory       - Creates Users from an Account (doesn't actually do anything but perform some IoC fluff)
     //User              - Can Save/Persist it's changes to the data store (EventStore)    
     //                  - Also loads it's Accounts?
-    //Account           - Hmm....Some how will have to be able to raise generic events, but internally have provider specific implementations (e.g. for OAuth authentication and renewal)
+    //Account           - Hmm....Somehow this will have to be able to raise generic events, but internally have provider specific implementations (e.g. for OAuth authentication and renewal)
 
-    public class NewUserScenario
-    {
-        private CallWall.Web.User _user;
-        private IAccount _account;
-        private readonly IUserRepository _userRepository;
+    
 
-        public NewUserScenario()
-        {
-            _userRepository = new UserRepository();
-        }
+    //internal interface IUserRepository
+    //{
+    //    User RegisterNewUser(IAccount account);
+    //    User FindByAccount(IAccount account);
+    //}
 
-        public void GivenAnAnonUser()
-        {
-            _user = User.AnonUser;
-        }
-
-        public void WhenTheUserRegistersWithAnUnrecongisedAccount()
-        {
-            _account = new StubAccount();
-            _account.CurrentSession.AuthorizedResources.Add("email");
-            _account.CurrentSession.AuthorizedResources.Add("calendar");
-            _user = _userRepository.RegisterNewUser(_account);
-        }
-
-        public void ThenAUserIsCreated()
-        {
-            var actualUser = _userRepository.FindByAccount(_account);
-            Assert.IsNotNull(_user);
-            Assert.IsNotNull(actualUser);
-        }
-
-        public void ThenAnAccountIsCreatedWithAnAccountIdentifier()
-        {
-            var actualUser = _userRepository.FindByAccount(_account);
-            var actualAccount = actualUser.Accounts.Single();
-            Assert.AreEqual(_account.Username, actualAccount.Username);
-        }
-
-        public void ThenAnAccountIsCreatedWithTheProvider() //(e.g. gmail/twitter/etc....)
-        {
-            var actualUser = _userRepository.FindByAccount(_account);
-            var actualAccount = actualUser.Accounts.Single();
-            Assert.AreEqual(_account.Provider, actualAccount.Provider);
-        }
-
-        public void ThenAnAccountIsCreatedWithPermissionsMappedToProviderScopes()
-        //With permission key set and the mapping to the provider's OAuth Scopes e.g. {Key: "CallWall.Communications", Value: "https://mail.google.com/"}
-        {
-            var actualUser = _userRepository.FindByAccount(_account);
-            var actualAccount = actualUser.Accounts.Single();
-            CollectionAssert.AreEqual(_account.CurrentSession.AuthorizedResources, actualAccount.CurrentSession.AuthorizedResources);
-        }
-
-        public void ThenAnAccountContactRefreshCommandIsIssuedForTheAccount()
-        {
-            Assert.Inconclusive();
-        }
-    }
-
-    public class UserRepository : IUserRepository
-    {
-        public User RegisterNewUser(IAccount account)
-        {
-            throw new NotImplementedException();
-        }
-
-        public User FindByAccount(IAccount account)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    internal interface IUserRepository
-    {
-        User RegisterNewUser(IAccount account);
-        User FindByAccount(IAccount account);
-    }
-
-    public class StubAccount : IAccount
-    {
-        private readonly ISession _currentSession = new StubSession();
-
-        public string Provider { get { return "TestProvider"; } }
-
-        public string Username { get { return "Test.User@email.com"; } }
-
-        public string DisplayName { get { return "Test User"; } }
-
-        public ISession CurrentSession { get { return _currentSession; } }
-    }
-
-    public class StubSession : ISession
-    {
-        private readonly ISet<string> _authorizedResources;
-
-        public StubSession(params string[] authorizedResources)
-        {
-            _authorizedResources = new HashSet<string>(authorizedResources);
-        }
-
-        public string AccessToken { get; set; }
-
-        public string RefreshToken { get; set; }
-
-        public DateTimeOffset Expires { get; set; }
-
-        public bool HasExpired()
-        {
-            return DateTimeOffset.Now > Expires;
-        }
-
-        public ISet<string> AuthorizedResources { get { return _authorizedResources; } }
-
-        public string Serialize()
-        {
-            throw new NotImplementedException();
-        }
-    }
 
     //UserLogin
     //Adding extra accounts
@@ -237,9 +98,11 @@ GIVEN a registered account
 		THEN updated contacts are stored as Contact updated events
 		THEN missing contacts are stored as Contact removal events
      
-GIVEN logged in users
+GIVEN logged in user
      Can request a list of current registered accounts and their providers
      Can request a list of all providers available to register with
+     Can change their display name
+     Can change their avatar
      
      
      */

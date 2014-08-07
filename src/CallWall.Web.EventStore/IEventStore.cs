@@ -14,7 +14,7 @@ namespace CallWall.Web.EventStore
         void SaveEvent(string streamName, string eventType, string jsonData, string jsonMetaData = null);
         IObservable<string> GetNewEvents(string streamName);
         IObservable<string> GetAllEvents(string streamName);
-        IObservable<ResolvedEvent> GetEvents(string streamName, int? fromEventId);
+        IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion);
         Task<string> GetHead(string streamName);
     }
 

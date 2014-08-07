@@ -4,21 +4,21 @@ namespace CallWall.Web.GoogleProvider
 {
     internal sealed class Account : IAccount
     {
-        private readonly string _username;
+        private readonly string _accountId;
         private readonly string _displayName;
         private ISession _currentSession;
 
-        public Account(string username, string displayName)
+        public Account(string accountId, string displayName)
         {
-            _username = username;
+            _accountId = accountId;
             _displayName = displayName;
         }
 
         public string Provider { get { return "Google"; } }
 
-        public string Username
+        public string AccountId
         {
-            get { return _username; }
+            get { return _accountId; }
         }
 
         public string DisplayName

@@ -113,7 +113,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 var tags = GetTags(xContactEntry);
 
                 //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
-                var contact = new ContactSummary(providerId, account.Username, title, avatar, tags);
+                var contact = new ContactSummary(providerId, account.AccountId, title, avatar, tags);
                 contacts.Add(contact);
             }
 

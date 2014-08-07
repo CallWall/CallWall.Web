@@ -38,7 +38,7 @@ namespace CallWall.Web.GoogleProviderFake
 
     sealed class FakeAccount : IAccount
     {
-        public string Username { get; set; }
+        public string AccountId { get; set; }
         public string DisplayName { get; set; }
     }
 }

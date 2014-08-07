@@ -78,7 +78,7 @@ namespace CallWall.Web.OAuth2Implementation
 
             var account = CreateAccount();
 
-            return new OAuthSession((string)json["access_token"], (string)json["refresh_token"], TimeSpan.FromSeconds((int)json["expires_in"]), DateTimeOffset.Now, ProviderName, account, authState.Scopes);
+            return new OAuthSession((string)json["access_token"], (string)json["refresh_token"], TimeSpan.FromSeconds((int)json["expires_in"]), DateTimeOffset.Now,/* ProviderName, account,*/ authState.Scopes);
         }
 
         public bool TryDeserialiseSession(string payload, out ISession session)
@@ -92,7 +92,7 @@ namespace CallWall.Web.OAuth2Implementation
 
                 var account = CreateAccount();
 
-                session = new OAuthSession((string)json["AccessToken"], (string)json["RefreshToken"], (DateTimeOffset)json["Expires"], ProviderName, account, authorizedResources);
+                session = new OAuthSession((string)json["AccessToken"], (string)json["RefreshToken"], (DateTimeOffset)json["Expires"], /*ProviderName, account,*/ authorizedResources);
                 return true;
             }
             catch (Exception)

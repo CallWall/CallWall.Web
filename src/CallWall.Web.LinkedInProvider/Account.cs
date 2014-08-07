@@ -16,7 +16,7 @@ namespace CallWall.Web.LinkedInProvider
 
         public string Provider { get { return "LinkedIn"; } }
 
-        public string Username { get { return _userName; } }
+        public string AccountId { get { return _userName; } }
         public string DisplayName { get { return _displayName; } }
         //TODO: Implement setting the session for a LinkedIn Provider Account; -LC
         public ISession CurrentSession { get { return _currentSession; } }

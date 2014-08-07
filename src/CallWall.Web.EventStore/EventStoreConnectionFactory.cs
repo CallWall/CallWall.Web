@@ -7,7 +7,7 @@ namespace CallWall.Web.EventStore
 {
     public interface IEventStoreConnectionFactory
     {
-        IEventStoreConnection CreateConnection();
+        IEventStoreConnection Connect();
     }
 
     public sealed class EventStoreConnectionFactory : IEventStoreConnectionFactory
@@ -16,7 +16,7 @@ namespace CallWall.Web.EventStore
         private static readonly Lazy<IPAddress> ConfiguredIpAddress = new Lazy<IPAddress>(LoadIpAddressFromConfig);
         private static readonly Lazy<int> ConfiguredPort = new Lazy<int>(LoadPortFromConfig); 
 
-        public IEventStoreConnection CreateConnection()
+        public IEventStoreConnection Connect()
         {
             var connectionSettings = ConnectionSettings.Create();
             var endPoint = new IPEndPoint(ConfiguredIpAddress.Value, ConfiguredPort.Value);

@@ -52,7 +52,7 @@ namespace CallWall.Web.GoogleProviderFake
 
         private static FakeAccount CreateFakeAccount()
         {
-            return new FakeAccount { DisplayName = Environment.UserName, Username = Environment.UserDomainName };
+            return new FakeAccount { DisplayName = Environment.UserName, AccountId = Environment.UserDomainName };
         }
 
         private class AuthState

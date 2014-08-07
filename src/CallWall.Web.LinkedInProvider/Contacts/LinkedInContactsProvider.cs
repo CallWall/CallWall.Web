@@ -71,7 +71,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                 var contacts = JsonConvert.DeserializeObject<ContactsResponse>(contactResponse);
                 _totalResults = contacts.Total;
                 if (_totalResults > 0 && contacts.Contacts != null)
-                    _values = contacts.Contacts.Select(c => TranslateToContactSummary(account.Username, c)).ToObservable();
+                    _values = contacts.Contacts.Select(c => TranslateToContactSummary(account.AccountId, c)).ToObservable();
                 else
                     _values = Observable.Empty<IContactSummary>();
             }

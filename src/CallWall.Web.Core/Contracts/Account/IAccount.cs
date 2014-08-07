@@ -10,10 +10,10 @@
         /// <summary>
         /// The unique username for the account. In many cases this is the user's email address or handle.
         /// </summary>
-        string Username { get; }
+        string AccountId { get; }
 
         /// <summary>
-        /// The name this account displays as the User's name. This may be the user's real name, a nickname or in many cases just the <see cref="Username"/>.
+        /// The name this account displays as the User's name. This may be the user's real name, a nickname or in many cases just the <see cref="AccountId"/>.
         /// </summary>
         string DisplayName { get; }
 
