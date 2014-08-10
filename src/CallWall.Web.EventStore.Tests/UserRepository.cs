@@ -22,7 +22,15 @@ using NUnit.Framework;
 
 namespace CallWall.Web.EventStore.Tests
 {
-    public class UserRepository : IDisposable //: IUserRepository
+    public interface IUserRepository : IDisposable
+    {
+        IObservable<bool> IsUpToDate { get; }
+        Task Load();
+        User FindByAccount(IAccount account);
+        Task<User> RegisterNewUser(IAccount account, Guid eventId);
+    }
+
+    public class UserRepository : IUserRepository
     {
         private const string UserStreamName = "Users";
         private readonly EventStore _eventStore;
@@ -59,6 +67,14 @@ namespace CallWall.Web.EventStore.Tests
                 sharedUserEvents.Connect());
         }
 
+        public User FindByAccount(IAccount account)
+        {
+            return _userCache.FirstOrDefault(u => u.Accounts.Any(a =>
+                a.Provider == account.Provider
+                &&
+                a.AccountId == account.AccountId));
+        }
+
         private void OnUserEvent(ResolvedEvent userEvent)
         {
             _readVersion = userEvent.OriginalEventNumber;
@@ -75,7 +91,7 @@ namespace CallWall.Web.EventStore.Tests
         {
             var json = Encoding.UTF8.GetString(data);
             var userCreatedEvent = JsonConvert.DeserializeObject<UserCreatedEvent>(json);
-            var accounts = userCreatedEvent.Accounts.Select(a => new Account()
+            var accounts = userCreatedEvent.Accounts.Select(a => new Account(this)
             {
                 AccountId = a.AccountId,
                 Provider = a.Provider,
@@ -138,19 +154,6 @@ namespace CallWall.Web.EventStore.Tests
             return new User(account.DisplayName, new[] {account});
         }
 
-        public User FindByAccount(IAccount account)
-        {
-            return _userCache.FirstOrDefault(u => u.Accounts.Any(a =>
-                a.Provider == account.Provider
-                &&
-                a.AccountId == account.AccountId));
-        }
-
-
-
-
-
-
         private static class AccountEventType
         {
             public const string AccountRegististered = "AccountRegistered";
@@ -197,10 +200,27 @@ namespace CallWall.Web.EventStore.Tests
 
     public class Account : IAccount
     {
+        private readonly IUserRepository _userRepository;
+        
+        public Account(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+
         public string Provider { get; set; }
         public string AccountId { get; set; }
         public string DisplayName { get; set; }
         public ISession CurrentSession { get; set; }
+
+        public async Task<User> Login()
+        {
+            return await _userRepository
+                   .IsUpToDate.Where(isUpToDate => isUpToDate)
+                   .Select(isUpToDate => _userRepository.FindByAccount(this))
+                   .Take(1)
+                   .ToTask();
+        }
+
 
         private bool Equals(IAccount other)
         {

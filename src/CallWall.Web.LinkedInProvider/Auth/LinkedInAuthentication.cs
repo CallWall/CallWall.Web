@@ -30,12 +30,7 @@ namespace CallWall.Web.LinkedInProvider.Auth
         {
             get { return "LinkedIn"; }
         }
-
-        protected override IAccount CreateAccount()
-        {
-            return new Account("TODO userName", "TODO displayName");
-        }
-
+        
         protected override void DemandValidTokenResponse(JObject json)
         {
             if (json["error"] == null)

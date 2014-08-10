@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web
 {
@@ -12,9 +10,6 @@ namespace CallWall.Web
         DateTimeOffset Expires { get; }
         bool HasExpired();
         ISet<string> AuthorizedResources { get; }
-        //Not sure this needs to be here.... -LC
-        string Serialize();      
- 
     }
 
     public class Session : ISession
@@ -44,13 +39,6 @@ namespace CallWall.Web
         }
 
         public ISet<string> AuthorizedResources { get { return _authorizedResources; } }
-
-        public string Serialize()
-        {
-            var jObject = JObject.FromObject(this);
-            var json = jObject.ToString(Formatting.None);
-            return json;
-        }
 
         public override string ToString()
         {

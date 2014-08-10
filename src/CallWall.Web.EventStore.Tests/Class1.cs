@@ -46,19 +46,16 @@ Create set of Acceptance tests to document the expected behaviour
 
 [Acceptance tests]
 GIVEN an anonymous user
-	WHEN they register (login without the account being registered)
-		THEN a User is created
-		THEN an Account is created
-			With an Account identifier
-			With the Provider (gmail/twitter/etc....)
-			With permission key set and the mapping to the provider's OAuth Scopes e.g. {Key: "CallWall.Communications", Value: "https://mail.google.com/"}
-			(THEN the saved Account is decorated with the available scopes/permissions the User agreed to.)
-		THEN the new Account is associated to the new User
-		THEN an AccountContact refresh command is issued for the account
-		
 	WHEN they login (Login with an account that is registered)
 		THEN they are logged in as the user the account is associated with	 (implies some sort of look up. Is this in memory? Why not, it should just be a massive hashtable/dictionary.)
-		
+		THEN an AccountContact refresh command is issued for the account	
+    WHEN they register with an existing account
+        AND the same scopes selected
+            THEN the registration event is captured
+            THEN the new AuthCode/RefreshCode/Expiry is captured
+        AND different scopes are selected
+            THEN the registration event is captured
+            THEN the user is alerted that this account was already registered, and shown the new vs the old scopes
 		
 GIVEN a logged in user (i.e. a UserId) with a single account 
 	WHEN they request their contacts [From a version/eventId]

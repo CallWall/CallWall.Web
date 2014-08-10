@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.Account
+﻿using System.Threading.Tasks;
+
+namespace CallWall.Web
 {
     public interface IAccount
     {
@@ -18,5 +20,7 @@
         string DisplayName { get; }
 
         ISession CurrentSession { get; }
+
+        Task<User> Login();
     }
 }

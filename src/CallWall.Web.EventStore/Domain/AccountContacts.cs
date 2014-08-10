@@ -37,9 +37,11 @@ namespace CallWall.Web.EventStore.Domain
             //I think this will need to take an IContactsProvider (which may now need to be renamed to IAccountContactsProvider)
             // It will need to be able to execute the contactProvider's getContactsFeed() method passing in relevant state (OAuth tokens, lastUpdate Timestamp/date/eventId)
     
-            _accountEventsSubscription.Disposable = _eventStore.GetNewEvents(Account.StreamName(_providerName, _accountId))
-                                                    //.Where(evt=>evt.EventType==Account.EventType.)
-                                                    .Subscribe(x => { throw new NotImplementedException(); });
+            throw new NotImplementedException();
+
+            //_accountEventsSubscription.Disposable = _eventStore.GetNewEvents(Account.StreamName(_providerName, _accountId))
+            //                                        //.Where(evt=>evt.EventType==Account.EventType.)
+            //                                        .Subscribe(x => { throw new NotImplementedException(); });
         }
 
         public void RequestRefresh()

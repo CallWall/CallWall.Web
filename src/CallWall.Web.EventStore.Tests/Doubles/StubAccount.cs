@@ -2,7 +2,7 @@ namespace CallWall.Web.EventStore.Tests.Doubles
 {
     public class StubAccount : Account
     {
-        public StubAccount()
+        public StubAccount(UserRepository userRepository):base(userRepository)
         {
             Provider = "TestProvider";
             AccountId = "Test.User@email.com";

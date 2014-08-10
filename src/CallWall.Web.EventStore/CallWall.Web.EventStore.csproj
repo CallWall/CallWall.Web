@@ -64,7 +64,6 @@
     <Compile Include="Configuration\CallWallEventStoreSection.cs" />
     <Compile Include="Configuration\IpAddressConverter.cs" />
     <Compile Include="ContactSummaryRepository.cs" />
-    <Compile Include="Domain\Account.cs" />
     <Compile Include="Domain\AccountContacts.cs" />
     <Compile Include="Domain\ContactAggregate.cs" />
     <Compile Include="Domain\ContactProviderSummary.cs" />

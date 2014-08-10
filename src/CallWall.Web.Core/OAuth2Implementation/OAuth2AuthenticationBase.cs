@@ -20,8 +20,6 @@ namespace CallWall.Web.OAuth2Implementation
 
         public abstract string ProviderName { get; }
 
-        protected abstract IAccount CreateAccount();
-
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
             var uriBuilder = new StringBuilder();
@@ -76,8 +74,6 @@ namespace CallWall.Web.OAuth2Implementation
 
             DemandValidTokenResponse(json);
 
-            var account = CreateAccount();
-
             return new OAuthSession((string)json["access_token"], (string)json["refresh_token"], TimeSpan.FromSeconds((int)json["expires_in"]), DateTimeOffset.Now,/* ProviderName, account,*/ authState.Scopes);
         }
 
@@ -89,8 +85,6 @@ namespace CallWall.Web.OAuth2Implementation
                 var jsonContainer = JObject.Parse(payload);
                 var json = jsonContainer[ProviderName];
                 var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<string>>();
-
-                var account = CreateAccount();
 
                 session = new OAuthSession((string)json["AccessToken"], (string)json["RefreshToken"], (DateTimeOffset)json["Expires"], /*ProviderName, account,*/ authorizedResources);
                 return true;
