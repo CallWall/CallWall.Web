@@ -17,24 +17,24 @@ namespace CallWall.Web.EventStore.Domain
         #region Private fields
 
         private readonly IEventStore _eventStore;
-        private readonly IContactsProvider _contactsProvider;
+        private readonly IAccountContactProvider _accountContactProvider;
         private readonly string _providerName;
         private readonly string _accountId;
         private readonly SingleAssignmentDisposable _accountEventsSubscription = new SingleAssignmentDisposable();
 
         #endregion
 
-        public AccountContacts(IEventStore eventStore, IContactsProvider contactsProvider, string providerName, string accountId)
+        public AccountContacts(IEventStore eventStore, IAccountContactProvider accountContactProvider, string providerName, string accountId)
         {
             _eventStore = eventStore;
-            _contactsProvider = contactsProvider;
+            _accountContactProvider = accountContactProvider;
             _providerName = providerName;
             _accountId = accountId;
         }
 
         public void Start()
         {
-            //I think this will need to take an IContactsProvider (which may now need to be renamed to IAccountContactsProvider)
+            //I think this will need to take an IAccountContactsProvider
             // It will need to be able to execute the contactProvider's getContactsFeed() method passing in relevant state (OAuth tokens, lastUpdate Timestamp/date/eventId)
     
             throw new NotImplementedException();

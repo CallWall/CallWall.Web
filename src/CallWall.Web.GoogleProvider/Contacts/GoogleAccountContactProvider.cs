@@ -11,11 +11,13 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
-    internal sealed class GoogleContactsProvider : IContactsProvider
+    internal sealed class GoogleAccountContactProvider : IAccountContactProvider
     {
+        public string Provider { get { return "Google"; } }
+
         public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
-            if (account.Provider != "Google")
+            if (account.Provider != Provider)
                 return Observable.Empty<ContactFeed>();
             return Observable.Create<ContactFeed>(o =>
               {

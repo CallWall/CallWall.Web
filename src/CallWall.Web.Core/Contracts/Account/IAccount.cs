@@ -22,5 +22,7 @@ namespace CallWall.Web
         ISession CurrentSession { get; }
 
         Task<User> Login();
+
+        void RefreshContacts();
     }
 }

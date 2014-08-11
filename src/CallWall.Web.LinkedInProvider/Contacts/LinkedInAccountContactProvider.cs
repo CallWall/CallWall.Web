@@ -13,11 +13,13 @@ using Newtonsoft.Json;
 
 namespace CallWall.Web.LinkedInProvider.Contacts
 {
-    public class LinkedInContactsProvider : IContactsProvider
+    public class LinkedInAccountContactProvider : IAccountContactProvider
     {
+        public string Provider { get { return "LinkedIn"; } }
+
         public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
-            if (account.Provider != "LinkedIn")
+            if (account.Provider != Provider)
                 return Observable.Empty<ContactFeed>();
             return Observable.Create<ContactFeed>(o =>
             {
@@ -50,7 +52,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                 //TODO - this shouldnt be in a ctor - but it doesnt need to complexity of the Google provider - review with Lee - RC
                 var client = new HttpClient();
                 var requestUriBuilder = new UriBuilder("https://api.linkedin.com/v1/people/~/connections");
-                
+
                 requestUriBuilder.AddQuery("oauth2_access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken));
                 if (lastUpdated != default(DateTime))
                 {
@@ -82,7 +84,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 
             private static IContactSummary TranslateToContactSummary(string accountId, Contact c)
             {
-                return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new []{c.Industry, c.Headline});
+                return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new[] { c.Industry, c.Headline });
             }
         }
     }

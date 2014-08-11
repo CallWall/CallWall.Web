@@ -14,7 +14,7 @@ namespace CallWall.Web.GoogleProvider
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, GoogleContactsProvider>("GoogleContactsProvider");
+            registry.RegisterType<IAccountContactProvider, GoogleAccountContactProvider>("GoogleContactsProvider");
             registry.RegisterType<IAccountAuthentication, GoogleAuthentication>("GoogleAuthentication");
 
             registry.RegisterType<ICommunicationProvider, GmailCommunicationQueryProvider>();

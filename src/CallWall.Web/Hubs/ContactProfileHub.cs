@@ -15,11 +15,11 @@ namespace CallWall.Web.Hubs
     public class ContactProfileHub : Hub
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
-        private readonly IEnumerable<IContactsProvider> _contactsProviders;
+        private readonly IEnumerable<IAccountContactProvider> _contactsProviders;
         private readonly ISessionProvider _sessionProvider;
         private readonly ILogger _logger;
 
-        public ContactProfileHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactProfileHub(IEnumerable<IAccountContactProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
         {
             Debug.Print("ContactProfileHub.ctor()");
             _contactsProviders = contactsProviders.ToArray();

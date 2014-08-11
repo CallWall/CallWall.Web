@@ -8,9 +8,11 @@ using CallWall.Web.Contracts.Contact;
 
 namespace CallWall.Web.GoogleProviderFake
 {
-    public class FakeGoogleContactsProvider : IContactsProvider
+    public class FakeGoogleAccountContactProvider : IAccountContactProvider
     {
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(ISession session, DateTime lastUpdated)
+        public string Provider { get { return "FakeGoogle"; } }
+
+        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
             return Observable.Return(new ContactFeed());
         }
@@ -114,7 +116,7 @@ namespace CallWall.Web.GoogleProviderFake
 
             public string AccountId { get { return "lee.fake@gmail.com"; } }
 
-            public string ProviderId { get; set;}
+            public string ProviderId { get; set; }
             public string Title { get; set; }
             public string PrimaryAvatar { get; set; }
             public IEnumerable<string> Tags { get; set; }
@@ -125,8 +127,8 @@ namespace CallWall.Web.GoogleProviderFake
             public string Title { get; set; }
             public string FullName { get; set; }
             public IEnumerable<Uri> Avatars { get; set; }//TODO: Not set or read from anywhere yet. -LC
-            public DateTime? DateOfBirth { get;  set; }
-            public IEnumerable<string> Tags { get;  set; }
+            public DateTime? DateOfBirth { get; set; }
+            public IEnumerable<string> Tags { get; set; }
             public IEnumerable<IContactAssociation> Organizations { get; set; }
             public IEnumerable<IContactAssociation> Relationships { get; set; }
             public IEnumerable<IContactAssociation> EmailAddresses { get; set; }
@@ -145,4 +147,4 @@ namespace CallWall.Web.GoogleProviderFake
             public string Association { get; private set; }
         }
     }
-} 
+}

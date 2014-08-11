@@ -9,7 +9,7 @@ namespace CallWall.Web.LinkedInProvider
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, LinkedInContactsProvider>("LinkedInContactsProvider");
+            registry.RegisterType<IAccountContactProvider, LinkedInAccountContactProvider>("LinkedInContactsProvider");
             registry.RegisterType<IAccountAuthentication, LinkedInAuthentication>("LinkedInAuthentication");
         }
     }

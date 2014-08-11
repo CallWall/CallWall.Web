@@ -83,11 +83,11 @@ namespace CallWall.Web.EventStore
     class ContactSummaryProviderRefreshProcessor : IDisposable
     {
         private readonly IEventStore _eventStore;
-        private readonly IEnumerable<IContactsProvider> _providers;
+        private readonly IEnumerable<IAccountContactProvider> _providers;
         private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
         private bool _isRunning;
 
-        public ContactSummaryProviderRefreshProcessor(IEventStore eventStore, IEnumerable<IContactsProvider> providers)
+        public ContactSummaryProviderRefreshProcessor(IEventStore eventStore, IEnumerable<IAccountContactProvider> providers)
         {
             _eventStore = eventStore;
             _providers = providers;

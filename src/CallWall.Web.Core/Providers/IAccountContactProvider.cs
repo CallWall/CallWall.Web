@@ -5,9 +5,10 @@ using CallWall.Web.Contracts.Contact;
 
 namespace CallWall.Web.Providers
 {
-    //TODO: Rename to IAccountContactsProvider -LC
-    public interface IContactsProvider
+    public interface IAccountContactProvider
     {
+        string Provider { get; }
+
         IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated);
 
         IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys);

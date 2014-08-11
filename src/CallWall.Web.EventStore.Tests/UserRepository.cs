@@ -12,7 +12,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CallWall.Web.EventStore.Domain;
 using CallWall.Web.EventStore.Tests.Doubles;
+using CallWall.Web.Providers;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Common.Utils;
 using Newtonsoft.Json;
@@ -30,8 +32,14 @@ namespace CallWall.Web.EventStore.Tests
         Task<User> RegisterNewUser(IAccount account, Guid eventId);
     }
 
+    public interface IAccountContactsFactory
+    {
+        IAccountContacts Create(string provider, string accountId);
+    }
+
     public class UserRepository : IUserRepository
     {
+        private readonly IAccountContactsFactory _accountContactsFactory;
         private const string UserStreamName = "Users";
         private readonly EventStore _eventStore;
         private int _writeVersion = ExpectedVersion.NoStream;
@@ -41,8 +49,9 @@ namespace CallWall.Web.EventStore.Tests
 
         private readonly List<User> _userCache = new List<User>();
 
-        public UserRepository(IEventStoreConnectionFactory connectionFactory)
+        public UserRepository(IEventStoreConnectionFactory connectionFactory, IAccountContactsFactory accountContactsFactory )
         {
+            _accountContactsFactory = accountContactsFactory;
             _eventStore = new EventStore(connectionFactory);
         }
 
@@ -91,20 +100,26 @@ namespace CallWall.Web.EventStore.Tests
         {
             var json = Encoding.UTF8.GetString(data);
             var userCreatedEvent = JsonConvert.DeserializeObject<UserCreatedEvent>(json);
-            var accounts = userCreatedEvent.Accounts.Select(a => new Account(this)
-            {
-                AccountId = a.AccountId,
-                Provider = a.Provider,
-                DisplayName = a.DisplayName,
-                CurrentSession = new Session(
-                    a.CurrentSession.AccessToken, 
-                    a.CurrentSession.RefreshToken, 
-                    a.CurrentSession.Expires,
-                    a.CurrentSession.AuthorizedResources)
-            });
+            var accounts = userCreatedEvent.Accounts.Select(CreateAccount);
 
             var user = new User(userCreatedEvent.DisplayName, accounts);
             _userCache.Add(user);
+        }
+
+        private Account CreateAccount(AccountRecord accountRecord)
+        {
+            var accountContacts = _accountContactsFactory.Create(accountRecord.Provider, accountRecord.AccountId);
+            return new Account(this, accountContacts)
+            {
+                AccountId = accountRecord.AccountId,
+                Provider = accountRecord.Provider,
+                DisplayName = accountRecord.DisplayName,
+                CurrentSession = new Session(
+                    accountRecord.CurrentSession.AccessToken, 
+                    accountRecord.CurrentSession.RefreshToken, 
+                    accountRecord.CurrentSession.Expires,
+                    accountRecord.CurrentSession.AuthorizedResources)
+            };
         }
 
         private void OnError(Exception error)
@@ -117,7 +132,9 @@ namespace CallWall.Web.EventStore.Tests
             Guard.ArgumentNotNull(account, "account");
             if (eventId == Guid.Empty) throw new ArgumentException("Must provide a non-zero eventId", "eventId");
 
-            return await CreateUserStream(account, eventId);
+            var user = await CreateUserStream(account, eventId);
+            account.RefreshContacts();
+            return user;
         }
 
         private async Task<User> CreateUserStream(IAccount account, Guid eventId)
@@ -201,10 +218,14 @@ namespace CallWall.Web.EventStore.Tests
     public class Account : IAccount
     {
         private readonly IUserRepository _userRepository;
-        
-        public Account(IUserRepository userRepository)
+        private readonly IAccountContacts _accountContacts;
+
+        public Account(IUserRepository userRepository, IAccountContacts accountContacts)
         {
+            Guard.ArgumentNotNull(userRepository, "userRepository");
+            Guard.ArgumentNotNull(accountContacts, "accountContacts");
             _userRepository = userRepository;
+            _accountContacts = accountContacts;
         }
 
         public string Provider { get; set; }
@@ -214,11 +235,21 @@ namespace CallWall.Web.EventStore.Tests
 
         public async Task<User> Login()
         {
-            return await _userRepository
+            var user = await _userRepository
                    .IsUpToDate.Where(isUpToDate => isUpToDate)
                    .Select(isUpToDate => _userRepository.FindByAccount(this))
                    .Take(1)
                    .ToTask();
+            foreach (var account in user.Accounts)
+            {
+                account.RefreshContacts();
+            }
+            return user;
+        }
+
+        public void RefreshContacts()
+        {
+            _accountContacts.RequestRefresh();
         }
 
 

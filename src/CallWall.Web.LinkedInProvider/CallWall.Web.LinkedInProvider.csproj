@@ -76,7 +76,7 @@
     <Compile Include="Auth\AccountConfiguration.cs" />
     <Compile Include="Contacts\ContactSummary.cs" />
     <Compile Include="LinkedInModule.cs" />
-    <Compile Include="Contacts\LinkedInContactsProvider.cs" />
+    <Compile Include="Contacts\LinkedInAccountContactProvider.cs" />
     <Compile Include="Auth\LinkedInAuthentication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Auth\ResourceScope.cs" />
