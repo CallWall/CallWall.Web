@@ -51,21 +51,18 @@ namespace CallWall.Web.EventStore.Tests
             private User _user;
             private readonly IAccount _account;
             private readonly UserRepository _userRepository;
-            private static readonly TimeSpan TimeOut = TimeSpan.FromSeconds(2);
             private readonly IAccountContacts _accountContactsMock;
 
             public UserLoginScenario(IEventStoreConnectionFactory connectionFactory)
             {
                 _accountContactsMock = Substitute.For<IAccountContacts>();
                 var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
-                //accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
-                accountContactsFactory.Create(null, null).ReturnsForAnyArgs(_accountContactsMock);
+                accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
 
                 var x = accountContactsFactory.Create("", null);
 
                 _userRepository = new UserRepository(connectionFactory, accountContactsFactory);
-                _userRepository.Load()
-                    .Wait(TimeOut);
+                _userRepository.Run();
                 
                 _account = new StubAccount(_userRepository, _accountContactsMock);
                 _account.CurrentSession.AuthorizedResources.Add("email");
@@ -116,7 +113,6 @@ namespace CallWall.Web.EventStore.Tests
 
         public class UserWithSingleAccountLogsInScenario
         {
-            private static readonly TimeSpan TimeOut = TimeSpan.FromSeconds(2);
             private readonly UserRepository _userRepository;
             private readonly IAccount _account;
             private User _storedUser;
@@ -127,8 +123,7 @@ namespace CallWall.Web.EventStore.Tests
                 var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
                 accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
                 _userRepository = new UserRepository(connectionFactory, accountContactsFactory);
-                _userRepository.Load()
-                    .Wait(TimeOut);
+                _userRepository.Run();
                 
                 _account = new StubAccount(_userRepository, _accountContactsMock);
             }
@@ -148,8 +143,6 @@ namespace CallWall.Web.EventStore.Tests
             {
                 _accountContactsMock.Received().RequestRefresh();
             }
-
-
         }
     }
 }

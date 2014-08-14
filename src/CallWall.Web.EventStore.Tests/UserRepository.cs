@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -24,11 +26,9 @@ using NUnit.Framework;
 
 namespace CallWall.Web.EventStore.Tests
 {
-    public interface IUserRepository : IDisposable
+    public interface IUserRepository : IDomainEventBase
     {
-        IObservable<bool> IsUpToDate { get; }
-        Task Load();
-        User FindByAccount(IAccount account);
+        Task<User> FindByAccount(IAccount account);
         Task<User> RegisterNewUser(IAccount account, Guid eventId);
     }
 
@@ -37,61 +37,40 @@ namespace CallWall.Web.EventStore.Tests
         IAccountContacts Create(string provider, string accountId);
     }
 
-    public class UserRepository : IUserRepository
+    public class UserRepository : DomainEventBase, IUserRepository
     {
         private readonly IAccountContactsFactory _accountContactsFactory;
-        private const string UserStreamName = "Users";
-        private readonly EventStore _eventStore;
-        private int _writeVersion = ExpectedVersion.NoStream;
-        private int _readVersion = ExpectedVersion.NoStream;
-        private IDisposable _eventSubscription;
-        private IConnectableObservable<bool> _isUpToDate;
 
         private readonly List<User> _userCache = new List<User>();
 
         public UserRepository(IEventStoreConnectionFactory connectionFactory, IAccountContactsFactory accountContactsFactory )
+            : base(connectionFactory, "Users")
         {
             _accountContactsFactory = accountContactsFactory;
-            _eventStore = new EventStore(connectionFactory);
         }
-
-        public IObservable<bool> IsUpToDate { get { return _isUpToDate; } }
-
-        public async Task Load()
+        
+        public async Task<User> FindByAccount(IAccount account)
         {
-            _writeVersion = await _eventStore.GetHeadVersion(UserStreamName);
+            await this.PropertyChanges(ur => ur.State)
+                .StartWith(State)
+                .Where(s => s.IsListening && !s.IsProcessing)
+                .Take(1)
+                .ToTask();
 
-            var sharedUserEvents = _eventStore.GetEvents(UserStreamName)
-                .Publish();
-            _isUpToDate = sharedUserEvents.Select(ev => ev.OriginalEventNumber == _writeVersion)
-                .StartWith(false)
-                .Replay(1);
-            //Load into memory the previous events
-            var eventSubscription = sharedUserEvents
-                .Subscribe(
-                    OnUserEvent,
-                    OnError);
-            
-            _eventSubscription = new CompositeDisposable(eventSubscription, _isUpToDate.Connect(),
-                sharedUserEvents.Connect());
-        }
-
-        public User FindByAccount(IAccount account)
-        {
-            return _userCache.FirstOrDefault(u => u.Accounts.Any(a =>
+            var user =  _userCache.FirstOrDefault(u => u.Accounts.Any(a =>
                 a.Provider == account.Provider
                 &&
                 a.AccountId == account.AccountId));
+
+            return user;
         }
 
-        private void OnUserEvent(ResolvedEvent userEvent)
+        protected override void OnEventReceived(ResolvedEvent resolvedEvent)
         {
-            _readVersion = userEvent.OriginalEventNumber;
-
-            switch (userEvent.OriginalEvent.EventType)
+            switch (resolvedEvent.OriginalEvent.EventType)
             {
                 case UserEventType.UserCreated:
-                    AddUser(userEvent.OriginalEvent.Data);
+                    AddUser(resolvedEvent.OriginalEvent.Data);
                     break;
             }
         }
@@ -122,7 +101,7 @@ namespace CallWall.Web.EventStore.Tests
             };
         }
 
-        private void OnError(Exception error)
+        protected override void OnStreamError(Exception error)
         {
             throw new NotImplementedException();
         }
@@ -160,14 +139,8 @@ namespace CallWall.Web.EventStore.Tests
                 }
             }.ToJson();
 
-            await _eventStore.SaveEvent(UserStreamName,
-                _writeVersion,
-                eventId,
-                UserEventType.UserCreated,
-                userCreatedEvent);
-
-            _writeVersion++;
-
+            await WriteEvent(eventId, UserEventType.UserCreated, userCreatedEvent);
+            
             return new User(account.DisplayName, new[] {account});
         }
 
@@ -207,12 +180,6 @@ namespace CallWall.Web.EventStore.Tests
             public string DisplayName { get; set; }
             public List<AccountRecord> Accounts { get; set; }
         }
-
-        public void Dispose()
-        {
-            if(_eventSubscription!=null)
-                _eventSubscription.Dispose();
-        }
     }
 
     public class Account : IAccount
@@ -235,11 +202,7 @@ namespace CallWall.Web.EventStore.Tests
 
         public async Task<User> Login()
         {
-            var user = await _userRepository
-                   .IsUpToDate.Where(isUpToDate => isUpToDate)
-                   .Select(isUpToDate => _userRepository.FindByAccount(this))
-                   .Take(1)
-                   .ToTask();
+            var user = await _userRepository.FindByAccount(this);
             foreach (var account in user.Accounts)
             {
                 account.RefreshContacts();
@@ -317,5 +280,82 @@ namespace CallWall.Web.EventStore.Tests
         public string RefreshToken { get; set; }
         public DateTimeOffset Expires { get; set; }
         public string[] AuthorizedResources { get; set; }
+    }
+
+    public static class NotificationExtensions
+    {
+        /// <summary>
+        /// Returns an observable sequence of a property value when the source raises <seealso cref="INotifyPropertyChanged.PropertyChanged"/> for the given property.
+        /// </summary>
+        /// <typeparam name="T">The type of the source object. Type must implement <seealso cref="INotifyPropertyChanged"/>.</typeparam>
+        /// <typeparam name="TProperty">The type of the property that is being observed.</typeparam>
+        /// <param name="source">The object to observe property changes on.</param>
+        /// <param name="property">An expression that describes which property to observe.</param>
+        /// <returns>Returns an observable sequence of property values when the property changes.</returns>
+        public static IObservable<TProperty> PropertyChanges<T, TProperty>(this T source, Expression<Func<T, TProperty>> property)
+            where T : class, INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException("source");
+
+            var propertyName = property.GetPropertyInfo().Name;
+            var propertySelector = property.Compile();
+
+            return Observable.Create<TProperty>(
+                o => Observable.FromEventPattern
+                         <PropertyChangedEventHandler, PropertyChangedEventArgs>
+                         (
+                             h => source.PropertyChanged += h,
+                             h => source.PropertyChanged -= h
+                         )
+                         .Where(e => e.EventArgs.PropertyName == propertyName)// || string.IsNullOrEmpty(e.EventArgs.PropertyName))
+                         .Select(e => propertySelector(source))
+                         .Subscribe(o));
+        }
+
+        /// <summary>
+        /// Returns an observable sequence when <paramref name="source"/> raises <seealso cref="INotifyPropertyChanged.PropertyChanged"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the source object. Type must implement <seealso cref="INotifyPropertyChanged"/>.</typeparam>
+        /// <param name="source">The object to observe property changes on.</param>
+        /// <returns>Returns an observable sequence with the source as its value. Values are produced each time the PropertyChanged event is raised.</returns>
+        public static IObservable<T> AnyPropertyChanges<T>(this T source)
+            where T : class, INotifyPropertyChanged
+        {
+            if (source == null) throw new ArgumentNullException("source");
+
+            return Observable.FromEventPattern
+                <PropertyChangedEventHandler, PropertyChangedEventArgs>
+                (
+                    h => source.PropertyChanged += h,
+                    h => source.PropertyChanged -= h
+                )
+                .Select(_ => source);
+        }        
+    }
+    public static class PropertyExtensions
+    {
+        /// <summary>
+        /// Gets property information for the specified <paramref name="property"/> expression.
+        /// </summary>
+        /// <typeparam name="TSource">Type of the parameter in the <paramref name="property"/> expression.</typeparam>
+        /// <typeparam name="TValue">Type of the property's value.</typeparam>
+        /// <param name="property">The expression from which to retrieve the property information.</param>
+        /// <returns>Property information for the specified expression.</returns>
+        /// <exception cref="ArgumentException">The expression is not understood.</exception>
+        public static PropertyInfo GetPropertyInfo<TSource, TValue>(this Expression<Func<TSource, TValue>> property)
+        {
+            if (property == null)
+                throw new ArgumentNullException("property");
+
+            var body = property.Body as MemberExpression;
+            if (body == null)
+                throw new ArgumentException("Expression is not a property", "property");
+
+            var propertyInfo = body.Member as PropertyInfo;
+            if (propertyInfo == null)
+                throw new ArgumentException("Expression is not a property", "property");
+
+            return propertyInfo;
+        }
     }
 }

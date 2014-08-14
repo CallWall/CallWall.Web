@@ -58,12 +58,12 @@ namespace CallWall.Web.EventStore.Tests
                .Given(s => s.Given_an_existing_user())
                .When(s => s.When_user_logs_in_by_account())
                .Then(s => s.Then_user_has_all_accounts())
+               .And(s=>s.Then_an_AccountContactRefresh_command_is_issued_for_the_account())
                .BDDfy();
         }
 
         public class NewUserScenario
         {
-            private static readonly TimeSpan TimeOut = TimeSpan.FromSeconds(2);
             private User _user;
             private readonly IAccount _account;
             private readonly UserRepository _userRepository;
@@ -75,8 +75,7 @@ namespace CallWall.Web.EventStore.Tests
                 accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
                 
                 _userRepository = new UserRepository(connectionFactory, accountContactsFactory);
-                _userRepository.Load()
-                    .Wait(TimeOut);
+                _userRepository.Run();
                 
                 _account = new StubAccount(_userRepository, _accountContactsMock);
                 _account.CurrentSession.AuthorizedResources.Add("email");
@@ -127,7 +126,6 @@ namespace CallWall.Web.EventStore.Tests
         public class UserWithSingleAccountLogsInScenario
         {
             private readonly UserRepository _userRepository;
-            private static readonly TimeSpan TimeOut = TimeSpan.FromSeconds(2);
             private User _storedUser = User.AnonUser;
             private readonly IAccount _account;
             private readonly IList<IAccount> _allAccounts = new List<IAccount>();
@@ -140,8 +138,7 @@ namespace CallWall.Web.EventStore.Tests
                 accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
                 
                 _userRepository = new UserRepository(connectionFactory, accountContactsFactory);
-                UserRepository.Load()
-                    .Wait(TimeOut);
+                UserRepository.Run();
 
                 _account = new StubAccount(_userRepository, _accountContactsMock);
                 _allAccounts.Add(_account);
