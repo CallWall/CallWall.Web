@@ -51,20 +51,20 @@ namespace CallWall.Web.EventStore.Tests
             private User _user;
             private readonly IAccount _account;
             private readonly UserRepository _userRepository;
-            private readonly IAccountContacts _accountContactsMock;
+            private readonly IAccountContactRefresher _accountContactRefresherMock;
 
             public UserLoginScenario(IEventStoreConnectionFactory connectionFactory)
             {
-                _accountContactsMock = Substitute.For<IAccountContacts>();
+                _accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
                 var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
-                accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
+                accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactRefresherMock);
 
                 var x = accountContactsFactory.Create("", null);
 
                 _userRepository = new UserRepository(connectionFactory, accountContactsFactory);
                 _userRepository.Run();
                 
-                _account = new StubAccount(_userRepository, _accountContactsMock);
+                _account = new StubAccount(_userRepository, _accountContactRefresherMock);
                 _account.CurrentSession.AuthorizedResources.Add("email");
                 _account.CurrentSession.AuthorizedResources.Add("calendar");
             }
@@ -107,7 +107,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public void ThenAnAccountContactRefreshCommandIsIssuedForTheAccount()
             {
-                _accountContactsMock.Received().RequestRefresh();
+                _accountContactRefresherMock.Received().RequestRefresh(ContactRefreshTriggers.Registered);
             }
         }
 
@@ -116,16 +116,16 @@ namespace CallWall.Web.EventStore.Tests
             private readonly UserRepository _userRepository;
             private readonly IAccount _account;
             private User _storedUser;
-            private readonly IAccountContacts _accountContactsMock = Substitute.For<IAccountContacts>();
+            private readonly IAccountContactRefresher _accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
 
             public UserWithSingleAccountLogsInScenario(IEventStoreConnectionFactory connectionFactory)
             {
                 var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
-                accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactsMock);
+                accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactRefresherMock);
                 _userRepository = new UserRepository(connectionFactory, accountContactsFactory);
                 _userRepository.Run();
                 
-                _account = new StubAccount(_userRepository, _accountContactsMock);
+                _account = new StubAccount(_userRepository, _accountContactRefresherMock);
             }
 
             public async Task Given_an_existing_user()
@@ -141,7 +141,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public void Then_an_AccountContactRefresh_command_is_issued_for_the_account()
             {
-                _accountContactsMock.Received().RequestRefresh();
+                _accountContactRefresherMock.Received().RequestRefresh(ContactRefreshTriggers.Login);
             }
         }
     }

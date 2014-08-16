@@ -10,7 +10,7 @@ namespace CallWall.Web.EventStore.Domain
     {
         private readonly IEventStore _eventStore;
         private readonly int _userId;
-        private readonly List<IAccountContacts> _accountContacts = new List<IAccountContacts>();
+        //private readonly List<IAccountContact> _accountContacts = new List<IAccountContacts>();
         private readonly string _streamName;
         
 
@@ -31,13 +31,13 @@ namespace CallWall.Web.EventStore.Domain
             throw new NotImplementedException();
         }
 
-        public void RequestRefresh()
-        {
-            foreach (var account in _accountContacts)
-            {
-                account.RequestRefresh();
-            }
-        }
+        //public void RequestRefresh()
+        //{
+        //    foreach (var account in _accountContacts)
+        //    {
+        //        account.RequestRefresh();
+        //    }
+        //}
 
         public IObservable<IContactAggregate> GetContacts(int fromEventId)
         {

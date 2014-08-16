@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace CallWall.Web
 {
@@ -23,6 +24,17 @@ namespace CallWall.Web
 
         Task<User> Login();
 
-        void RefreshContacts();
+        Task RefreshContacts(ContactRefreshTriggers triggeredBy);
+    }
+
+    
+    public enum ContactRefreshTriggers
+    {
+        [Obsolete("Default value is not valid", true)]
+        None,
+        Registered,
+        Login,
+        UserRequested,
+        Timeout
     }
 }

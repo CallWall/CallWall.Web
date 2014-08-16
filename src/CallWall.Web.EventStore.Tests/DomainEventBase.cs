@@ -6,10 +6,12 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace CallWall.Web.EventStore.Tests
 {
@@ -22,7 +24,7 @@ namespace CallWall.Web.EventStore.Tests
         #region Fields
 
         private readonly string _streamName;
-        private readonly EventStore _eventStore;
+        protected readonly EventStore _eventStore;
         private readonly SingleAssignmentDisposable _eventSubscription = new SingleAssignmentDisposable();
         private readonly Lazy<Task<int>> _initialHeadVersion; 
         private int _isRunning;
@@ -71,6 +73,13 @@ namespace CallWall.Web.EventStore.Tests
                     OnStreamError);
         }
 
+        protected T Deserialize<T>(RecordedEvent recordedEvent)
+        {
+            var data = recordedEvent.Data;
+            var json = Encoding.UTF8.GetString(data);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
         protected async Task WriteEvent(Guid eventId, string eventType, string eventData)
         {
             await _eventStore.SaveEvent(StreamName,
@@ -95,8 +104,18 @@ namespace CallWall.Web.EventStore.Tests
         private void ReceiveEvent(ResolvedEvent resolvedEvent)
         {
             OnEventReceived(resolvedEvent);
-            ReadVersion = resolvedEvent.OriginalEventNumber;
-            State = ReevaluateState();
+            using (QueueNotifications())
+            {
+                ReadVersion = resolvedEvent.OriginalEventNumber;
+                if (ReadVersion > WriteVersion)
+                {
+                    IncrementWriteVersion();
+                }
+                else
+                {
+                    State = ReevaluateState();        
+                }
+            }
         }
 
         private DomainEventState ReevaluateState()

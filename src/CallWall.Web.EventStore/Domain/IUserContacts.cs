@@ -6,7 +6,7 @@ namespace CallWall.Web.EventStore.Domain
     {
         void AddAccount(string provider, string accountId);
         void RemoveAccount(string provider, string accountId);
-        void RequestRefresh();
+        //void RequestRefresh();
         IObservable<IContactAggregate> GetContacts(int fromEventId);
     }
 }

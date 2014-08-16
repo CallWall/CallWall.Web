@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CallWall.Web.EventStore.Domain;
+using CallWall.Web.EventStore.Events;
 using CallWall.Web.EventStore.Tests.Doubles;
 using CallWall.Web.Providers;
 using EventStore.ClientAPI;
@@ -34,7 +35,7 @@ namespace CallWall.Web.EventStore.Tests
 
     public interface IAccountContactsFactory
     {
-        IAccountContacts Create(string provider, string accountId);
+        IAccountContactRefresher Create(string provider, string accountId);
     }
 
     public class UserRepository : DomainEventBase, IUserRepository
@@ -43,12 +44,12 @@ namespace CallWall.Web.EventStore.Tests
 
         private readonly List<User> _userCache = new List<User>();
 
-        public UserRepository(IEventStoreConnectionFactory connectionFactory, IAccountContactsFactory accountContactsFactory )
+        public UserRepository(IEventStoreConnectionFactory connectionFactory, IAccountContactsFactory accountContactsFactory)
             : base(connectionFactory, "Users")
         {
             _accountContactsFactory = accountContactsFactory;
         }
-        
+
         public async Task<User> FindByAccount(IAccount account)
         {
             await this.PropertyChanges(ur => ur.State)
@@ -57,7 +58,7 @@ namespace CallWall.Web.EventStore.Tests
                 .Take(1)
                 .ToTask();
 
-            var user =  _userCache.FirstOrDefault(u => u.Accounts.Any(a =>
+            var user = _userCache.FirstOrDefault(u => u.Accounts.Any(a =>
                 a.Provider == account.Provider
                 &&
                 a.AccountId == account.AccountId));
@@ -70,15 +71,14 @@ namespace CallWall.Web.EventStore.Tests
             switch (resolvedEvent.OriginalEvent.EventType)
             {
                 case UserEventType.UserCreated:
-                    AddUser(resolvedEvent.OriginalEvent.Data);
+                    AddUser(resolvedEvent.OriginalEvent);
                     break;
             }
         }
 
-        private void AddUser(byte[] data)
+        private void AddUser(RecordedEvent recordedEvent)
         {
-            var json = Encoding.UTF8.GetString(data);
-            var userCreatedEvent = JsonConvert.DeserializeObject<UserCreatedEvent>(json);
+            var userCreatedEvent = Deserialize<UserCreatedEvent>(recordedEvent);
             var accounts = userCreatedEvent.Accounts.Select(CreateAccount);
 
             var user = new User(userCreatedEvent.DisplayName, accounts);
@@ -94,8 +94,8 @@ namespace CallWall.Web.EventStore.Tests
                 Provider = accountRecord.Provider,
                 DisplayName = accountRecord.DisplayName,
                 CurrentSession = new Session(
-                    accountRecord.CurrentSession.AccessToken, 
-                    accountRecord.CurrentSession.RefreshToken, 
+                    accountRecord.CurrentSession.AccessToken,
+                    accountRecord.CurrentSession.RefreshToken,
                     accountRecord.CurrentSession.Expires,
                     accountRecord.CurrentSession.AuthorizedResources)
             };
@@ -112,7 +112,7 @@ namespace CallWall.Web.EventStore.Tests
             if (eventId == Guid.Empty) throw new ArgumentException("Must provide a non-zero eventId", "eventId");
 
             var user = await CreateUserStream(account, eventId);
-            account.RefreshContacts();
+            await account.RefreshContacts(ContactRefreshTriggers.Registered);
             return user;
         }
 
@@ -140,8 +140,8 @@ namespace CallWall.Web.EventStore.Tests
             }.ToJson();
 
             await WriteEvent(eventId, UserEventType.UserCreated, userCreatedEvent);
-            
-            return new User(account.DisplayName, new[] {account});
+
+            return new User(account.DisplayName, new[] { account });
         }
 
         private static class AccountEventType
@@ -162,7 +162,7 @@ namespace CallWall.Web.EventStore.Tests
             /// Indicates that the Provider or User has revoked access from CallWall accessing this account.
             /// </summary>
             public static readonly string AccountRevoked = "AccountRevoked";
-                                          //May have to be a linked event from a AccountContactSummaryRefresh failure. -LC
+            //May have to be a linked event from a AccountContactSummaryRefresh failure. -LC
         }
 
         private static class UserEventType
@@ -185,14 +185,14 @@ namespace CallWall.Web.EventStore.Tests
     public class Account : IAccount
     {
         private readonly IUserRepository _userRepository;
-        private readonly IAccountContacts _accountContacts;
+        private readonly IAccountContactRefresher _accountContactRefresher;
 
-        public Account(IUserRepository userRepository, IAccountContacts accountContacts)
+        public Account(IUserRepository userRepository, IAccountContactRefresher accountContactRefresher)
         {
             Guard.ArgumentNotNull(userRepository, "userRepository");
-            Guard.ArgumentNotNull(accountContacts, "accountContacts");
+            Guard.ArgumentNotNull(accountContactRefresher, "accountContactRefresher");
             _userRepository = userRepository;
-            _accountContacts = accountContacts;
+            _accountContactRefresher = accountContactRefresher;
         }
 
         public string Provider { get; set; }
@@ -203,16 +203,12 @@ namespace CallWall.Web.EventStore.Tests
         public async Task<User> Login()
         {
             var user = await _userRepository.FindByAccount(this);
-            foreach (var account in user.Accounts)
-            {
-                account.RefreshContacts();
-            }
+            await Task.WhenAll(user.Accounts.Select(a => a.RefreshContacts(ContactRefreshTriggers.Login)));
             return user;
         }
-
-        public void RefreshContacts()
+        public async Task RefreshContacts(ContactRefreshTriggers triggeredBy)
         {
-            _accountContacts.RequestRefresh();
+            await _accountContactRefresher.RequestRefresh(triggeredBy);
         }
 
 
@@ -261,7 +257,7 @@ namespace CallWall.Web.EventStore.Tests
         }
     }
 
-    public class AccountRecord 
+    public class AccountRecord
     {
         public string Provider { get; set; }
         public string AccountId { get; set; }
@@ -330,7 +326,7 @@ namespace CallWall.Web.EventStore.Tests
                     h => source.PropertyChanged -= h
                 )
                 .Select(_ => source);
-        }        
+        }
     }
     public static class PropertyExtensions
     {
@@ -357,5 +353,116 @@ namespace CallWall.Web.EventStore.Tests
 
             return propertyInfo;
         }
+    }
+
+    //TODO: Consider loading previous evens to see if there has been a incomplete RefreshCommand i.e. THe server failed during a Refresh. -LC
+    public interface IAccountContactRefresher
+    {
+        Task RequestRefresh(ContactRefreshTriggers triggeredBy);
+    }
+
+    public sealed class AccountContactRefresher : IAccountContactRefresher
+    {
+        private readonly EventStore _eventStore;
+        private readonly string _streamName;
+
+        public AccountContactRefresher(IEventStoreConnectionFactory connectionFactory, string provider, string accountId)
+        {
+            _eventStore = new EventStore(connectionFactory);
+            _streamName = AccountContactsSynchronizer.StreamName(provider, accountId);
+        }
+
+        public async Task RequestRefresh(ContactRefreshTriggers triggeredBy)
+        {
+            var evt = new RefreshContactsCommand()
+            {
+                RefreshTrigger = triggeredBy.ToString(),
+                TimeStamp = DateTimeOffset.Now,
+            }.ToJson();
+
+            await _eventStore.SaveEvent(_streamName, ExpectedVersion.Any, Guid.NewGuid(), "RefreshRequest", evt);
+        }
+    }
+
+    //Changed my mind. RequestRefresh will always drop a new event into the stream. {TimeStamp:2001-12-31T12:59:00, Reason:Login}oa
+
+    public sealed class AccountContactsSynchronizer //: DomainEventBase//, IAccountContacts
+    //public sealed class AccountContactsSynchronizer : DomainEventBase//, IAccountContacts
+    {
+        //    private readonly Dictionary<string, IContactSummary> _contacts = new Dictionary<string, IContactSummary>();
+        //    private DateTimeOffset _lastRefreshRequestAt;
+
+        //    public AccountContactsSynchronizer(string provider, string accountId, IEventStoreConnectionFactory connectionFactory)
+        //        : base(connectionFactory, StreamName(provider, accountId))
+        //    {
+
+        //    }
+
+
+        //    public void RequestRefresh()
+        //    {
+        //        var eventData = new RefreshContactsCommand
+        //        {
+        //            //.....TODO:
+        //        };
+        //        base.WriteEvent(Guid.NewGuid(), EventType.RefreshRequest, eventData.ToJson());
+        //    }
+
+        //    protected override void OnEventReceived(ResolvedEvent resolvedEvent)
+        //    {
+        //        throw new NotImplementedException();
+
+        //        switch (resolvedEvent.OriginalEvent.EventType)
+        //        {
+        //            case EventType.RefreshRequest:
+        //                RefreshContacts(resolvedEvent);
+        //        }
+        //    }
+
+        //    private void RefreshContacts(ResolvedEvent resolvedEvent)
+        //    {
+        //        var evt = Deserialize<RefreshContactsCommand>(resolvedEvent.OriginalEvent);
+        //        _lastRefreshRequestAt = evt.TimeStamp;
+        //        if (State.IsReplaying)
+        //        {
+        //            //Ignore, just register the timeout if it is the InitialHeadVersion
+        //            var isHeadEvent = false;
+        //            if (isHeadEvent && evt.IsRequestAccepted)
+        //            {
+        //                if (evt.TimeoutBy < DateTimeOffset.Now)
+        //                {
+        //                    //TODO: Write RefreshRequest("Timeout after restart")    
+        //                }
+        //                else
+        //                {
+        //                    //TODO: Schedule RefreshRequest("Timeout", evt.RetryCount++)
+        //                }
+
+        //            }
+        //        }
+
+        //    }
+
+        //    protected override void OnStreamError(Exception error)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        public static string StreamName(string provider, string accountId)
+        {
+            return string.Format("AccountContacts-{0}-{1}", provider, accountId);
+        }
+
+        //    private static class EventType
+        //    {
+        //        public const string RefreshRequest = "RefreshRequest";
+        //    }
+
+    }
+
+    public class RefreshContactsCommand
+    {
+        public DateTimeOffset TimeStamp { get; set; }
+        public string RefreshTrigger { get; set; }
     }
 }

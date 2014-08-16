@@ -6,19 +6,7 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.EventStore.Domain
 {
-    //TODO: Consider loading previous evens to see if there has been a incomplete RefreshCommand i.e. THe server failed during a Refresh. -LC
-    public interface IAccountContacts
-    {
-        void RequestRefresh();
-    }
-
-    public sealed class AccountContacts : IAccountContacts
-    {
-        public void RequestRefresh()
-        {
-            throw new NotImplementedException();
-        }
-    }
+    
 
     //internal class AccountContacts : IAccountContacts
     //{
