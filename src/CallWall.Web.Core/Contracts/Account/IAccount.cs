@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace CallWall.Web
 {
-    public interface IAccount
+    public interface IAccountData
     {
         /// <summary>
         /// The provider for which this account belongs to
@@ -21,10 +21,13 @@ namespace CallWall.Web
         string DisplayName { get; }
 
         ISession CurrentSession { get; }
+    }
 
+    public interface IAccount : IAccountData
+    {
         Task<User> Login();
 
-        Task RefreshContacts(ContactRefreshTriggers triggeredBy);
+        Task RefreshContacts(Guid userId, ContactRefreshTriggers triggeredBy);
     }
 
     

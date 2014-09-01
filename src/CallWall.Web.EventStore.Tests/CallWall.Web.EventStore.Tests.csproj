@@ -73,19 +73,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountContactSynchronization.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="ContactsRepository.cs" />
-    <Compile Include="ContactSynchronization.cs" />
-    <Compile Include="DomainEventBase.cs" />
-    <Compile Include="DomainEventState.cs" />
     <Compile Include="Doubles\InMemoryEventStoreConnectionFactory.cs" />
     <Compile Include="Doubles\StubAccount.cs" />
+    <Compile Include="Doubles\StubAccountContactProvider.cs" />
+    <Compile Include="Doubles\StubContactSummary.cs" />
+    <Compile Include="Doubles\StubFeed.cs" />
     <Compile Include="Doubles\StubSession.cs" />
     <Compile Include="IContactsRepository.cs" />
-    <Compile Include="IRunnable.cs" />
     <Compile Include="NewUserRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

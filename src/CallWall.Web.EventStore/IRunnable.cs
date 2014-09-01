@@ -1,4 +1,4 @@
-namespace CallWall.Web.EventStore.Tests
+namespace CallWall.Web.EventStore
 {
     public interface IRunnable
     {

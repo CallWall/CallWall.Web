@@ -3,7 +3,7 @@ using CallWall.Web.Contracts;
 
 namespace CallWall.Web.LinkedInProvider.Contacts
 {
-    public class ContactSummary : IContactSummary
+    public class ContactSummary : IAccountContactSummary
     {
         //TODO copy and paste job here - see google
 

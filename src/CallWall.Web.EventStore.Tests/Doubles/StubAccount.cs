@@ -1,4 +1,5 @@
-using CallWall.Web.EventStore.Domain;
+using CallWall.Web.EventStore.Accounts;
+using CallWall.Web.EventStore.Users;
 
 namespace CallWall.Web.EventStore.Tests.Doubles
 {

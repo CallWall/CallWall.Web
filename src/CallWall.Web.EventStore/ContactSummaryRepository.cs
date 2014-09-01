@@ -124,7 +124,7 @@ namespace CallWall.Web.EventStore
 
         }
 
-        private void OnContactSummaryRecieved(int userId, string provider, IContactSummary contactSummary)
+        private void OnContactSummaryRecieved(int userId, string provider, IAccountContactSummary contactSummary)
         {
             var streamName = StreamNames.ContactSummaryRecieved(userId, provider);
             _eventStore.SaveEvent(streamName, contactSummary);

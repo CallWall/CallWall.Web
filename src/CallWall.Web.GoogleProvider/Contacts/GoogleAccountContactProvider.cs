@@ -15,7 +15,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
     {
         public string Provider { get { return "Google"; } }
 
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
+        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccountData account, DateTime lastUpdated)
         {
             if (account.Provider != Provider)
                 return Observable.Empty<ContactFeed>();
@@ -39,12 +39,12 @@ namespace CallWall.Web.GoogleProvider.Contacts
             return Observable.Empty<IContactProfile>();
         }
 
-        private sealed class ContactFeed : IFeed<IContactSummary>
+        private sealed class ContactFeed : IFeed<IAccountContactSummary>
         {
             private readonly int _totalResults;
-            private readonly IObservable<IContactSummary> _values;
+            private readonly IObservable<IAccountContactSummary> _values;
 
-            public ContactFeed(IAccount account, DateTime lastUpdated)
+            public ContactFeed(IAccountData account, DateTime lastUpdated)
             {
                 var batchPage = GetContactPage(account, 1, lastUpdated);
                 _totalResults = batchPage.TotalResults;
@@ -53,11 +53,11 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
             public int TotalResults { get { return _totalResults; } }
 
-            public IObservable<IContactSummary> Values { get { return _values; } }
+            public IObservable<IAccountContactSummary> Values { get { return _values; } }
 
-            private IObservable<IContactSummary> GenerateValues(IAccount account, DateTime lastUpdated, BatchOperationPage<IContactSummary> batchPage)
+            private IObservable<IAccountContactSummary> GenerateValues(IAccountData account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
             {
-                return Observable.Create<IContactSummary>(o =>
+                return Observable.Create<IAccountContactSummary>(o =>
                 {
                     var pages = GetPages(account, lastUpdated, batchPage);
                     var query = from page in pages
@@ -67,7 +67,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 });
             }
 
-            private static IEnumerable<BatchOperationPage<IContactSummary>> GetPages(IAccount account, DateTime lastUpdated, BatchOperationPage<IContactSummary> batchPage)
+            private static IEnumerable<BatchOperationPage<IAccountContactSummary>> GetPages(IAccountData account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
             {
                 yield return batchPage;
                 while (batchPage.NextPageStartIndex > 0)
@@ -81,7 +81,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 }
             }
 
-            private static BatchOperationPage<IContactSummary> GetContactPage(IAccount account, int startIndex, DateTime lastUpdated)
+            private static BatchOperationPage<IAccountContactSummary> GetContactPage(IAccountData account, int startIndex, DateTime lastUpdated)
             {
                 var client = new HttpClient();
 
@@ -115,7 +115,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 catch (Exception exception)
                 {
                     //TODO logging? do we want a logging factory?
-                    return BatchOperationPage<IContactSummary>.Empty();
+                    return BatchOperationPage<IAccountContactSummary>.Empty();
                 }
             }
         }

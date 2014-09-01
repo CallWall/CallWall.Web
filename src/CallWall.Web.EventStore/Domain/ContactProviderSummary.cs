@@ -1,31 +1,23 @@
 namespace CallWall.Web.EventStore.Domain
 {
-    internal class ContactProviderSummary : IContactProviderSummary
+    //Not sure if the interface is needed or even helpful -LC
+    public class ContactProviderSummary : IContactProviderSummary
     {
-        private readonly string _providerName;
-        private readonly string _accountId;
-        private readonly string _contactId;
+        public ContactProviderSummary()
+        {
+        }
 
         public ContactProviderSummary(string providerName, string accountId, string contactId)
         {
-            _providerName = providerName;
-            _accountId = accountId;
-            _contactId = contactId;
+            ProviderName = providerName;
+            AccountId = accountId;
+            ContactId = contactId;
         }
 
-        public string ProviderName
-        {
-            get { return _providerName; }
-        }
+        public string ProviderName { get; set; }
 
-        public string AccountId
-        {
-            get { return _accountId; }
-        }
+        public string AccountId { get; set; }
 
-        public string ContactId
-        {
-            get { return _contactId; }
-        }
+        public string ContactId { get; set; }
     }
 }

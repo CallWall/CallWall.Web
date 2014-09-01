@@ -93,7 +93,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         }
 
-        public BatchOperationPage<IContactSummary> Translate(string response, string accessToken, IAccount account)
+        public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccountData account)
         {
             //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
             var xDoc = XDocument.Parse(response);
@@ -101,7 +101,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 return null;
 
             var entries = xDoc.Root.Elements(Atom.Entry);
-            var contacts = new List<IContactSummary>();
+            var contacts = new List<IAccountContactSummary>();
             foreach (var xContactEntry in entries)
             {
                 if (xContactEntry == null)
@@ -122,9 +122,9 @@ namespace CallWall.Web.GoogleProvider.Contacts
             var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
             var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
             if (startIndex == null || itemsPerPage == null || totalResults == null)
-                return new BatchOperationPage<IContactSummary>(contacts, 0, 1, -1);
+                return new BatchOperationPage<IAccountContactSummary>(contacts, 0, 1, -1);
 
-            return new BatchOperationPage<IContactSummary>(contacts,
+            return new BatchOperationPage<IAccountContactSummary>(contacts,
                 int.Parse(startIndex.Value),
                 int.Parse(totalResults.Value),
                 int.Parse(itemsPerPage.Value));

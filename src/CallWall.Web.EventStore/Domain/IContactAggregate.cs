@@ -28,16 +28,18 @@ namespace CallWall.Web.EventStore.Domain
         /// <summary>
         /// All of the providers that this contact data is sourced from
         /// </summary>
-        IEnumerable<IContactProviderSummary> Providers { get; }
+        IEnumerable<ContactProviderSummary> Providers { get; }
 
-        bool OwnsContact(IContactSummary contact);
-        bool IsMatch(IContactSummary contact);
+        bool OwnsContact(IAccountContactSummary contact);
+        bool IsMatch(IAccountContactSummary contact);
 
-        void Add(IContactSummary contact);
-        void Remove(string provider, string accountId);   
-        void Update(IContactSummary contact);
-        
+        ContactAggregateUpdate Add(IAccountContactSummary contact);
+        ContactAggregateUpdate Remove(string provider, string accountId);
+        ContactAggregateUpdate Update(IAccountContactSummary contact);
+
         IContactAggregate Merge(IContactAggregate other);
-        IEnumerable<IContactSummary> Purge();
+        IEnumerable<IAccountContactSummary> Purge();
+
+        IContactAggregate Snapshot();
     }
 }

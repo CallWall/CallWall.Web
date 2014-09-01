@@ -12,7 +12,7 @@ namespace CallWall.Web.GoogleProviderFake
     {
         public string Provider { get { return "FakeGoogle"; } }
 
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
+        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
             return Observable.Return(new ContactFeed());
         }
@@ -63,7 +63,7 @@ namespace CallWall.Web.GoogleProviderFake
             };
         }
 
-        private sealed class ContactFeed : IFeed<IContactSummary>
+        private sealed class ContactFeed : IFeed<IAccountContactSummary>
         {
             private const string Family = "Family";
             private const string Colleague = "Colleague";
@@ -104,13 +104,13 @@ namespace CallWall.Web.GoogleProviderFake
                 TotalResults = contacts.Length;
                 Values = Observable.Interval(TimeSpan.FromSeconds(0.25))
                                    .Zip(contacts.ToObservable(), (_, c) => c)
-                                   .Concat(Observable.Throw<IContactSummary>(new IOException("Fake error")));
+                                   .Concat(Observable.Throw<IAccountContactSummary>(new IOException("Fake error")));
             }
             public int TotalResults { get; private set; }
-            public IObservable<IContactSummary> Values { get; private set; }
+            public IObservable<IAccountContactSummary> Values { get; private set; }
         }
 
-        private sealed class ContactSummary : IContactSummary
+        private sealed class ContactSummary : IAccountContactSummary
         {
             public string Provider { get { return "FakeGoogle"; } }
 

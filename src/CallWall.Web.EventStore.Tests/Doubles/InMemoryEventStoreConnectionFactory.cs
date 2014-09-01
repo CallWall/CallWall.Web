@@ -15,7 +15,7 @@ namespace CallWall.Web.EventStore.Tests.Doubles
         {}
         public InMemoryEventStoreConnectionFactory(string eventStorePath, string ipAddress, int port)
         {
-            _eventStoreProcess = Process.Start(eventStorePath, "--mem-db");
+            _eventStoreProcess = Process.Start(eventStorePath, "--mem-db --run-projections=ALL");
             var ip = IPAddress.Parse(ipAddress);
             _ipEndPoint = new IPEndPoint(ip, port);            
         }

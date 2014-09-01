@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -109,6 +110,7 @@ namespace CallWall.Web.EventStore
         }
         public async Task SaveEvent(string streamName, int expectedVersion, Guid eventId, string eventType, string jsonData, string jsonMetaData = null)
         {
+            Trace.WriteLine("SaveEvent(" + streamName + ", " + expectedVersion + ", " + eventId  + ", " + eventType + ")");
             var payload = Encoding.UTF8.GetBytes(jsonData);
             var metadata = jsonMetaData == null ? null : Encoding.UTF8.GetBytes(jsonMetaData);
             using (var conn = _connectionFactory.Connect())

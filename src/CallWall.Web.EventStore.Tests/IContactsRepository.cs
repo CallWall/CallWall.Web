@@ -6,6 +6,4 @@ namespace CallWall.Web.EventStore.Tests
     {
         Task RequestRefreshFor(IAccount account);
     }
-
-    
 }

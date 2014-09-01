@@ -9,7 +9,8 @@ namespace CallWall.Web.Providers
     {
         string Provider { get; }
 
-        IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated);
+        //TODO: Change to return Task<IFeed<IAccountContactSummary>>
+        IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccountData account, DateTime lastUpdated);
 
         IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys);
     }

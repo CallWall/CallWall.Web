@@ -3,7 +3,7 @@ using CallWall.Web.Contracts;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
-    internal class ContactSummary : IContactSummary
+    internal class ContactSummary : IAccountContactSummary
     {
         private readonly string _title;
         private readonly IEnumerable<string> _tags;

@@ -17,7 +17,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
     {
         public string Provider { get { return "LinkedIn"; } }
 
-        public IObservable<IFeed<IContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
+        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccountData account, DateTime lastUpdated)
         {
             if (account.Provider != Provider)
                 return Observable.Empty<ContactFeed>();
@@ -41,13 +41,13 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             return Observable.Empty<IContactProfile>();
         }
 
-        private sealed class ContactFeed : IFeed<IContactSummary>
+        private sealed class ContactFeed : IFeed<IAccountContactSummary>
         {
             private readonly int _totalResults;
-            private readonly IObservable<IContactSummary> _values;
+            private readonly IObservable<IAccountContactSummary> _values;
             private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 
-            public ContactFeed(IAccount account, DateTime lastUpdated)
+            public ContactFeed(IAccountData account, DateTime lastUpdated)
             {
                 //TODO - this shouldnt be in a ctor - but it doesnt need to complexity of the Google provider - review with Lee - RC
                 var client = new HttpClient();
@@ -75,14 +75,14 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                 if (_totalResults > 0 && contacts.Contacts != null)
                     _values = contacts.Contacts.Select(c => TranslateToContactSummary(account.AccountId, c)).ToObservable();
                 else
-                    _values = Observable.Empty<IContactSummary>();
+                    _values = Observable.Empty<IAccountContactSummary>();
             }
 
             public int TotalResults { get { return _totalResults; } }
 
-            public IObservable<IContactSummary> Values { get { return _values; } }
+            public IObservable<IAccountContactSummary> Values { get { return _values; } }
 
-            private static IContactSummary TranslateToContactSummary(string accountId, Contact c)
+            private static IAccountContactSummary TranslateToContactSummary(string accountId, Contact c)
             {
                 return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new[] { c.Industry, c.Headline });
             }

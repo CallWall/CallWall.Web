@@ -1,0 +1,10 @@
+﻿using System;
+using System.Threading.Tasks;
+
+namespace CallWall.Web.EventStore.Accounts
+{
+    public interface IAccountContactRefresher
+    {
+        Task RequestRefresh(Guid userId, IAccount account, ContactRefreshTriggers triggeredBy);
+    }
+}
