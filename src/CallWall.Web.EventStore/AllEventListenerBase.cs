@@ -13,12 +13,14 @@ namespace CallWall.Web.EventStore
         private readonly IEventStoreConnectionFactory _connectionFactory;
         private int _isRunning;
         private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
+        private static readonly UserCredentials UserCredentials = new UserCredentials("admin", "changeit");
 
         protected AllEventListenerBase(IEventStoreConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
 
+        //TODO: This needs to have some error handling. What should happen if we cant connect? -LC
         public void Run()
         {
             if (Interlocked.CompareExchange(ref _isRunning, 1, 0) == 1)
@@ -33,18 +35,29 @@ namespace CallWall.Web.EventStore
                         {
                             var logMsg = string.Format("{0}.Received({1}[{2}] {{ EventType = '{3}'}}",
                                 typeName,
-                                resolvedEvent.OriginalEvent.EventStreamId, resolvedEvent.OriginalEvent.EventNumber,
+                                resolvedEvent.OriginalEvent.EventStreamId, 
+                                resolvedEvent.OriginalEvent.EventNumber,
                                 resolvedEvent.OriginalEvent.EventType);
                             Trace.WriteLine(logMsg);
                             o.OnNext(resolvedEvent);
                         };
 
                     var conn = _connectionFactory.Connect();
-
-                    //TODO: Handle the subscription dropped callback? -LC
-                    var subscription = await conn.SubscribeToAllAsync(true, callback,null, new UserCredentials("admin", "changeit"));
-
-                    return new CompositeDisposable(subscription, conn);
+                    
+                    try
+                    {
+                        //TODO: Handle the subscription dropped callback? -LC
+                        var subscription = await conn.SubscribeToAllAsync(true, callback,null, UserCredentials);
+                        Trace.WriteLine(typeName + " is subscribed to all events");
+                        return new CompositeDisposable(subscription, conn);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine("Error subscribing to all events.");
+                        Trace.TraceError(e.ToString());
+                        conn.Dispose();
+                        return Disposable.Empty;
+                    }
                 });
 
             _subscription.Disposable = query.Subscribe(OnEventReceived);

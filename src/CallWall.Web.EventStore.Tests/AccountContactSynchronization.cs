@@ -22,6 +22,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As a system",
         IWant = "I want to keep a synchronized cache of user's contacts per account",
         SoThat = "So that I can present this data to the user quickly")]
+    [Timeout(15000)]
     public class AccountContactSynchronization
     {
         #region Setup/TearDown
@@ -49,7 +50,7 @@ namespace CallWall.Web.EventStore.Tests
         //Restart
 
         [Test]
-        public void Test1()
+        public void InitialUserRegistration()
         {
             new UserRegistrationAccountContactSynchronizationScenario(_connectionFactory)
                .Given(s => s.Given_a_ContactSynchronizationService())
@@ -57,6 +58,28 @@ namespace CallWall.Web.EventStore.Tests
                .Then(s => s.Then_Account_contacts_are_availble_from_User_contacts_feed())
                .BDDfy();
         }
+
+        //[Test]
+        //public void Dont_reprocess_AccountRefresh_events_after_system_restart()
+        //{
+        //    Assert.Inconclusive("TBD");
+        //    //new UserRegistrationAccountContactSynchronizationScenario(_connectionFactory)
+        //    //   .Given(s => s.Given_a_ContactSynchronizationService())
+        //    //   .And(s => s.And_processed_AccountRefresh_events_exist())
+        //    //   .Then(s => s.The_events_are_not_reprocessed())
+        //    //   .BDDfy();
+        //}
+
+        //[Test]
+        //public void Process_unhandled_AccountRefresh_events_after_system_restart()
+        //{
+        //    Assert.Inconclusive("TBD");
+        //    //new UserRegistrationAccountContactSynchronizationScenario(_connectionFactory)
+        //    //   .Given(s => s.Given_a_ContactSynchronizationService())
+        //    //   .And(s => s.And_processed_AccountRefresh_events_exist())
+        //    //   .Then(s => s.The_events_are_not_reprocessed())
+        //    //   .BDDfy();
+        //}
 
         //TODO: Implement IDisposable.
         public class UserRegistrationAccountContactSynchronizationScenario
@@ -70,7 +93,6 @@ namespace CallWall.Web.EventStore.Tests
 
             public UserRegistrationAccountContactSynchronizationScenario(IEventStoreConnectionFactory connectionFactory)
             {
-                
                 _userContactRepository = new UserContactRepository(connectionFactory);
                 _userRepository = new UserRepository(connectionFactory, Substitute.For<IAccountContactRefresher>());
                 _account = CreateAccount(_userRepository, connectionFactory);
@@ -100,7 +122,7 @@ namespace CallWall.Web.EventStore.Tests
                 Trace.WriteLine("Account logged in");
 
                 var contacts = await _userContactRepository.GetContactSummariesFrom(user, null)
-                    .SubscribeOn(Scheduler.Default)
+                    //.SubscribeOn(Scheduler.Default)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Take(expected.Count)
                     .ToList()

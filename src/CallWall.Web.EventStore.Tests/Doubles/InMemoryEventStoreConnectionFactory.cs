@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using EventStore.ClientAPI;
 
 namespace CallWall.Web.EventStore.Tests.Doubles
@@ -17,7 +18,21 @@ namespace CallWall.Web.EventStore.Tests.Doubles
         {
             _eventStoreProcess = Process.Start(eventStorePath, "--mem-db --run-projections=ALL");
             var ip = IPAddress.Parse(ipAddress);
-            _ipEndPoint = new IPEndPoint(ip, port);            
+            _ipEndPoint = new IPEndPoint(ip, port);
+            
+            Trace.Write("Waiting for process to warm up..");
+            Thread.Sleep(1000);
+            Trace.Write(".");
+            Thread.Sleep(1000);
+            Trace.Write(".");
+            Thread.Sleep(1000);
+            Trace.Write(".");
+            Thread.Sleep(1000);
+            Trace.Write(".");
+            Thread.Sleep(1000);
+            Trace.Write(".");
+            Thread.Sleep(1000);
+            Trace.WriteLine("Done (hopefully).");
         }
 
         public IEventStoreConnection Connect()
