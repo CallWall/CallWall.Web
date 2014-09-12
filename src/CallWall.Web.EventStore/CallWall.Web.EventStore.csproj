@@ -70,7 +70,6 @@
     <Compile Include="AllEventListenerBase.cs" />
     <Compile Include="Configuration\CallWallEventStoreSection.cs" />
     <Compile Include="Configuration\IpAddressConverter.cs" />
-    <Compile Include="ContactSummaryRepository.cs" />
     <Compile Include="Contacts\AccountContactBatchUpdateRecord.cs" />
     <Compile Include="Contacts\AccountContactRecord.cs" />
     <Compile Include="Contacts\AccountContacts.cs" />

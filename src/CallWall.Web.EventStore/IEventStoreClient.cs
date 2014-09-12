@@ -1,6 +1,5 @@
 using System;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
@@ -12,12 +11,6 @@ namespace CallWall.Web.EventStore
     //No doubt this will have to change as we discover our requirements.
     public interface IEventStoreClient
     {
-        //void SaveEvent(string streamName, string eventType, string jsonData, string jsonMetaData = null);
-        //IObservable<string> GetNewEvents(string streamName);
-        //IObservable<string> GetAllEvents(string streamName);
-        //IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion);
-        //Task<string> GetHead(string streamName);
-
         IObservable<ResolvedEvent> AllEvents();
         IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion = null);
         IObservable<string> GetNewEvents(string streamName);
@@ -45,12 +38,5 @@ namespace CallWall.Web.EventStore
                 .Select(re=>Encoding.UTF8.GetString(re.OriginalEvent.Data))
                 .Select(JsonConvert.DeserializeObject<T>);
         }
-
-        //public static IObservable<T> GetHead<T>(this IEventStoreClient eventStoreClient, string streamName)
-        //{
-        //    return eventStoreClient.GetHead(streamName)
-        //                     .ToObservable()
-        //                     .Select(JsonConvert.DeserializeObject<T>);
-        //}
     }
 }
