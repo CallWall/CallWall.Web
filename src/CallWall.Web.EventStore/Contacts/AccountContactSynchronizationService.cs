@@ -66,8 +66,8 @@ namespace CallWall.Web.EventStore.Contacts
     {
         private readonly IAccountContactsFactory _accountContactsFactory;
         private readonly Dictionary<string, AccountContacts> _accounts = new Dictionary<string, AccountContacts>();
-        public AccountContactSynchronizationService(IEventStoreConnectionFactory connectionFactory, IAccountContactsFactory accountContactsFactory)
-            : base(connectionFactory, ContactStreamNames.AccountRefreshRequests())
+        public AccountContactSynchronizationService(IEventStoreClient eventStoreClient, IAccountContactsFactory accountContactsFactory)
+            : base(eventStoreClient, ContactStreamNames.AccountRefreshRequests())
         {
             _accountContactsFactory = accountContactsFactory;
         }

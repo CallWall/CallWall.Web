@@ -98,12 +98,12 @@
     <Compile Include="Domain\IUserContacts.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserContacts.cs" />
-    <Compile Include="EventStore.cs" />
+    <Compile Include="EventStoreClient.cs" />
     <Compile Include="EventStoreExtensions.cs" />
     <Compile Include="Events\ContactSummaryUpdate.cs" />
     <Compile Include="EventStoreConnectionFactory.cs" />
     <Compile Include="IDomainEventBase.cs" />
-    <Compile Include="IEventStore.cs" />
+    <Compile Include="IEventStoreClient.cs" />
     <Compile Include="IRunnable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Events\RefreshContactSummaryCommand.cs" />

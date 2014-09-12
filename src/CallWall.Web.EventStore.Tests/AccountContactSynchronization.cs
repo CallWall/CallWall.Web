@@ -28,11 +28,13 @@ namespace CallWall.Web.EventStore.Tests
         #region Setup/TearDown
 
         private InMemoryEventStoreConnectionFactory _connectionFactory;
+        private IEventStoreClient _eventStoreClient;
 
         [SetUp]
         public void SetUp()
         {
             _connectionFactory = new InMemoryEventStoreConnectionFactory();
+            _eventStoreClient = new EventStoreClient(_connectionFactory, new ConsoleLoggerFactory());
         }
 
         [TearDown]
@@ -52,7 +54,7 @@ namespace CallWall.Web.EventStore.Tests
         [Test]
         public void InitialUserRegistration()
         {
-            new UserRegistrationAccountContactSynchronizationScenario(_connectionFactory)
+            new UserRegistrationAccountContactSynchronizationScenario(_eventStoreClient)
                .Given(s => s.Given_a_ContactSynchronizationService())
                .When(s => s.When_a_user_registers_and_triggers_an_AccountRefresh())
                .Then(s => s.Then_Account_contacts_are_availble_from_User_contacts_feed())
@@ -91,14 +93,14 @@ namespace CallWall.Web.EventStore.Tests
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
             private readonly StubFeed _expectedFeed;
 
-            public UserRegistrationAccountContactSynchronizationScenario(IEventStoreConnectionFactory connectionFactory)
+            public UserRegistrationAccountContactSynchronizationScenario(IEventStoreClient eventStoreClient)
             {
-                _userContactRepository = new UserContactRepository(connectionFactory);
-                _userRepository = new UserRepository(connectionFactory, Substitute.For<IAccountContactRefresher>());
-                _account = CreateAccount(_userRepository, connectionFactory);
+                _userContactRepository = new UserContactRepository(eventStoreClient);
+                _userRepository = new UserRepository(eventStoreClient, Substitute.For<IAccountContactRefresher>());
+                _account = CreateAccount(_userRepository, eventStoreClient);
                 _expectedFeed = CreateStubFeed(_account);
-                _accountContactSynchronizationService = CreateAccountContactSynchronizationService(connectionFactory, _account, _expectedFeed);
-                _userContactSynchronizationService = new UserContactSynchronizationService(connectionFactory);
+                _accountContactSynchronizationService = CreateAccountContactSynchronizationService(eventStoreClient, _account, _expectedFeed);
+                _userContactSynchronizationService = new UserContactSynchronizationService(eventStoreClient);
             }
 
             public void Given_a_ContactSynchronizationService()
@@ -122,11 +124,9 @@ namespace CallWall.Web.EventStore.Tests
                 Trace.WriteLine("Account logged in");
 
                 var contacts = await _userContactRepository.GetContactSummariesFrom(user, null)
-                    //.SubscribeOn(Scheduler.Default)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Take(expected.Count)
                     .ToList()
-                    //.Timeout(TimeSpan.FromSeconds(15))
                     .FirstAsync();
 
                 Trace.WriteLine("Received " + contacts.Count + " values");
@@ -157,20 +157,20 @@ namespace CallWall.Web.EventStore.Tests
             #region Factory methods
 
             private static AccountContactSynchronizationService CreateAccountContactSynchronizationService(
-                IEventStoreConnectionFactory connectionFactory, IAccountData account, IFeed<IAccountContactSummary> expectedFeed)
+                IEventStoreClient eventStoreClient, IAccountData account, IFeed<IAccountContactSummary> expectedFeed)
             {
                 var dummyAccountContactProvider = CreateAccountContactProvider(account, expectedFeed);
-                var accountContactsFactory = new AccountContactsFactory(connectionFactory,
+                var accountContactsFactory = new AccountContactsFactory(eventStoreClient,
                     new[] {dummyAccountContactProvider});
-                var accountContactSynchronizationService = new AccountContactSynchronizationService(connectionFactory,
+                var accountContactSynchronizationService = new AccountContactSynchronizationService(eventStoreClient,
                     accountContactsFactory);
                 return accountContactSynchronizationService;
             }
 
             private static IAccount CreateAccount(IUserRepository userRepository,
-                IEventStoreConnectionFactory connectionFactory)
+                IEventStoreClient eventStoreClient)
             {
-                var accountContactRefresher = new AccountContactRefresher(connectionFactory);
+                var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 var account = new StubAccount(userRepository, accountContactRefresher);
                 account.CurrentSession.AuthorizedResources.Add("email");
                 account.CurrentSession.AuthorizedResources.Add("calendar");

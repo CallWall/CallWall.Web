@@ -21,11 +21,13 @@ namespace CallWall.Web.EventStore.Tests
         #region Setup/TearDown
 
         private InMemoryEventStoreConnectionFactory _connectionFactory;
+        private IEventStoreClient _eventStoreClient;
 
         [SetUp]
         public void SetUp()
         {
             _connectionFactory = new InMemoryEventStoreConnectionFactory();
+            _eventStoreClient = new EventStoreClient(_connectionFactory, new ConsoleLoggerFactory());
         }
 
         [TearDown]
@@ -39,7 +41,7 @@ namespace CallWall.Web.EventStore.Tests
         [Test]
         public void UserRegistersSuccussfully()
         {
-            new NewUserScenario(_connectionFactory)
+            new NewUserScenario(_eventStoreClient)
                 .Given(s => s.Given_an_anon_user())
                 .When(s => s.When_the_user_registers_with_an_unrecongised_account())
                 .Then(s => s.Then_a_user_is_created())
@@ -55,7 +57,7 @@ namespace CallWall.Web.EventStore.Tests
         [Test]
         public void UserLogin()
         {
-            new UserWithSingleAccountLogsInScenario(_connectionFactory)
+            new UserWithSingleAccountLogsInScenario(_eventStoreClient)
                .Given(s => s.Given_an_existing_user())
                .When(s => s.When_user_logs_in_by_account())
                .Then(s => s.Then_user_has_all_accounts())
@@ -70,12 +72,12 @@ namespace CallWall.Web.EventStore.Tests
             private readonly UserRepository _userRepository;
             //private readonly IAccountContactRefresher _accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
 
-            public NewUserScenario(IEventStoreConnectionFactory connectionFactory)
+            public NewUserScenario(IEventStoreClient eventStoreClient)
             {
                 //var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
                 //accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactRefresherMock);
-                
-                _userRepository = new UserRepository(connectionFactory, Substitute.For<IAccountContactRefresher>());
+
+                _userRepository = new UserRepository(eventStoreClient, Substitute.For<IAccountContactRefresher>());
                 _userRepository.Run();
                 
                 //_account = new StubAccount(_userRepository, _accountContactRefresherMock);
@@ -135,13 +137,13 @@ namespace CallWall.Web.EventStore.Tests
             private readonly IList<IAccount> _allAccounts = new List<IAccount>();
             //private readonly IAccountContactRefresher _accountContactRefresherMock;
 
-            public UserWithSingleAccountLogsInScenario(IEventStoreConnectionFactory connectionFactory)
+            public UserWithSingleAccountLogsInScenario(IEventStoreClient eventStoreClient)
             {
                 //var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
                 var accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
                 //accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactRefresherMock);
                 
-                _userRepository = new UserRepository(connectionFactory, Substitute.For<IAccountContactRefresher>());
+                _userRepository = new UserRepository(eventStoreClient, Substitute.For<IAccountContactRefresher>());
                 UserRepository.Run();
 
                 _account = new StubAccount(_userRepository, accountContactRefresherMock);

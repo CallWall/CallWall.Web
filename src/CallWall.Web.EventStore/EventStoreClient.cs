@@ -7,16 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Exceptions;
+using EventStore.ClientAPI.SystemData;
 
 namespace CallWall.Web.EventStore
 {
-    public sealed class EventStore : IEventStore
+    public sealed class EventStoreClient : IEventStoreClient
     {
         private readonly IEventStoreConnectionFactory _connectionFactory;
+        private readonly ILogger _logger;
 
-        public EventStore(IEventStoreConnectionFactory connectionFactory)
+        public EventStoreClient(IEventStoreConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
         {
             _connectionFactory = connectionFactory;
+            _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public IObservable<string> GetNewEvents(string streamName)
@@ -110,13 +113,52 @@ namespace CallWall.Web.EventStore
         }
         public async Task SaveEvent(string streamName, int expectedVersion, Guid eventId, string eventType, string jsonData, string jsonMetaData = null)
         {
-            Trace.WriteLine("SaveEvent(" + streamName + ", " + expectedVersion + ", " + eventId  + ", " + eventType + ")");
+            _logger.Trace("SaveEvent(" + streamName + ", " + expectedVersion + ", " + eventId  + ", " + eventType + ")");
             var payload = Encoding.UTF8.GetBytes(jsonData);
             var metadata = jsonMetaData == null ? null : Encoding.UTF8.GetBytes(jsonMetaData);
             using (var conn = _connectionFactory.Connect())
             {
                 await conn.AppendToStreamAsync(streamName, expectedVersion, new EventData(eventId, eventType, true, payload, metadata));
             }
+        }
+
+
+        private static readonly UserCredentials UserCredentials = new UserCredentials("admin", "changeit");
+
+        public IObservable<ResolvedEvent> AllEvents()
+        {
+            return Observable.Create<ResolvedEvent>(async o =>
+            {
+                Action<EventStoreSubscription, ResolvedEvent> callback =
+                    (eventStoreSubscription, resolvedEvent) =>
+                    {
+                        //var logMsg = string.Format("{0}.Received({1}[{2}] {{ EventType = '{3}'}}",
+                        //    typeName,
+                        //    resolvedEvent.OriginalEvent.EventStreamId,
+                        //    resolvedEvent.OriginalEvent.EventNumber,
+                        //    resolvedEvent.OriginalEvent.EventType);
+                        //Trace.WriteLine(logMsg);
+                        o.OnNext(resolvedEvent);
+                    };
+
+                var conn = _connectionFactory.Connect();
+
+                try
+                {
+                    //TODO: Handle the subscription dropped callback? -LC
+                    var subscription = await conn.SubscribeToAllAsync(true, callback, null, UserCredentials);
+                    //Trace.WriteLine(typeName + " is subscribed to all events");
+                    return new CompositeDisposable(subscription, conn);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Error subscribing to all events.");
+                    Trace.TraceError(e.ToString());
+                    conn.Dispose();
+                    return Disposable.Empty;
+                }
+            });
+
         }
     }
 }

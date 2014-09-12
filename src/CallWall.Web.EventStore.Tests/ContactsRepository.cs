@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
-using System.Threading.Tasks;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.EventStore.Tests
@@ -10,12 +8,12 @@ namespace CallWall.Web.EventStore.Tests
     public partial class ContactsRepository
     {
         private readonly IEnumerable<IAccountContactProvider> _contactProviders;
-        private EventStore _eventStore;
+        private IEventStoreClient _eventStoreClient;
 
-        public ContactsRepository(IEventStoreConnectionFactory connectionFactory, IEnumerable<IAccountContactProvider> contactProviders)
+        public ContactsRepository(IEventStoreClient eventStoreClient, IEnumerable<IAccountContactProvider> contactProviders)
         {
             _contactProviders = contactProviders;
-            _eventStore = new EventStore(connectionFactory);
+            _eventStoreClient = eventStoreClient;
         }
 
         public void RefreshContacts(IEnumerable<IAccount> accounts)

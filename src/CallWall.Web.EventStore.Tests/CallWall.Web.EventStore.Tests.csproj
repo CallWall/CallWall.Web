@@ -76,6 +76,8 @@
     <Compile Include="AccountContactSynchronization.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="ContactsRepository.cs" />
+    <Compile Include="Doubles\ConsoleLogger.cs" />
+    <Compile Include="Doubles\ConsoleLoggerFactory.cs" />
     <Compile Include="Doubles\InMemoryEventStoreConnectionFactory.cs" />
     <Compile Include="Doubles\StubAccount.cs" />
     <Compile Include="Doubles\StubAccountContactProvider.cs" />

@@ -13,7 +13,6 @@ namespace CallWall.Web.EventStore
     {
         #region Fields
 
-        private readonly IEventStoreConnectionFactory _connectionFactory;
         private readonly string _streamName;
         
         private readonly SingleAssignmentDisposable _eventSubscription = new SingleAssignmentDisposable();
@@ -21,16 +20,15 @@ namespace CallWall.Web.EventStore
         private int _isRunning;
         private int _writeVersion = ExpectedVersion.NoStream;
         private DomainEventState _state = DomainEventState.Idle;
-        private readonly EventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
 
         #endregion
 
-        protected DomainEventBase(IEventStoreConnectionFactory connectionFactory, string streamName)
+        protected DomainEventBase(IEventStoreClient eventStoreClient, string streamName)
         {
-            _connectionFactory = connectionFactory;
             _streamName = streamName;
-            _eventStore = new EventStore(connectionFactory);
-            _initialHeadVersion =  new Lazy<Task<int>>(()=>EventStore.GetHeadVersion(StreamName));
+            _eventStoreClient = eventStoreClient;
+            _initialHeadVersion =  new Lazy<Task<int>>(()=>EventStoreClient.GetHeadVersion(StreamName));
             ReadVersion = ExpectedVersion.NoStream;
         }
         
@@ -40,9 +38,8 @@ namespace CallWall.Web.EventStore
 
         protected int WriteVersion { get { return _writeVersion; } }
 
-        protected IEventStoreConnectionFactory ConnectionFactory { get { return _connectionFactory; } }
 
-        protected EventStore EventStore { get { return _eventStore; } }
+        protected IEventStoreClient EventStoreClient { get { return _eventStoreClient; } }
 
         public DomainEventState State
         {
@@ -62,7 +59,7 @@ namespace CallWall.Web.EventStore
             Trace.WriteLine("Running " + GetType().Name);
 
             var query = from _ in _initialHeadVersion.Value.ToObservable()
-                        from evt in EventStore.GetEvents(StreamName)
+                        from evt in EventStoreClient.GetEvents(StreamName)
                         select evt;
 
             _eventSubscription.Disposable = query
@@ -73,7 +70,7 @@ namespace CallWall.Web.EventStore
 
         protected async Task WriteEvent(Guid eventId, string eventType, string eventData)
         {
-            await EventStore.SaveEvent(StreamName,
+            await EventStoreClient.SaveEvent(StreamName,
                 _writeVersion,
                 eventId,
                 eventType,

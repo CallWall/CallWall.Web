@@ -6,17 +6,17 @@ namespace CallWall.Web.EventStore.Contacts
 {
     public class UserContactRepository : IUserContactRepository
     {
-        private readonly EventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
 
-        public UserContactRepository(IEventStoreConnectionFactory connectionFactory)
+        public UserContactRepository(IEventStoreClient eventStoreClient)
         {
-            _eventStore = new EventStore(connectionFactory);
+            _eventStoreClient = eventStoreClient;
         }
 
         public IObservable<ContactAggregateUpdate> GetContactSummariesFrom(User user, int? versionId)
         {
             var streamName = ContactStreamNames.UserContacts(user.Id);
-            return _eventStore.GetEvents(streamName, versionId)
+            return _eventStoreClient.GetEvents(streamName, versionId)
                 .SelectMany(resolvedEvent => resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate[]>());
         }
     }

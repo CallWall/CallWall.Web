@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Security.Cryptography;
 using CallWall.Web.EventStore.Events;
 using CallWall.Web.Providers;
-using Newtonsoft.Json;
+using EventStore.ClientAPI;
 
 namespace CallWall.Web.EventStore
 {
     class ContactSummaryRepository : IContactSummaryRepository
     {
-        private readonly IEventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
 
-        public ContactSummaryRepository(IEventStore eventStore)
+        public ContactSummaryRepository(IEventStoreClient eventStoreClient)
         {
-            _eventStore = eventStore;
+            _eventStoreClient = eventStoreClient;
         }
 
         public IObservable<IContactSummaryUpdate> GetContactUpdates(int userId, int fromEventId)
@@ -24,10 +23,9 @@ namespace CallWall.Web.EventStore
             return Observable.Create<IContactSummaryUpdate>(o =>
             {
                 var refreshCommand = new RefreshContactSummaryCommand(userId, fromEventId);
-                _eventStore.SaveEvent(StreamNames.ContactSummaryRefreshRequest, refreshCommand);
+                _eventStoreClient.SaveEvent(StreamNames.ContactSummaryRefreshRequest, ExpectedVersion.Any, Guid.NewGuid(), refreshCommand);
 
-                return _eventStore.GetAllEvents(StreamNames.ContactSummaryUpdates(userId))
-                                  .Select(JsonConvert.DeserializeObject<ContactSummaryUpdate>)
+                return _eventStoreClient.GetEvents<ContactSummaryUpdate>(StreamNames.ContactSummaryUpdates(userId))
                                   .Subscribe(o);
             });
         }
@@ -37,13 +35,13 @@ namespace CallWall.Web.EventStore
 
     class ContactSummaryRefreshProcessor : IDisposable
     {
-        private readonly IEventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
         private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
         private bool _isRunning;
 
-        public ContactSummaryRefreshProcessor(IEventStore eventStore)
+        public ContactSummaryRefreshProcessor(IEventStoreClient eventStoreClient)
         {
-            _eventStore = eventStore;
+            _eventStoreClient = eventStoreClient;
         }
 
         public void Run()
@@ -55,7 +53,7 @@ namespace CallWall.Web.EventStore
             //TODO: Add throttling by User/EventId i.e. 
             //  1) If user hit refresh 3 times in 10 seconds, ignore the later 2?
             //  2) If previous refresh is still processing, do not reissue?
-            var query = from refreshCommand in _eventStore.GetNewEvents<RefreshContactSummaryCommand>(StreamNames.ContactSummaryRefreshRequest)
+            var query = from refreshCommand in _eventStoreClient.GetNewEvents<RefreshContactSummaryCommand>(StreamNames.ContactSummaryRefreshRequest)
                         from sessions in GetSessionsByUserId(refreshCommand.UserId)
                         select sessions;
 
@@ -66,7 +64,7 @@ namespace CallWall.Web.EventStore
         private void EnqueueContactSummaryRefresh(ISession session)
         {
             //TODO: Need to track a provider specific way of time stamping this stuff.
-            _eventStore.SaveEvent(StreamNames.ContactSummaryProviderRefreshRequest, session);
+            _eventStoreClient.SaveEvent(StreamNames.ContactSummaryProviderRefreshRequest, ExpectedVersion.Any, Guid.NewGuid(), session);
         }
 
         //TODO:
@@ -82,14 +80,14 @@ namespace CallWall.Web.EventStore
 
     class ContactSummaryProviderRefreshProcessor : IDisposable
     {
-        private readonly IEventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
         private readonly IEnumerable<IAccountContactProvider> _providers;
         private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
         private bool _isRunning;
 
-        public ContactSummaryProviderRefreshProcessor(IEventStore eventStore, IEnumerable<IAccountContactProvider> providers)
+        public ContactSummaryProviderRefreshProcessor(IEventStoreClient eventStoreClient, IEnumerable<IAccountContactProvider> providers)
         {
-            _eventStore = eventStore;
+            _eventStoreClient = eventStoreClient;
             _providers = providers;
         }
 
@@ -127,7 +125,7 @@ namespace CallWall.Web.EventStore
         private void OnContactSummaryRecieved(int userId, string provider, IAccountContactSummary contactSummary)
         {
             var streamName = StreamNames.ContactSummaryRecieved(userId, provider);
-            _eventStore.SaveEvent(streamName, contactSummary);
+            _eventStoreClient.SaveEvent(streamName, ExpectedVersion.Any, Guid.NewGuid(), contactSummary);
         }
 
         public void Dispose()

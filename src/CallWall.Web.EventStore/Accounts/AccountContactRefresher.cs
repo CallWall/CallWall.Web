@@ -8,11 +8,11 @@ namespace CallWall.Web.EventStore.Accounts
 {
     public sealed class AccountContactRefresher : IAccountContactRefresher
     {
-        private readonly EventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
 
-        public AccountContactRefresher(IEventStoreConnectionFactory connectionFactory)
+        public AccountContactRefresher(IEventStoreClient eventStoreClient)
         {
-            _eventStore = new EventStore(connectionFactory);
+            _eventStoreClient = eventStoreClient;
         }
 
         public async Task RequestRefresh(Guid userId, IAccount account, ContactRefreshTriggers triggeredBy)
@@ -28,7 +28,7 @@ namespace CallWall.Web.EventStore.Accounts
                 CurrentSession = new SessionRecord(account.CurrentSession)
             }.ToJson();
 
-            await _eventStore.SaveEvent(ContactStreamNames.AccountRefreshRequests(), ExpectedVersion.Any, Guid.NewGuid(), ContactEventType.AccountContactRefreshRequest, evt);
+            await _eventStoreClient.SaveEvent(ContactStreamNames.AccountRefreshRequests(), ExpectedVersion.Any, Guid.NewGuid(), ContactEventType.AccountContactRefreshRequest, evt);
         }
     }
 }

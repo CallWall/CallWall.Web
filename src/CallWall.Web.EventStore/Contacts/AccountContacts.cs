@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using CallWall.Web.EventStore.Accounts;
 using CallWall.Web.Providers;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.Common.Log;
 using EventStore.ClientAPI.Common.Utils;
 
 namespace CallWall.Web.EventStore.Contacts
 {
     public sealed class AccountContacts
     {
-        private readonly EventStore _eventStore;
+        private readonly IEventStoreClient _eventStoreClient;
         private readonly IAccountContactProvider _contactProvider;
         private readonly string _accountId;
         private readonly string _provider;
@@ -34,7 +31,7 @@ namespace CallWall.Web.EventStore.Contacts
 
 
         public AccountContacts(
-            IEventStoreConnectionFactory connectionFactory,
+            IEventStoreClient eventStoreClient,
             IAccountContactProvider contactProvider,
             IAccountData accountData)
         {
@@ -42,7 +39,7 @@ namespace CallWall.Web.EventStore.Contacts
             if (accountData == null) throw new ArgumentNullException("provider");
             if (contactProvider.Provider != accountData.Provider) throw new InvalidOperationException("Provider must match the provider for the accountContactProvider");
 
-            _eventStore = new EventStore(connectionFactory);
+            _eventStoreClient = eventStoreClient;
             _contactProvider = contactProvider;
             _accountId = accountData.AccountId;
             _provider = accountData.Provider;
@@ -144,7 +141,7 @@ namespace CallWall.Web.EventStore.Contacts
 
             var streamName = ContactStreamNames.AccountContacts(_provider, _accountId);
             //await _eventStore.SaveEvent(streamName, ExpectedVersion.Any, new Guid(), ContactEventType.AccountContactUpdate, payload);
-            await _eventStore.SaveEvent(streamName, _writeVersion, Guid.NewGuid(), ContactEventType.AccountContactUpdate, payload);
+            await _eventStoreClient.SaveEvent(streamName, _writeVersion, Guid.NewGuid(), ContactEventType.AccountContactUpdate, payload);
 
             _writeVersion++;
 

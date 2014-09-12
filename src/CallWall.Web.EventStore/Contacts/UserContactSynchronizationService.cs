@@ -9,17 +9,14 @@ namespace CallWall.Web.EventStore.Contacts
 {
     public sealed class UserContactSynchronizationService : AllEventListenerBase, IContactSynchronizationService
     {
-        private readonly EventStore _eventStore;
         private readonly Dictionary<string, Guid> _accountIdToUserId = new Dictionary<string, Guid>();
         private readonly Dictionary<Guid, UserContacts> _users = new Dictionary<Guid, UserContacts>();
 
-        public UserContactSynchronizationService(IEventStoreConnectionFactory connectionFactory)
-            : base(connectionFactory)
+        public UserContactSynchronizationService(IEventStoreClient eventStoreClient)
+            : base(eventStoreClient)
         {
-            _eventStore = new EventStore(connectionFactory);
         }
-
-
+        
         protected override void OnEventReceived(ResolvedEvent resolvedEvent)
         {
             switch (resolvedEvent.OriginalEvent.EventType)
@@ -69,10 +66,10 @@ namespace CallWall.Web.EventStore.Contacts
         {
             var streamName = ContactStreamNames.UserContacts(userContacts.UserId);
             var payload = userContacts.GetChangesSnapshot().ToJson();
-            _eventStore.SaveEvent(streamName, userContacts.Version, Guid.NewGuid(),
-                ContactEventType.UserAggregateContactUpdate, payload)
+            SaveEvent(streamName, userContacts.Version, Guid.NewGuid(), ContactEventType.UserAggregateContactUpdate, payload)
                 .Wait();
         }
+
 
         private UserContacts GetUserContacts(AccountContactBatchUpdateRecord payload)
         {

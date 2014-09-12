@@ -15,8 +15,8 @@ namespace CallWall.Web.EventStore.Users
         private readonly IAccountContactRefresher _accountContactRefresher;
         private readonly List<User> _userCache = new List<User>();
 
-        public UserRepository(IEventStoreConnectionFactory connectionFactory, IAccountContactRefresher accountContactRefresher)
-            : base(connectionFactory, "Users")
+        public UserRepository(IEventStoreClient eventStoreClient, IAccountContactRefresher accountContactRefresher)
+            : base(eventStoreClient, "Users")
         {
             _accountContactRefresher = accountContactRefresher;
         }
