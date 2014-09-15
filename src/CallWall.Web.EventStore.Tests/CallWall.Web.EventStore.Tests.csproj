@@ -82,7 +82,6 @@
     <Compile Include="Doubles\StubContactSummary.cs" />
     <Compile Include="Doubles\StubFeed.cs" />
     <Compile Include="Doubles\StubSession.cs" />
-    <Compile Include="IContactsRepository.cs" />
     <Compile Include="NewUserRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

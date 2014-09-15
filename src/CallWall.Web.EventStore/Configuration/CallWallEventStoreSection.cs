@@ -12,17 +12,26 @@ namespace CallWall.Web.EventStore.Configuration
             return section;
         }
 
+        [ConfigurationProperty("connection", IsRequired = true)]
+        public ConnectionElement Connection
+        {
+            get { return (ConnectionElement)this["connection"]; }
+        }
+    }
+
+    public class ConnectionElement : ConfigurationElement
+    {
         [ConfigurationProperty("endpoint", IsRequired = true)]
         [TypeConverter(typeof(IpAddressConverter))]
-        [CallbackValidator(Type = typeof(IPAddress), CallbackMethodName = "ValidateIpAddress")]
+        [CallbackValidator(Type = typeof(ConnectionElement), CallbackMethodName = "ValidateIpAddress")]
         public IPAddress Endpoint
         {
-            get { return (IPAddress)this["endpoint"]; }
+            get { return IPAddress.Parse(this["endpoint"].ToString()); }
         }
 
         public static void ValidateIpAddress(object ipAddress)
         {
-            if(ipAddress == null)
+            if (ipAddress == null)
                 throw new ConfigurationErrorsException("The configuration value for the EventStore IPAddress is null. It must be provided");
             IPAddress _;
             if (!IPAddress.TryParse(ipAddress.ToString(), out _))
@@ -34,7 +43,7 @@ namespace CallWall.Web.EventStore.Configuration
 
         [ConfigurationProperty("port", IsRequired = true)]
         [TypeConverter(typeof(Int32Converter))]
-        [CallbackValidator(Type = typeof(IPAddress), CallbackMethodName = "ValidatePort")]
+        [CallbackValidator(Type = typeof(ConnectionElement), CallbackMethodName = "ValidatePort")]
         public int Port
         {
             get { return (int)this["port"]; }
@@ -49,7 +58,6 @@ namespace CallWall.Web.EventStore.Configuration
             {
                 throw new ConfigurationErrorsException("The configuration value for the EventStore port could not be parsed as an integer.");
             }
-
         }
     }
 }

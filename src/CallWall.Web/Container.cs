@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CallWall.Web.EventStore;
 using CallWall.Web.Contracts;
 using CallWall.Web.Http;
 using CallWall.Web.Hubs;
@@ -39,7 +40,7 @@ namespace CallWall.Web
 
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
-
+            
             InitialiseModules(container);
         }
 
@@ -76,6 +77,12 @@ namespace CallWall.Web
                 module.Initialise(typeRegistry);
             }
             logger.Trace("Modules Initialised");
+
+            var processes = container.ResolveAll<IProcess>();
+            foreach (var process in processes)
+            {
+                process.Run();
+            }
         }
 
         public static bool IsModule(Type type)

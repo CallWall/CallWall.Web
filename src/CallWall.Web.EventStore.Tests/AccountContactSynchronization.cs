@@ -88,7 +88,7 @@ namespace CallWall.Web.EventStore.Tests
         {
             private readonly UserRepository _userRepository;
             private readonly IUserContactRepository _userContactRepository;
-            private readonly IContactSynchronizationService _userContactSynchronizationService;
+            private readonly UserContactSynchronizationService _userContactSynchronizationService;
             private readonly IAccount _account;
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
             private readonly StubFeed _expectedFeed;

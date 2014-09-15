@@ -66,14 +66,14 @@
     <Content Include="..\CallWall.Web\Scripts\Inhouse\ProgressbarBindings.js">
       <Link>Scripts\Inhouse\ProgressbarBindings.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\jquery-2.1.0.intellisense.js">
-      <Link>Scripts\jquery-2.1.0.intellisense.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.1.1.intellisense.js">
+      <Link>Scripts\jquery-2.1.1.intellisense.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\jquery-2.1.0.js">
-      <Link>Scripts\jquery-2.1.0.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.1.1.js">
+      <Link>Scripts\jquery-2.1.1.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\jquery-2.1.0.min.js">
-      <Link>Scripts\jquery-2.1.0.min.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\jquery-2.1.1.min.js">
+      <Link>Scripts\jquery-2.1.1.min.js</Link>
     </Content>
     <Content Include="..\CallWall.Web\Scripts\jquery-ui-1.10.4.js">
       <Link>Scripts\jquery-ui-1.10.4.js</Link>
@@ -93,11 +93,11 @@
     <Content Include="..\CallWall.Web\Scripts\jquery.color.svg-names-2.1.2.min.js">
       <Link>Scripts\jquery.color.svg-names-2.1.2.min.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.0.2.js">
-      <Link>Scripts\jquery.signalR-2.0.2.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.1.0.js">
+      <Link>Scripts\jquery.signalR-2.1.0.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.0.2.min.js">
-      <Link>Scripts\jquery.signalR-2.0.2.min.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\jquery.signalR-2.1.0.min.js">
+      <Link>Scripts\jquery.signalR-2.1.0.min.js</Link>
     </Content>
     <Content Include="..\CallWall.Web\Scripts\jquery.unobtrusive-ajax.js">
       <Link>Scripts\jquery.unobtrusive-ajax.js</Link>
@@ -120,14 +120,14 @@
     <Content Include="..\CallWall.Web\Scripts\jquery.validate.unobtrusive.min.js">
       <Link>Scripts\jquery.validate.unobtrusive.min.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\knockout-3.0.0.debug.js">
-      <Link>Scripts\knockout-3.0.0.debug.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.1.0.debug.js">
+      <Link>Scripts\knockout-3.1.0.debug.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\knockout-3.0.0.js">
-      <Link>Scripts\knockout-3.0.0.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.1.0.js">
+      <Link>Scripts\knockout-3.1.0.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\modernizr-2.7.1.js">
-      <Link>Scripts\modernizr-2.7.1.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\modernizr-2.7.2.js">
+      <Link>Scripts\modernizr-2.7.2.js</Link>
     </Content>
     <Content Include="..\CallWall.Web\Scripts\_references.js">
       <Link>Scripts\_references.js</Link>
@@ -144,9 +144,6 @@
     <Content Include="SpecRunner.html" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\CallWall.Web\Scripts\jquery-2.1.0.min.map">
-      <Link>Scripts\jquery-2.1.0.min.map</Link>
-    </None>
     <None Include="packages.config" />
     <None Include="Scripts\jasmine\MIT.LICENSE" />
   </ItemGroup>

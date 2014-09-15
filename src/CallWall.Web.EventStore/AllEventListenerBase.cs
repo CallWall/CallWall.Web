@@ -7,7 +7,7 @@ using EventStore.ClientAPI;
 
 namespace CallWall.Web.EventStore
 {
-    public abstract class AllEventListenerBase : IDisposable
+    public abstract class AllEventListenerBase : IDisposable, IRunnable
     {
         private int _isRunning;
         private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
@@ -26,39 +26,8 @@ namespace CallWall.Web.EventStore
             var typeName = GetType().Name;
             Trace.WriteLine("Running " + typeName);
 
-            //var query = Observable.Create<ResolvedEvent>(async o =>
-            //    {
-            //        Action<EventStoreSubscription, ResolvedEvent> callback =
-            //            (eventStoreSubscription, resolvedEvent) =>
-            //            {
-            //                var logMsg = string.Format("{0}.Received({1}[{2}] {{ EventType = '{3}'}}",
-            //                    typeName,
-            //                    resolvedEvent.OriginalEvent.EventStreamId, 
-            //                    resolvedEvent.OriginalEvent.EventNumber,
-            //                    resolvedEvent.OriginalEvent.EventType);
-            //                Trace.WriteLine(logMsg);
-            //                o.OnNext(resolvedEvent);
-            //            };
-
-            //        var conn = _connectionFactory.Connect();
-                    
-            //        try
-            //        {
-            //            //TODO: Handle the subscription dropped callback? -LC
-            //            var subscription = await conn.SubscribeToAllAsync(true, callback,null, UserCredentials);
-            //            Trace.WriteLine(typeName + " is subscribed to all events");
-            //            return new CompositeDisposable(subscription, conn);
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            Trace.WriteLine("Error subscribing to all events.");
-            //            Trace.TraceError(e.ToString());
-            //            conn.Dispose();
-            //            return Disposable.Empty;
-            //        }
-            //    });
-
-            _subscription.Disposable = _eventStoreClient.AllEvents().Subscribe(OnEventReceived);
+            _subscription.Disposable = _eventStoreClient.AllEvents()
+                .Subscribe(OnEventReceived);
         }
 
         protected abstract void OnEventReceived(ResolvedEvent resolvedEvent);
