@@ -1,12 +1,10 @@
 using CallWall.Web.EventStore.Accounts;
-using CallWall.Web.EventStore.Users;
 
 namespace CallWall.Web.EventStore.Tests.Doubles
 {
     public class StubAccount : Account
     {
-        public StubAccount(IUserRepository userRepository, IAccountContactRefresher accountContactRefresher)
-            : base(userRepository, accountContactRefresher)
+        public StubAccount(IAccountContactRefresher accountContactRefresher)
         {
             Provider = "TestProvider";
             AccountId = "Test.User@email.com";

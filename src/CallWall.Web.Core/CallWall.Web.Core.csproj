@@ -115,6 +115,7 @@
     <Compile Include="Contracts\ICalendarEntry.cs" />
     <Compile Include="Contracts\IContactCollaboration.cs" />
     <Compile Include="Contracts\IGalleryAlbum.cs" />
+    <Compile Include="ContactRefreshTriggers.cs" />
     <Compile Include="EnumerableEx.cs" />
     <Compile Include="ICalendarEntry.cs" />
     <Compile Include="IContactAssociation.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="IContactSummaryRepository.cs" />
     <Compile Include="IGalleryAlbum.cs" />
     <Compile Include="IMessage.cs" />
+    <Compile Include="IRunnable.cs" />
     <Compile Include="ITypeRegistry.cs" />
     <Compile Include="Contracts\Communication\ICommunicationQueryProvider.cs" />
     <Compile Include="Contracts\Communication\IMessage.cs" />
@@ -142,10 +144,12 @@
     <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
     <Compile Include="OAuth2Implementation\Outh2Session.cs" />
     <Compile Include="Contracts\Account\IAccount.cs" />
+    <Compile Include="IUserRepository.cs" />
     <Compile Include="NotificationBase.cs" />
     <Compile Include="NotificationExtensions.cs" />
     <Compile Include="NotifyEventComparer.cs" />
     <Compile Include="OAuth2Implementation\AuthState.cs" />
+    <Compile Include="IAccountFactory.cs" />
     <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
     <Compile Include="OAuth2Implementation\Outh2Session.cs" />
     <Compile Include="IAccount.cs" />
@@ -156,7 +160,9 @@
     <Compile Include="Providers\ICommunicationProvider.cs" />
     <Compile Include="Providers\IContactCollaborationProvider.cs" />
     <Compile Include="Providers\IGalleryProvider.cs" />
+    <Compile Include="Providers\ILoginProvider.cs" />
     <Compile Include="Providers\ISessionProvider.cs" />
+    <Compile Include="Providers\LoginProvider.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Providers\UriExtensions.cs" />
     <Compile Include="ResharperAnnotations.cs" />

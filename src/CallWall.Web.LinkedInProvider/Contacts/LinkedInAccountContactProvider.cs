@@ -17,7 +17,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
     {
         public string Provider { get { return "LinkedIn"; } }
 
-        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccountData account, DateTime lastUpdated)
+        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
             if (account.Provider != Provider)
                 return Observable.Empty<ContactFeed>();
@@ -47,7 +47,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             private readonly IObservable<IAccountContactSummary> _values;
             private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 
-            public ContactFeed(IAccountData account, DateTime lastUpdated)
+            public ContactFeed(IAccount account, DateTime lastUpdated)
             {
                 //TODO - this shouldnt be in a ctor - but it doesnt need to complexity of the Google provider - review with Lee - RC
                 var client = new HttpClient();

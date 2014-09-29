@@ -4,10 +4,10 @@
 (function (ko, callWall) {
     var ContactSummaryViewModel = function (contact) {
         var self = this;
-        self.title = contact.Title;
+        self.title = contact.NewTitle;
         self.titleUpperCase = self.title.toUpperCase();
-        self.primaryAvatar = contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
-        self.tags = contact.Tags;
+        self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        self.tags = [];//contact.Tags;
         self.isVisible = ko.observable(true);
         self.filter = function(prefixTest) {
             var isVisible = (self.titleUpperCase.lastIndexOf(prefixTest, 0) === 0);
@@ -57,7 +57,7 @@
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
-            return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
+            return contact.NewTitle.toUpperCase().lastIndexOf(self.header, 0) === 0;
         };
     };
 
@@ -112,6 +112,17 @@
                 }
             }
             incrementProgress();
+        };
+        self.processUpdate = function (contactUpdate) {
+            console.log("processUpdate:");
+            console.log(contactUpdate);
+            if (contactUpdate.isDeleted) {
+                //TODO: Will have to find this record by Id to remove it. -LC
+            } else {//if (contactUpdate._rev == 1) {
+                self.addContact(contactUpdate);
+            //} else {
+            //    console.log("Updates not supported...yet.");
+            }
         };
 
         self.IncrementCount = function(addition) {

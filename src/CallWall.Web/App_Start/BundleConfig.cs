@@ -11,7 +11,7 @@ namespace CallWall.Web
                        "~/Scripts/jquery-{version}.js",
                        "~/Scripts/jquery-ui-{version}.js",
                        "~/Scripts/jquery.color-{version}.js",
-                       "~/Scripts/jquery.unobtrusive*",
+                        "~/Scripts/jquery.unobtrusive*",
                        "~/Scripts/jquery.validate*",
                        "~/Scripts/knockout-{version}.js"));
 
@@ -40,13 +40,13 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/Dashboard/DashboardModel.js",
                        "~/Scripts/Inhouse/Dashboard/ContactProfileSignalR.js"
                        ));
-
+            
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 //"~/Content/bootstrap.css",
-               "~/Content/bootstrap.metro.css",
-               "~/Content/site.css",
-               "~/Content/bootstrap-responsive.css"
-               ));
+                "~/Content/bootstrap.metro.css",
+                "~/Content/site.css",
+                "~/Content/bootstrap-responsive.css"
+                ));
 
             bundles.Add(new StyleBundle("~/Content/contactdetails").Include(
                 "~/Content/ContactDetails.css"));

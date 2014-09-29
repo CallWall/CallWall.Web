@@ -54,6 +54,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,6 +67,7 @@
     <Compile Include="Accounts\Account.cs" />
     <Compile Include="Accounts\AccountContactRefresher.cs" />
     <Compile Include="Accounts\AccountEventType.cs" />
+    <Compile Include="Accounts\AccountFactory.cs" />
     <Compile Include="Accounts\AccountRecord.cs" />
     <Compile Include="Accounts\IAccountContactRefresher.cs" />
     <Compile Include="Accounts\SessionRecord.cs" />
@@ -78,6 +82,7 @@
     <Compile Include="Contacts\ContactComparer.cs" />
     <Compile Include="Contacts\ContactEventType.cs" />
     <Compile Include="Contacts\ContactStreamNames.cs" />
+    <Compile Include="Contacts\ContactSummaryRepository.cs" />
     <Compile Include="Contacts\ContactSummaryUpdate.cs" />
     <Compile Include="Contacts\IAccountContactsFactory.cs" />
     <Compile Include="Contacts\UserContacts.cs" />
@@ -89,8 +94,6 @@
     <Compile Include="DomainEventState.cs" />
     <Compile Include="Domain\AccountContacts.cs" />
     <Compile Include="Domain\ContactAggregate.cs" />
-    <Compile Include="Domain\ContactAggregateUpdate.cs" />
-    <Compile Include="Domain\ContactProviderSummary.cs" />
     <Compile Include="Domain\IContactAggregate.cs" />
     <Compile Include="Domain\IUser.cs" />
     <Compile Include="Domain\IUserContacts.cs" />
@@ -103,14 +106,12 @@
     <Compile Include="EventStoreConnectionFactory.cs" />
     <Compile Include="IDomainEventBase.cs" />
     <Compile Include="IEventStoreClient.cs" />
-    <Compile Include="IRunnable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Events\RefreshContactSummaryCommand.cs" />
     <Compile Include="StreamNames.cs" />
     <Compile Include="Users\UserCreatedEvent.cs" />
     <Compile Include="Users\UserEventType.cs" />
     <Compile Include="Users\UserRepository.cs" />
-    <Compile Include="Users\IUserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

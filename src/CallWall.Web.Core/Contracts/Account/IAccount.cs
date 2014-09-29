@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace CallWall.Web
+﻿namespace CallWall.Web
 {
-    public interface IAccountData
+    public interface IAccount
     {
         /// <summary>
         /// The provider for which this account belongs to
@@ -21,23 +18,5 @@ namespace CallWall.Web
         string DisplayName { get; }
 
         ISession CurrentSession { get; }
-    }
-
-    public interface IAccount : IAccountData
-    {
-        Task<User> Login();
-
-        Task RefreshContacts(Guid userId, ContactRefreshTriggers triggeredBy);
-    }
-
-    
-    public enum ContactRefreshTriggers
-    {
-        [Obsolete("Default value is not valid", true)]
-        None,
-        Registered,
-        Login,
-        UserRequested,
-        Timeout
     }
 }

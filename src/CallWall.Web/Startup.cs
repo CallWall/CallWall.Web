@@ -22,6 +22,11 @@ namespace CallWall.Web
         static Startup()
         {
             _logger = new Log4NetLogger(typeof(Startup));
+            _logger.Info("--------------------------------------------------------------------------------");
+            _logger.Info("--------------------------------------------------------------------------------");
+            _logger.Info("--------------------------------------------------------------------------------");
+            _logger.Info("Startup");
+
             _container = Bootstrapper.Initialise();
         }
 
@@ -32,6 +37,8 @@ namespace CallWall.Web
 
         public void Configuration(IAppBuilder app)
         {
+
+            
             _logger.Info("Owin Starting...");
             var ct = GetShutdownToken(app.Properties);
             ct.Register(Dispose);

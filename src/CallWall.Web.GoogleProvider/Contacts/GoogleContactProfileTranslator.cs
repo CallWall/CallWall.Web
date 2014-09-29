@@ -93,7 +93,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         }
 
-        public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccountData account)
+        public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccount account)
         {
             //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
             var xDoc = XDocument.Parse(response);

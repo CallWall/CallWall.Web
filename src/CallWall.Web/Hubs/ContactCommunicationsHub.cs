@@ -12,15 +12,14 @@ using Microsoft.AspNet.SignalR.Hubs;
 namespace CallWall.Web.Hubs
 {
     [HubName("contactCommunications")]
-    public class ContactCommunicationsHub : Hub//ObservableHub<IMessage>
+    public class ContactCommunicationsHub : Hub
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
-        private readonly ISessionProvider _sessionProvider;
+        private readonly IEnumerable<ICommunicationProvider> _communicationProviders;
+        private readonly ILoginProvider _sessionProvider;
         private readonly ILogger _logger;
-        private readonly ICommunicationProvider[] _communicationProviders;
 
-        public ContactCommunicationsHub(IEnumerable<ICommunicationProvider> communicationProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory) 
-            : base()
+        public ContactCommunicationsHub(IEnumerable<ICommunicationProvider> communicationProviders, ILoginProvider sessionProvider, ILoggerFactory loggerFactory)
         {
             Debug.Print("ContactCommunicationsHub.ctor()");
             _communicationProviders = communicationProviders.ToArray();
@@ -29,10 +28,11 @@ namespace CallWall.Web.Hubs
             _logger.Trace("ContactCommunicationsHub.ctor(communicationProviders:{0})", string.Join(",", _communicationProviders.Select(cp => cp.GetType().Name)));
         }
 
-        public void Subscribe(string[] contactKeys)
+        public async Task Subscribe(string[] contactKeys)
         {
             Debug.Print("ContactCommunicationsHub.Subscribe(...)");
-            var sessions = _sessionProvider.GetSessions(Context.User);
+            var user = await _sessionProvider.GetUser(Context.User.UserId());
+            var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
             var subscription = _communicationProviders
                                 .ToObservable()
                                 .SelectMany(c => c.GetMessages(sessions, contactKeys))

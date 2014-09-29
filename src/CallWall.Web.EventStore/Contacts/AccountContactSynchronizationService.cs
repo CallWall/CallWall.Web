@@ -10,8 +10,8 @@ namespace CallWall.Web.EventStore.Contacts
     {
         private readonly IAccountContactsFactory _accountContactsFactory;
         private readonly Dictionary<string, AccountContacts> _accounts = new Dictionary<string, AccountContacts>();
-        public AccountContactSynchronizationService(IEventStoreClient eventStoreClient, IAccountContactsFactory accountContactsFactory)
-            : base(eventStoreClient, ContactStreamNames.AccountRefreshRequests())
+        public AccountContactSynchronizationService(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory, IAccountContactsFactory accountContactsFactory)
+            : base(eventStoreClient, loggerFactory, ContactStreamNames.AccountRefreshRequests())
         {
             _accountContactsFactory = accountContactsFactory;
         }
@@ -41,6 +41,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         protected override void OnStreamError(Exception error)
         {
+            Logger.Error(error, "Sequence failed.");
             throw new NotImplementedException();
         }
 
@@ -51,25 +52,25 @@ namespace CallWall.Web.EventStore.Contacts
 
             //TODO: What do I do if there are duplicates or it is missing? -LC
             var accountContacts = _accountContactsFactory.Create(payload.Account);
-            _accounts[key] = accountContacts;
+            _accounts.Add(key, accountContacts);
         }
 
         private void ProcessRefreshRequest(RecordedEvent recordedEvent)
         {
-            Trace.WriteLine("Processing Refresh request");
+            Logger.Trace("Processing Refresh request");
             var payload = recordedEvent.Deserialize<RefreshContactsCommand>();
             var accountContacts = GetOrCreateAccountContacts(payload);
             accountContacts.RequestRefresh(payload.UserId);
         }
 
-        private AccountContacts GetOrCreateAccountContacts(IAccountData payload)
+        private AccountContacts GetOrCreateAccountContacts(IAccount payload)
         {
             var key = GetKey(payload.Provider, payload.AccountId);
             AccountContacts accountContacts;
             if (!_accounts.TryGetValue(key, out accountContacts))
             {
                 accountContacts = _accountContactsFactory.Create(payload);
-                _accounts[key] = accountContacts;
+                _accounts.Add(key, accountContacts);
             }
             return accountContacts;
         }

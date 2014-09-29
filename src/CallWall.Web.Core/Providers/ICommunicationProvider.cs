@@ -8,4 +8,5 @@ namespace CallWall.Web.Providers
     {
         IObservable<IMessage> GetMessages(IEnumerable<ISession> session, string[] contactKeys);
     }
+
 }

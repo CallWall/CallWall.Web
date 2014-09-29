@@ -1,6 +1,6 @@
 namespace CallWall.Web.EventStore.Accounts
 {
-    public class AccountRecord : IAccountData
+    public class AccountRecord : IAccount
     {
         public string Provider { get; set; }
         public string AccountId { get; set; }
@@ -13,9 +13,9 @@ namespace CallWall.Web.EventStore.Accounts
                 DisplayName, CurrentSession);
         }
 
-        string IAccountData.Provider { get { return Provider; } }
-        string IAccountData.AccountId { get { return AccountId; } }
-        string IAccountData.DisplayName { get { return DisplayName; } }
-        ISession IAccountData.CurrentSession { get { return CurrentSession; } }
+        string IAccount.Provider { get { return Provider; } }
+        string IAccount.AccountId { get { return AccountId; } }
+        string IAccount.DisplayName { get { return DisplayName; } }
+        ISession IAccount.CurrentSession { get { return CurrentSession; } }
     }
 }

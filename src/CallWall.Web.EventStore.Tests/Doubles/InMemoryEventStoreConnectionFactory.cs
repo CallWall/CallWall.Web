@@ -21,17 +21,11 @@ namespace CallWall.Web.EventStore.Tests.Doubles
             _ipEndPoint = new IPEndPoint(ip, port);
             
             Trace.Write("Waiting for process to warm up..");
-            Thread.Sleep(1000);
-            Trace.Write(".");
-            Thread.Sleep(1000);
-            Trace.Write(".");
-            Thread.Sleep(1000);
-            Trace.Write(".");
-            Thread.Sleep(1000);
-            Trace.Write(".");
-            Thread.Sleep(1000);
-            Trace.Write(".");
-            Thread.Sleep(1000);
+            for (int i = 0; i < 8; i++)
+            {
+                Thread.Sleep(1000);
+                Trace.Write(".");
+            }
             Trace.WriteLine("Done (hopefully).");
         }
 
@@ -46,6 +40,7 @@ namespace CallWall.Web.EventStore.Tests.Doubles
         {
             _eventStoreProcess.Kill();
             _eventStoreProcess.Dispose();
+            Trace.WriteLine("ConnectionFactory Disposed");
         }
     }
 }

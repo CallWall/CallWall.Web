@@ -9,10 +9,11 @@ namespace CallWall.Web.Account
 
         Uri AuthenticationUri(string redirectUri, IList<string> scopes);
 
-        bool CanCreateSessionFromState(string code, string state);
-        
-        ISession CreateSession(string code, string state);
+        bool CanCreateAccountFromState(string code, string state);
 
+        IAccount CreateAccountFromOAuthCallback(string code, string state);
+
+        //TODO: Is this required anymore? -LC
         bool TryDeserialiseSession(string payload, out ISession session);   
     }
 }

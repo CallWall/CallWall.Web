@@ -7,7 +7,14 @@ namespace CallWall.Web.LinkedInProvider.Auth
 {
     public class LinkedInAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
-        public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
+        private readonly IAccountFactory _accountFactory;
+
+        public LinkedInAuthentication(IAccountFactory accountFactory)
+        {
+            _accountFactory = accountFactory;
+        }
+
+        public override IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
 
         public override string RequestAuthorizationBaseUri { get { return "https://www.linkedin.com/uas/oauth2/authorization"; } }
 
@@ -39,5 +46,13 @@ namespace CallWall.Web.LinkedInProvider.Auth
                 throw new AuthenticationException(string.Format("{0} : {1}", json["error"], json["error_description"]));
             throw new AuthenticationException((string)json["error"]);
         }
+
+
+        protected override IAccount CreateAccount(ISession session)
+        {
+            //HACK: This should obviously go to Google and fetch the details. -LC
+            return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session);
+        }
+
     }
 }

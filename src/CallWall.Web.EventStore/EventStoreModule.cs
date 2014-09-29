@@ -1,4 +1,7 @@
 
+using System.Threading.Tasks;
+using CallWall.Web.EventStore.Contacts;
+
 namespace CallWall.Web.EventStore
 {
 
@@ -7,12 +10,14 @@ namespace CallWall.Web.EventStore
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IEventStoreClient, EventStoreClient>();
-            registry.RegisterType<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
-            registry.RegisterType<Accounts.IAccountContactRefresher, Accounts.AccountContactRefresher>();
-            registry.RegisterType<Contacts.IAccountContactsFactory, Contacts.AccountContactsFactory>();
-            registry.RegisterType<Contacts.IUserContactRepository, Contacts.UserContactRepository>();
-            registry.RegisterType<Users.IUserRepository, Users.UserRepository>();         
+            registry.RegisterSingleton<IEventStoreClient, EventStoreClient>();
+            registry.RegisterSingleton<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
+            registry.RegisterSingleton<Accounts.IAccountContactRefresher, Accounts.AccountContactRefresher>();
+            registry.RegisterSingleton<Contacts.IAccountContactsFactory, Contacts.AccountContactsFactory>();
+            registry.RegisterSingleton<Contacts.IUserContactRepository, Contacts.UserContactRepository>();
+            registry.RegisterSingleton<IUserRepository, Users.UserRepository>();
+            registry.RegisterSingleton<IAccountFactory, Accounts.AccountFactory>();
+            registry.RegisterSingleton<IContactSummaryRepository, ContactSummaryRepository>();
    
             registry.RegisterType<IProcess, EventStoreProcess>("EventStoreProcess");
         }
@@ -23,22 +28,23 @@ namespace CallWall.Web.EventStore
     {
         private readonly Contacts.AccountContactSynchronizationService _accountContactSynchronizationService;
         private readonly Contacts.UserContactSynchronizationService _userContactSynchronizationService;
-        private readonly Users.IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
         public EventStoreProcess(Contacts.AccountContactSynchronizationService accountContactSynchronizationService,
              Contacts.UserContactSynchronizationService userContactSynchronizationService,
-             Users.IUserRepository userRepository)
+             IUserRepository userRepository)
         {
             _accountContactSynchronizationService = accountContactSynchronizationService;
             _userContactSynchronizationService = userContactSynchronizationService;
             _userRepository = userRepository;
         }
 
-        public void Run()
+        public async Task Run()
         {
-            _accountContactSynchronizationService.Run();
-            _userContactSynchronizationService.Run();
-            _userRepository.Run();
+            await Task.WhenAll(
+                _accountContactSynchronizationService.Run(),
+                _userContactSynchronizationService.Run(),
+                _userRepository.Run());
         }
     }
 }

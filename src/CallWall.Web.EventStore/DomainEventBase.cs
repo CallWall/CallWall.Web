@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -13,30 +12,34 @@ namespace CallWall.Web.EventStore
     {
         #region Fields
 
-        private readonly string _streamName;
-        
         private readonly SingleAssignmentDisposable _eventSubscription = new SingleAssignmentDisposable();
-        private readonly Lazy<Task<int>> _initialHeadVersion; 
+        private readonly string _streamName;
+        private readonly IEventStoreClient _eventStoreClient;
+        private readonly ILogger _logger;
+        private int? _initialHeadVersion;
         private int _isRunning;
         private int _writeVersion = ExpectedVersion.NoStream;
         private DomainEventState _state = DomainEventState.Idle;
-        private readonly IEventStoreClient _eventStoreClient;
+
 
         #endregion
 
-        protected DomainEventBase(IEventStoreClient eventStoreClient, string streamName)
+        protected DomainEventBase(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory, string streamName)
         {
             _streamName = streamName;
             _eventStoreClient = eventStoreClient;
-            _initialHeadVersion =  new Lazy<Task<int>>(()=>EventStoreClient.GetHeadVersion(StreamName));
+            _logger = loggerFactory.CreateLogger(GetType());
+            
             ReadVersion = ExpectedVersion.NoStream;
         }
-        
+
         protected string StreamName { get { return _streamName; } }
 
         protected int ReadVersion { get; private set; }
 
         protected int WriteVersion { get { return _writeVersion; } }
+
+        protected ILogger Logger { get { return _logger; } }
 
 
         protected IEventStoreClient EventStoreClient { get { return _eventStoreClient; } }
@@ -52,20 +55,29 @@ namespace CallWall.Web.EventStore
             }
         }
 
-        public void Run()
+        protected int InitialHeadVersion
+        {
+            get { return _initialHeadVersion.GetValueOrDefault(-3); }
+        }
+
+        public async Task Run()
         {
             if (Interlocked.CompareExchange(ref _isRunning, 1, 0) == 1)
                 return;
-            Trace.WriteLine("Running " + GetType().Name);
+            _logger.Info("Running (Listening to '{0}')", _streamName);
 
-            var query = from _ in _initialHeadVersion.Value.ToObservable()
-                        from evt in EventStoreClient.GetEvents(StreamName)
+            _initialHeadVersion = await EventStoreClient.GetHeadVersion(StreamName);
+            _logger.Debug("{0} head is at version {1}", _streamName, InitialHeadVersion);
+
+            var query = from evt in EventStoreClient.GetEvents(StreamName)
                         select evt;
 
             _eventSubscription.Disposable = query
                 .Subscribe(
                     ReceiveEvent,
                     OnStreamError);
+
+            SetState();
         }
 
         protected async Task WriteEvent(Guid eventId, string eventType, string eventData)
@@ -88,20 +100,18 @@ namespace CallWall.Web.EventStore
             Interlocked.Increment(ref _writeVersion);
             using (QueueNotifications())
             {
-                State = ReevaluateState();
-                OnPropertyChanged("WriteVersion");    
+                SetState();
+                OnPropertyChanged("WriteVersion");
             }
         }
 
         private void ReceiveEvent(ResolvedEvent resolvedEvent)
         {
-            var logMsg = string.Format("{0}.Received({1}[{2}] {{ EventType = '{3}'}}",
-                                GetType().Name,
-                                resolvedEvent.OriginalEvent.EventStreamId, resolvedEvent.OriginalEvent.EventNumber,
-                                resolvedEvent.OriginalEvent.EventType);
-            Trace.WriteLine(logMsg);
-            //Trace.WriteLine("OnEventReceived " + resolvedEvent.OriginalEvent.EventStreamId + " " + resolvedEvent.OriginalEvent.EventType);
-            
+            _logger.Debug("{0}.Received({1}[{2}] {{ EventType = '{3}'}}",
+                GetType().Name,
+                resolvedEvent.OriginalEvent.EventStreamId, resolvedEvent.OriginalEvent.EventNumber,
+                resolvedEvent.OriginalEvent.EventType);
+
             OnEventReceived(resolvedEvent);
             using (QueueNotifications())
             {
@@ -112,14 +122,21 @@ namespace CallWall.Web.EventStore
                 }
                 else
                 {
-                    State = ReevaluateState();        
+                    SetState();
                 }
             }
         }
 
+        private void SetState()
+        {
+            _logger.Trace("Setting state. Current State : {0}", State);
+            State = ReevaluateState();
+            _logger.Trace("Setting state. New State : {0}", State);
+        }
         private DomainEventState ReevaluateState()
         {
-            if (ReadVersion < _initialHeadVersion.Value.Result)
+            _logger.Trace("Reevaluating State :InitialHeadVersion:{0} ReadVersion:{1} WriteVersion:{2}", InitialHeadVersion, ReadVersion, WriteVersion);
+            if (ReadVersion < InitialHeadVersion)
             {
                 return DomainEventState.LoadingFromHistory;
             }
@@ -129,10 +146,11 @@ namespace CallWall.Web.EventStore
             }
             return DomainEventState.Current;
         }
-        
+
         public void Dispose()
         {
             _eventSubscription.Dispose();
+            _logger.Info("{0} Disposed", GetType().Name);
         }
     }
 }

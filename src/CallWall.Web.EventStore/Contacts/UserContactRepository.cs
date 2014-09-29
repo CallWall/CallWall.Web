@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reactive.Linq;
-using CallWall.Web.EventStore.Domain;
 
 namespace CallWall.Web.EventStore.Contacts
 {
@@ -17,7 +16,8 @@ namespace CallWall.Web.EventStore.Contacts
         {
             var streamName = ContactStreamNames.UserContacts(user.Id);
             return _eventStoreClient.GetEvents(streamName, versionId)
-                .SelectMany(resolvedEvent => resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate[]>());
+                .Where(resolvedEvent => resolvedEvent.OriginalEvent!=null)
+                .Select(resolvedEvent => resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate>());
         }
     }
 }

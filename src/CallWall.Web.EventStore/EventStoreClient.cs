@@ -1,11 +1,12 @@
 using System;
 using System.Data;
-using System.Diagnostics;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
+using EventStore.ClientAPI.Common.Utils;
 using EventStore.ClientAPI.Exceptions;
 using EventStore.ClientAPI.SystemData;
 
@@ -13,6 +14,7 @@ namespace CallWall.Web.EventStore
 {
     public sealed class EventStoreClient : IEventStoreClient
     {
+        private static readonly UserCredentials AdminUserCredentials = new UserCredentials("admin", "changeit");
         private readonly IEventStoreConnectionFactory _connectionFactory;
         private readonly ILogger _logger;
 
@@ -45,14 +47,13 @@ namespace CallWall.Web.EventStore
                 var conn = _connectionFactory.Connect();
 
                 Action<EventStoreCatchUpSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2.OriginalEvent.Data);
-                
+
                 var subscription = conn.SubscribeToStreamFrom(streamName, StreamPosition.Start, false, callback);
 
                 return new CompositeDisposable(Disposable.Create(() => subscription.Stop(TimeSpan.FromSeconds(2))), conn);
             })
             .Select(Encoding.UTF8.GetString);
         }
-
         public IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion = null)
         {
             return Observable.Create<ResolvedEvent>(o =>
@@ -83,7 +84,6 @@ namespace CallWall.Web.EventStore
                 throw new MissingPrimaryKeyException(error);
             }
         }
-
         public async Task<int> GetHeadVersion(string streamName)
         {
             using (var conn = _connectionFactory.Connect())
@@ -95,7 +95,7 @@ namespace CallWall.Web.EventStore
                 }
                 if (slice.Status == SliceReadStatus.StreamNotFound)
                 {
-                    return -1;
+                    return ExpectedVersion.NoStream;//- 1;
                 }
                 throw new StreamDeletedException(streamName);
             }
@@ -113,52 +113,137 @@ namespace CallWall.Web.EventStore
         }
         public async Task SaveEvent(string streamName, int expectedVersion, Guid eventId, string eventType, string jsonData, string jsonMetaData = null)
         {
-            _logger.Trace("SaveEvent(" + streamName + ", " + expectedVersion + ", " + eventId  + ", " + eventType + ")");
+            _logger.Trace("SaveEvent(" + streamName + ", " + expectedVersion + ", " + eventId + ", " + eventType + ")");
             var payload = Encoding.UTF8.GetBytes(jsonData);
             var metadata = jsonMetaData == null ? null : Encoding.UTF8.GetBytes(jsonMetaData);
-            using (var conn = _connectionFactory.Connect())
+            try
             {
-                await conn.AppendToStreamAsync(streamName, expectedVersion, new EventData(eventId, eventType, true, payload, metadata));
+                using (var conn = _connectionFactory.Connect())
+                {
+                    await conn.AppendToStreamAsync(streamName, expectedVersion, new EventData(eventId, eventType, true, payload, metadata));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to SaveEvent({0}, {1}, {2}, {3})", streamName, expectedVersion, eventId, eventType);
+                throw;
+            }
+        }
+
+        public async Task SaveBatch(string streamName, int expectedVersion, string eventType, string[] jsonData)
+        {
+            _logger.Trace("SaveBatch({0}, {1}, {2}, jsonData[{3}])", streamName, expectedVersion, eventType, jsonData.Length);
+            var events = jsonData.Select(Encoding.UTF8.GetBytes)
+                .Select(bin=>new EventData(Guid.NewGuid(),eventType, true, bin, null));
+            
+            try
+            {
+                using (var conn = _connectionFactory.Connect())
+                {
+                    await conn.AppendToStreamAsync(streamName, expectedVersion, events);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to SaveBatch({0}, {1}, {2}, jsonData[{3}])", streamName, expectedVersion, eventType, jsonData.Length);
+                throw;
             }
         }
 
 
-        private static readonly UserCredentials UserCredentials = new UserCredentials("admin", "changeit");
-
-        public IObservable<ResolvedEvent> AllEvents()
+        public async Task<IDisposable> AllEvents(Action<ResolvedEvent> onEventReceived)
         {
-            return Observable.Create<ResolvedEvent>(async o =>
+            //TODO: When to dispose? -LC
+            var conn = _connectionFactory.Connect();
+            try
             {
-                Action<EventStoreSubscription, ResolvedEvent> callback =
-                    (eventStoreSubscription, resolvedEvent) =>
+                
+                //TODO: Handle the subscription dropped callback? -LC
+                //  Potentially pass in a strategy for handling the subscription drop? -LC
+                var subscription = await conn.SubscribeToAllAsync(true,
+                    (eventStoreSubscription, resolvedEvent) => onEventReceived(resolvedEvent),
+                    (eventStoreSubscription, dropReason, exception) =>
                     {
-                        //var logMsg = string.Format("{0}.Received({1}[{2}] {{ EventType = '{3}'}}",
-                        //    typeName,
-                        //    resolvedEvent.OriginalEvent.EventStreamId,
-                        //    resolvedEvent.OriginalEvent.EventNumber,
-                        //    resolvedEvent.OriginalEvent.EventType);
-                        //Trace.WriteLine(logMsg);
-                        o.OnNext(resolvedEvent);
-                    };
-
-                var conn = _connectionFactory.Connect();
-
-                try
-                {
-                    //TODO: Handle the subscription dropped callback? -LC
-                    var subscription = await conn.SubscribeToAllAsync(true, callback, null, UserCredentials);
-                    //Trace.WriteLine(typeName + " is subscribed to all events");
-                    return new CompositeDisposable(subscription, conn);
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("Error subscribing to all events.");
-                    Trace.TraceError(e.ToString());
-                    conn.Dispose();
-                    return Disposable.Empty;
-                }
-            });
-
+                        if (dropReason != SubscriptionDropReason.UserInitiated)
+                            _logger.Error("Subscription was dropped '{0}' - Error: {1}", dropReason, exception);
+                    },
+                    AdminUserCredentials);
+                _logger.Debug("Subscribed to all events");
+                return subscription;
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error subscribing to all events");
+                conn.Dispose();
+                throw;
+            }
         }
+
+
+        //public async Task<IDisposable> AllEvents(Action<ResolvedEvent> onEventReceived)
+        //{
+        //    var conn = _connectionFactory.Connect();
+
+        //    try
+        //    {
+                
+
+        //        //TODO: Handle the subscription dropped callback? -LC
+        //        //  Potentially pass in a strategy for handling the subscription drop? -LC
+        //        Position? currentPosition = null;
+        //        var subscription = await conn.SubscribeToAllFrom(currentPosition,
+        //            true,
+        //            (eventStoreSubscription, resolvedEvent) => onEventReceived(resolvedEvent),
+        //            _ => { },
+        //            (eventStoreSubscription, dropReason, exception) =>
+        //            {
+        //                if (dropReason != SubscriptionDropReason.UserInitiated)
+        //                    _logger.Error("Subscription was dropped '{0}' - Error: {1}", dropReason, exception);
+        //            },
+        //            AdminUserCredentials);
+        //        _logger.Debug("Subscribed to all events");
+        //        return subscription;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.Error(e, "Error subscribing to all events");
+        //        conn.Dispose();
+        //        throw;
+        //    }
+        //}
+
+        //private EventStoreAllCatchUpSubscription SubscribeToAllEventsFrom(Position? positionExclusive, Action<ResolvedEvent> onEventReceived)
+        //{
+        //    try
+        //    {
+        //        //HACK: Leaky connection. -LC
+        //        var conn = _connectionFactory.Connect();
+
+        //        EventStoreAllCatchUpSubscription subscription = null;
+        //        subscription = conn.SubscribeToAllFrom(positionExclusive,
+        //            true,
+        //            (eventStoreSubscription, resolvedEvent) => onEventReceived(resolvedEvent),
+        //            _ => { },
+        //            (eventStoreSubscription, dropReason, exception) =>
+        //            {
+        //                if (dropReason != SubscriptionDropReason.UserInitiated)
+        //                {
+        //                    _logger.Error("Subscription was dropped '{0}' - Error: {1}", dropReason, exception);
+
+        //                     subscription = SubscribeToAllEventsFrom(((EventStoreAllCatchUpSubscription) eventStoreSubscription).LastProcessedPosition, onEventReceived);
+        //                }
+        //            },
+        //            AdminUserCredentials);
+        //        _logger.Debug("Subscribed to all events");
+
+        //        return subscription;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.Error(e, "Error subscribing to all events");
+        //        //conn.Dispose();
+        //        throw;
+        //    }
+        //}
     }
 }

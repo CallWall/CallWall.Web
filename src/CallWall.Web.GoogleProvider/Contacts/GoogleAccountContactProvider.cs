@@ -13,24 +13,34 @@ namespace CallWall.Web.GoogleProvider.Contacts
 {
     internal sealed class GoogleAccountContactProvider : IAccountContactProvider
     {
+        private ILogger _logger;
+
+        public GoogleAccountContactProvider(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger(GetType());
+        }
         public string Provider { get { return "Google"; } }
 
-        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccountData account, DateTime lastUpdated)
+        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
+
             if (account.Provider != Provider)
                 return Observable.Empty<ContactFeed>();
+
+            
             return Observable.Create<ContactFeed>(o =>
               {
                   try
                   {
-                      var feed = new ContactFeed(account, lastUpdated);
+                      var feed = new ContactFeed(account, lastUpdated, _logger);
                       return Observable.Return(feed).Subscribe(o);
                   }
                   catch (Exception ex)
                   {
                       return Observable.Throw<ContactFeed>(ex).Subscribe(o);
                   }
-              });
+              })
+              .Log(_logger, "GetContactsFeed(" + account.AccountId + ")");
         }
 
         public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
@@ -41,11 +51,13 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         private sealed class ContactFeed : IFeed<IAccountContactSummary>
         {
+            private readonly ILogger _logger;
             private readonly int _totalResults;
             private readonly IObservable<IAccountContactSummary> _values;
 
-            public ContactFeed(IAccountData account, DateTime lastUpdated)
+            public ContactFeed(IAccount account, DateTime lastUpdated, ILogger logger)
             {
+                _logger = logger;
                 var batchPage = GetContactPage(account, 1, lastUpdated);
                 _totalResults = batchPage.TotalResults;
                 _values = GenerateValues(account, lastUpdated, batchPage);
@@ -55,7 +67,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
             public IObservable<IAccountContactSummary> Values { get { return _values; } }
 
-            private IObservable<IAccountContactSummary> GenerateValues(IAccountData account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
+            private IObservable<IAccountContactSummary> GenerateValues(IAccount account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
             {
                 return Observable.Create<IAccountContactSummary>(o =>
                 {
@@ -67,7 +79,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 });
             }
 
-            private static IEnumerable<BatchOperationPage<IAccountContactSummary>> GetPages(IAccountData account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
+            private IEnumerable<BatchOperationPage<IAccountContactSummary>> GetPages(IAccount account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
             {
                 yield return batchPage;
                 while (batchPage.NextPageStartIndex > 0)
@@ -81,8 +93,9 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 }
             }
 
-            private static BatchOperationPage<IAccountContactSummary> GetContactPage(IAccountData account, int startIndex, DateTime lastUpdated)
+            private BatchOperationPage<IAccountContactSummary> GetContactPage(IAccount account, int startIndex, DateTime lastUpdated)
             {
+                _logger.Debug("GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
                 var client = new HttpClient();
 
                 var requestUriBuilder = new UriBuilder("https://www.google.com/m8/feeds/contacts/default/full");
@@ -109,12 +122,13 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
                     var translator = new GoogleContactProfileTranslator();
                     var contacts = translator.Translate(contactResponse, account.CurrentSession.AccessToken, account);
-
+                    _logger.Debug("Contacts - Received : {0}, NextPageStartIndex : {1}, TotalResults : {2}", 
+                        contacts.Items.Count, contacts.NextPageStartIndex, contacts.TotalResults);
                     return contacts;
                 }
                 catch (Exception exception)
                 {
-                    //TODO logging? do we want a logging factory?
+                    _logger.Error(exception, "GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
                     return BatchOperationPage<IAccountContactSummary>.Empty();
                 }
             }

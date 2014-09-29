@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CallWall.Web.EventStore.Accounts;
@@ -11,7 +9,6 @@ using CallWall.Web.EventStore.Domain;
 using CallWall.Web.EventStore.Tests.Doubles;
 using CallWall.Web.EventStore.Users;
 using CallWall.Web.Providers;
-using NSubstitute;
 using NUnit.Framework;
 using TestStack.BDDfy;
 
@@ -57,7 +54,8 @@ namespace CallWall.Web.EventStore.Tests
             new UserRegistrationAccountContactSynchronizationScenario(_eventStoreClient)
                .Given(s => s.Given_a_ContactSynchronizationService())
                .When(s => s.When_a_user_registers_and_triggers_an_AccountRefresh())
-               .Then(s => s.Then_Account_contacts_are_availble_from_User_contacts_feed())
+               .Then(s => s.Then_Account_contacts_are_available_from_User_contacts_feed())
+               .TearDownWith(s=>s.Dispose())
                .BDDfy();
         }
 
@@ -83,8 +81,7 @@ namespace CallWall.Web.EventStore.Tests
         //    //   .BDDfy();
         //}
 
-        //TODO: Implement IDisposable.
-        public class UserRegistrationAccountContactSynchronizationScenario
+        public class UserRegistrationAccountContactSynchronizationScenario : IDisposable
         {
             private readonly UserRepository _userRepository;
             private readonly IUserContactRepository _userContactRepository;
@@ -96,31 +93,35 @@ namespace CallWall.Web.EventStore.Tests
             public UserRegistrationAccountContactSynchronizationScenario(IEventStoreClient eventStoreClient)
             {
                 _userContactRepository = new UserContactRepository(eventStoreClient);
-                _userRepository = new UserRepository(eventStoreClient, Substitute.For<IAccountContactRefresher>());
-                _account = CreateAccount(_userRepository, eventStoreClient);
+                var accountFactory = new AccountFactory();
+                var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
+                _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
+                _account = CreateAccount(eventStoreClient);
                 _expectedFeed = CreateStubFeed(_account);
                 _accountContactSynchronizationService = CreateAccountContactSynchronizationService(eventStoreClient, _account, _expectedFeed);
-                _userContactSynchronizationService = new UserContactSynchronizationService(eventStoreClient);
+                _userContactSynchronizationService = new UserContactSynchronizationService(eventStoreClient, new ConsoleLoggerFactory());
             }
 
-            public void Given_a_ContactSynchronizationService()
+            public async Task Given_a_ContactSynchronizationService()
             {
-                _accountContactSynchronizationService.Run();
-                _userContactSynchronizationService.Run();
-                _userRepository.Run();
+                await Task.WhenAll(
+                    _accountContactSynchronizationService.Run(),
+                    _userContactSynchronizationService.Run(),
+                    _userRepository.Run());
             }
 
             public async Task When_a_user_registers_and_triggers_an_AccountRefresh()
             {
                 await _userRepository.RegisterNewUser(_account, Guid.NewGuid());
             }
-            
-            public async Task Then_Account_contacts_are_availble_from_User_contacts_feed()
+
+            public async Task Then_Account_contacts_are_available_from_User_contacts_feed()
             {
                 var expected = await _expectedFeed.Values.ToList().FirstAsync();
+
                 Trace.WriteLine("Expecting " + expected.Count + " values");
 
-                var user = await _account.Login();
+                var user = await _userRepository.Login(_account);
                 Trace.WriteLine("Account logged in");
 
                 var contacts = await _userContactRepository.GetContactSummariesFrom(user, null)
@@ -144,47 +145,45 @@ namespace CallWall.Web.EventStore.Tests
             private static void IsSummaryEqualToUpdate(IAccountContactSummary summary, ContactAggregateUpdate update)
             {
                 CollectionAssert.AreEqual(new[] { summary.PrimaryAvatar }, update.AddedAvatars);
-                Assert.AreEqual( summary.Provider, update.AddedProviders.Single().ProviderName);
+                Assert.AreEqual(summary.Provider, update.AddedProviders.Single().ProviderName);
                 Assert.AreEqual(summary.AccountId, update.AddedProviders.Single().AccountId);
                 Assert.AreEqual(summary.ProviderId, update.AddedProviders.Single().ContactId);
                 CollectionAssert.AreEqual(summary.Tags, update.AddedTags);
                 Assert.AreEqual(summary.Title, update.NewTitle);
-                
             }
-
-
 
             #region Factory methods
 
             private static AccountContactSynchronizationService CreateAccountContactSynchronizationService(
-                IEventStoreClient eventStoreClient, IAccountData account, IFeed<IAccountContactSummary> expectedFeed)
+                IEventStoreClient eventStoreClient, IAccount account, IFeed<IAccountContactSummary> expectedFeed)
             {
                 var dummyAccountContactProvider = CreateAccountContactProvider(account, expectedFeed);
                 var accountContactsFactory = new AccountContactsFactory(eventStoreClient,
-                    new[] {dummyAccountContactProvider});
+                    new ConsoleLoggerFactory(),
+                    new[] { dummyAccountContactProvider });
                 var accountContactSynchronizationService = new AccountContactSynchronizationService(eventStoreClient,
+                    new ConsoleLoggerFactory(),
                     accountContactsFactory);
                 return accountContactSynchronizationService;
             }
 
-            private static IAccount CreateAccount(IUserRepository userRepository,
-                IEventStoreClient eventStoreClient)
+            private static IAccount CreateAccount(IEventStoreClient eventStoreClient)
             {
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
-                var account = new StubAccount(userRepository, accountContactRefresher);
+                var account = new StubAccount(accountContactRefresher);
                 account.CurrentSession.AuthorizedResources.Add("email");
                 account.CurrentSession.AuthorizedResources.Add("calendar");
                 return account;
             }
 
-            private static IAccountContactProvider CreateAccountContactProvider(IAccountData account, IFeed<IAccountContactSummary> expectedFeed)
+            private static IAccountContactProvider CreateAccountContactProvider(IAccount account, IFeed<IAccountContactSummary> expectedFeed)
             {
                 var accountContactProvider = new StubAccountContactProvider(account.Provider, expectedFeed.Values, expectedFeed.TotalResults);
                 return accountContactProvider;
             }
 
 
-            private static StubFeed CreateStubFeed(IAccountData account)
+            private static StubFeed CreateStubFeed(IAccount account)
             {
                 var accountId = account.AccountId;
                 var provider = account.Provider;
@@ -231,8 +230,15 @@ namespace CallWall.Web.EventStore.Tests
                     }.ToObservable());
                 return stubFeed;
             }
-            
+
             #endregion
+
+            public void Dispose()
+            {
+                _userRepository.Dispose();
+                _userContactSynchronizationService.Dispose();
+                _accountContactSynchronizationService.Dispose();
+            }
         }
     }
 }

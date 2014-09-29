@@ -1,41 +1,77 @@
 using System;
-using System.Diagnostics;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
-using System.Threading;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
+using System.Threading;
 
 namespace CallWall.Web.EventStore
 {
     public abstract class AllEventListenerBase : IDisposable, IRunnable
     {
-        private int _isRunning;
-        private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
         private readonly IEventStoreClient _eventStoreClient;
+        private readonly ILogger _logger;
+        private readonly EventLoopScheduler _eventLoopScheduler;
+        private readonly SingleAssignmentDisposable _subscription = new SingleAssignmentDisposable();
+        private int _isRunning;
 
-        protected AllEventListenerBase(IEventStoreClient eventStoreClient)
+        protected AllEventListenerBase(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
         {
             _eventStoreClient = eventStoreClient;
+            _logger = loggerFactory.CreateLogger(GetType());
+            _eventLoopScheduler = new EventLoopScheduler(ts => new Thread(ts) { Name = string.Format("{0}.AllEventListener", GetType().Name) });
+        }
+
+        protected ILogger Logger
+        {
+            get { return _logger; }
         }
 
         //TODO: This needs to have some error handling. What should happen if we cant connect? -LC
-        public void Run()
+        public async Task Run()
         {
             if (Interlocked.CompareExchange(ref _isRunning, 1, 0) == 1)
                 return;
-            var typeName = GetType().Name;
-            Trace.WriteLine("Running " + typeName);
 
-            _subscription.Disposable = _eventStoreClient.AllEvents()
-                .Subscribe(OnEventReceived);
+            try
+            {
+                _subscription.Disposable = await _eventStoreClient.AllEvents(OnEventReceivedImpl);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error subscribing to all events");
+                throw;
+            }
+
+
+            _logger.Info("Running (Listening to all events)");
         }
 
+        private void OnEventReceivedImpl(ResolvedEvent resolvedEvent)
+        {
+            _logger.Trace("{0} Received event and scheduling onto ELS - {1}[{2}] {{ EventType = '{3}'}}",
+                                GetType().Name,
+                                resolvedEvent.OriginalEvent.EventStreamId, resolvedEvent.OriginalEvent.EventNumber,
+                                resolvedEvent.OriginalEvent.EventType);
+            _eventLoopScheduler.Schedule(() =>
+            {
+                _logger.Trace("{0}.OnEventReceived({1}[{2}] {{ EventType = '{3}'}}",
+                                GetType().Name,
+                                resolvedEvent.OriginalEvent.EventStreamId, resolvedEvent.OriginalEvent.EventNumber,
+                                resolvedEvent.OriginalEvent.EventType);
+                OnEventReceived(resolvedEvent);
+            });
+        }
         protected abstract void OnEventReceived(ResolvedEvent resolvedEvent);
 
         protected async Task SaveEvent(string streamName, int expectedVersion, Guid eventId, string eventType, string jsonData, string jsonMetaData = null)
         {
-            await _eventStoreClient.SaveEvent(streamName, expectedVersion, eventId,
-                eventType, jsonData);
+            await _eventStoreClient.SaveEvent(streamName, expectedVersion, eventId, eventType, jsonData);
+        }
+
+        protected async Task SaveBatch(string streamName, int expectedVersion, string eventType, string[] jsonData)
+        {
+            await _eventStoreClient.SaveBatch(streamName, expectedVersion, eventType, jsonData);
         }
 
         public void Dispose()
@@ -46,6 +82,8 @@ namespace CallWall.Web.EventStore
         protected virtual void OnDispose(bool isDisposing)
         {
             _subscription.Dispose();
+            _eventLoopScheduler.Dispose();
+            _logger.Info("{0} Disposed", GetType().Name);
         }
     }
 

@@ -28,22 +28,27 @@ namespace CallWall.Web.EventStore.Contacts
         private readonly Dictionary<string, IAccountContactSummary> _contactSummariesSnapShot = new Dictionary<string, IAccountContactSummary>();
         private readonly Dictionary<string, IAccountContactSummary> _contactSummaries = new Dictionary<string, IAccountContactSummary>();
         private readonly List<IAccountContactSummary> _changes = new List<IAccountContactSummary>();
+        private readonly ILogger _logger;
 
 
         public AccountContacts(
             IEventStoreClient eventStoreClient,
+            ILoggerFactory loggerFactory,
             IAccountContactProvider contactProvider,
-            IAccountData accountData)
+            IAccount account)
         {
             if (contactProvider == null) throw new ArgumentNullException("contactProvider");
-            if (accountData == null) throw new ArgumentNullException("provider");
-            if (contactProvider.Provider != accountData.Provider) throw new InvalidOperationException("Provider must match the provider for the accountContactProvider");
+            if (account == null) throw new ArgumentNullException("provider");
+            if (contactProvider.Provider != account.Provider) throw new InvalidOperationException("Provider must match the provider for the accountContactProvider");
 
             _eventStoreClient = eventStoreClient;
             _contactProvider = contactProvider;
-            _accountId = accountData.AccountId;
-            _provider = accountData.Provider;
-            CurrentSession = accountData.CurrentSession;
+            _accountId = account.AccountId;
+            _provider = account.Provider;
+            _logger = loggerFactory.CreateLogger(GetType());
+            CurrentSession = account.CurrentSession;
+
+            _logger.Debug("AccountContacts created for {0}", account.AccountId);
         }
 
         private ISession CurrentSession { get; set; }
@@ -75,7 +80,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         private void UpdateContact(IAccountContactSummary updatedContact)
         {
-            Trace.WriteLine("Updating contact");
+            _logger.Trace("Updating contact - '{0}'", updatedContact.AccountId);
             IAccountContactSummary existingContact;
             if (_contactSummaries.TryGetValue(updatedContact.ProviderId, out existingContact))
             {
@@ -89,7 +94,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         private void UpdateFailed(Exception error)
         {
-            Trace.WriteLine("UpdateFailed - " + error);
+            _logger.Error(error, "Account contact update failed");
             //  Rollback any updates
             RollbackToSnapshot();
 
@@ -104,7 +109,7 @@ namespace CallWall.Web.EventStore.Contacts
         }
 
 
-        private IAccountData GenerateAccount()
+        private IAccount GenerateAccount()
         {
             return new AccountRecord
             {
@@ -134,7 +139,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         private async Task CommitChanges(string payload)
         {
-            Trace.WriteLine("Committing changes");
+            _logger.Trace("Committing changes");
             //  push changes batch to ES
 
             //TODO: Do I make a single stream for all AccountContact updates? Or do i subscribe to all streams as they accounts are registered?-LC
@@ -145,7 +150,7 @@ namespace CallWall.Web.EventStore.Contacts
 
             _writeVersion++;
 
-            Trace.WriteLine("Committed changes");
+            _logger.Trace("Committed changes");
             //  mark all as unmodified. 
             _changes.Clear();
             _contactSummariesSnapShot.Clear();
@@ -164,7 +169,7 @@ namespace CallWall.Web.EventStore.Contacts
                 })
                 .ToArray();
 
-            Trace.WriteLine("Changes.count = " + changes.Length);
+            _logger.Trace("Changes.count = {0}", changes.Length);
             var batch = new AccountContactBatchUpdateRecord
             {
                 UserId = userId,

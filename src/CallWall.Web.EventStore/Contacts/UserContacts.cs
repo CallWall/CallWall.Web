@@ -9,7 +9,7 @@ namespace CallWall.Web.EventStore.Contacts
     public class UserContacts
     {
         private readonly Guid _userId;
-        private int _version = -1;
+        private int _version = 0;
         private readonly List<IContactAggregate> _contacts = new List<IContactAggregate>();
         private readonly List<IContactAggregate> _snapshot = new List<IContactAggregate>();
         private readonly List<ContactAggregateUpdate> _changes = new List<ContactAggregateUpdate>();

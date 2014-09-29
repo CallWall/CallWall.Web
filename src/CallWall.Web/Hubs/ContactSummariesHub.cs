@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
-using CallWall.Web.EventStore;
 using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -19,16 +14,16 @@ namespace CallWall.Web.Hubs
     public class ContactSummariesHub : Hub
     {
         private readonly IContactSummaryRepository _contactSummaryRepository;
-        private readonly ISessionProvider _sessionProvider;
-        private readonly ILogger _logger;   //TODO: Replace Debug.Print with logger + ConsoleListener
+        private readonly ILoginProvider _loginProvider;
+        private readonly ILogger _logger; 
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
 
-        public ContactSummariesHub(IContactSummaryRepository contactSummaryRepository, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactSummariesHub(IContactSummaryRepository contactSummaryRepository, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
         {
-            Debug.Print("ContactSummariesHub.ctor()");
             _contactSummaryRepository = contactSummaryRepository;
-            _sessionProvider = sessionProvider;
+            _loginProvider = loginProvider;
             _logger = loggerFactory.CreateLogger(GetType());
+            _logger.Info("ContactSummariesHub.ctor()");
         }
 
         //public void RequestContactSummaryStream(ClientLastUpdated[] lastUpdatedDetails)
@@ -54,22 +49,32 @@ namespace CallWall.Web.Hubs
         //    _contactsSummarySubsription.Disposable = subscription;
         //}
 
-        public void RequestContactSummaryStream(int fromEventId)
+        public async Task RequestContactSummaryStream(int fromEventId)
         {
-            Debug.Print("ContactSummariesHub.RequestContactSummaryStream(...)");
-            var userId = _sessionProvider.GetUserId(Context.User);
-            var subscription = _contactSummaryRepository.GetContactUpdates(userId, fromEventId)
+            try
+            {
+                _logger.Debug("ContactSummariesHub.RequestContactSummaryStream({0})", fromEventId);            
+                var user = await _loginProvider.GetUser(Context.User.UserId());
+                _logger.Trace("Getting contacts for user : {0}", user.Id);
+                var subscription = _contactSummaryRepository.GetContactUpdates(user, fromEventId)
+                    .Log(_logger, "RequestContactSummaryStream")
                                                         .Subscribe(
-                                                               contactUpdate => Clients.Caller.ReceiveContactSummary(contactUpdate),
-                                           ex => Clients.Caller.ReceiveError("Error receiving contacts"),
+                        contactUpdate => Clients.Caller.ReceiveContactSummaryUpdate(contactUpdate),
+                                                               ex => Clients.Caller.ReceiveError("Error receiving contacts"),
                                                                () => Clients.Caller.ReceiveComplete()); //This will never fire? -LC
 
             _contactsSummarySubsription.Disposable = subscription;
         }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error Requesting ContactSummaryStream in Hub.");
+                Clients.Caller.ReceiveError("Error receiving contacts");
+            }
+        }
         
         public override Task OnDisconnected()
         {
-            Debug.Print("ContactSummariesHub.OnDisconnected()");
+            _logger.Debug("ContactSummariesHub.OnDisconnected()");
             _contactsSummarySubsription.Dispose();
             return base.OnDisconnected();
         }

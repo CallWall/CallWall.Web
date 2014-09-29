@@ -8,7 +8,7 @@ using CallWall.Web.Account;
 
 namespace CallWall.Web.OAuth2Implementation
 {
-    public abstract class OAuth2AuthenticationBase
+    public abstract class OAuth2AuthenticationBase : IAccountAuthentication
     {
         public abstract string RequestAuthorizationBaseUri { get; }
 
@@ -19,6 +19,8 @@ namespace CallWall.Web.OAuth2Implementation
         public abstract string ClientSecret { get; }
 
         public abstract string ProviderName { get; }
+
+        public abstract IAccountConfiguration Configuration { get; }
 
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
@@ -43,7 +45,7 @@ namespace CallWall.Web.OAuth2Implementation
             return new Uri(uriBuilder.ToString());
         }
 
-        public bool CanCreateSessionFromState(string code, string state)
+        public bool CanCreateAccountFromState(string code, string state)
         {
             return IsValidOAuthState(state);
         }
@@ -62,7 +64,14 @@ namespace CallWall.Web.OAuth2Implementation
             return false;
         }
 
-        public ISession CreateSession(string code, string state)
+        public IAccount CreateAccountFromOAuthCallback(string code, string state)
+        {
+            var session = CreateSession(code, state);
+            IAccount account = CreateAccount(session);
+            return account;
+        }
+
+        private ISession CreateSession(string code, string state)
         {
             var authState = AuthState.Deserialize(state);
             var request = CreateTokenRequest(code, authState.RedirectUri);
@@ -95,6 +104,8 @@ namespace CallWall.Web.OAuth2Implementation
                 return false;
             }
         }
+
+        protected abstract IAccount CreateAccount(ISession session);
 
         private HttpRequestMessage CreateTokenRequest(string code, string redirectUri)
         {

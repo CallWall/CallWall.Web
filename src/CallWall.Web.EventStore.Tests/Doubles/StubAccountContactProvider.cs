@@ -18,7 +18,7 @@ namespace CallWall.Web.EventStore.Tests.Doubles
 
         public string Provider { get { return _provider; } }
 
-        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccountData account, DateTime lastUpdated)
+        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
             return Observable.Return(_feed);
         }

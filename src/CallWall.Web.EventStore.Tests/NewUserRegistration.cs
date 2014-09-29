@@ -49,6 +49,7 @@ namespace CallWall.Web.EventStore.Tests
                 .Then(s => s.Then_an_account_is_created_with_the_provider())
                 .Then(s => s.Then_an_account_is_created_with_permissions_mapped_to_provider_scopes())
                 //.Then(s => s.Then_an_AccountContactRefreshCommand_is_issued_for_the_account())
+                .TearDownWith(s=>s.Dispose())
                 .BDDfy();
         }
         //What if the account already exists? What is the least awful thing to do? I think it is to just let them log in. What if they choose different permissions??
@@ -62,26 +63,22 @@ namespace CallWall.Web.EventStore.Tests
                .When(s => s.When_user_logs_in_by_account())
                .Then(s => s.Then_user_has_all_accounts())
                //.And(s=>s.Then_an_AccountContactRefresh_command_is_issued_for_the_account())
+               .TearDownWith(s=>s.Dispose())
                .BDDfy();
         }
 
-        public class NewUserScenario
+        public class NewUserScenario : IDisposable
         {
             private User _user;
             private readonly IAccount _account;
             private readonly UserRepository _userRepository;
-            //private readonly IAccountContactRefresher _accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
 
             public NewUserScenario(IEventStoreClient eventStoreClient)
             {
-                //var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
-                //accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactRefresherMock);
-
-                _userRepository = new UserRepository(eventStoreClient, Substitute.For<IAccountContactRefresher>());
-                _userRepository.Run();
+                _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), Substitute.For<IAccountFactory>(), Substitute.For<IAccountContactRefresher>());
+                _userRepository.Run().Wait();
                 
-                //_account = new StubAccount(_userRepository, _accountContactRefresherMock);
-                _account = new StubAccount(_userRepository, Substitute.For<IAccountContactRefresher>());
+                _account = new StubAccount(Substitute.For<IAccountContactRefresher>());
                 _account.CurrentSession.AuthorizedResources.Add("email");
                 _account.CurrentSession.AuthorizedResources.Add("calendar");
             }
@@ -127,26 +124,27 @@ namespace CallWall.Web.EventStore.Tests
             //    //_accountContactRefresherMock.Received().RequestRefresh(ContactRefreshTriggers.Registered);
             //    throw new Exception("Fail");
             //}
+            public void Dispose()
+            {
+                _userRepository.Dispose();
+            }
         }
 
-        public class UserWithSingleAccountLogsInScenario
+        public class UserWithSingleAccountLogsInScenario : IDisposable
         {
             private readonly UserRepository _userRepository;
             private User _storedUser = User.AnonUser;
             private readonly IAccount _account;
             private readonly IList<IAccount> _allAccounts = new List<IAccount>();
-            //private readonly IAccountContactRefresher _accountContactRefresherMock;
 
             public UserWithSingleAccountLogsInScenario(IEventStoreClient eventStoreClient)
             {
-                //var accountContactsFactory = Substitute.For<IAccountContactsFactory>();
                 var accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
-                //accountContactsFactory.Create(Arg.Any<string>(), Arg.Any<string>()).Returns(_accountContactRefresherMock);
+                var accountFactory = new AccountFactory();
+                _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, Substitute.For<IAccountContactRefresher>());
                 
-                _userRepository = new UserRepository(eventStoreClient, Substitute.For<IAccountContactRefresher>());
-                UserRepository.Run();
 
-                _account = new StubAccount(_userRepository, accountContactRefresherMock);
+                _account = new StubAccount(accountContactRefresherMock);
                 _allAccounts.Add(_account);
             }
 
@@ -154,12 +152,13 @@ namespace CallWall.Web.EventStore.Tests
 
             public async Task Given_an_existing_user()
             {
+                await UserRepository.Run();
                 await UserRepository.RegisterNewUser(_account, Guid.NewGuid());
             }
 
             public async Task When_user_logs_in_by_account()
             {
-                _storedUser = await _account.Login();
+                _storedUser = await _userRepository.Login(_account);
             }
 
             public void Then_user_has_all_accounts()
@@ -172,6 +171,10 @@ namespace CallWall.Web.EventStore.Tests
             //    _accountContactRefresherMock.Received().RequestRefresh(ContactRefreshTriggers.Login);
             //}
 
+            public void Dispose()
+            {
+                _userRepository.Dispose();
+            }
         }
     }
 }

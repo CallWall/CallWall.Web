@@ -11,13 +11,15 @@ namespace CallWall.Web.EventStore
     //No doubt this will have to change as we discover our requirements.
     public interface IEventStoreClient
     {
-        IObservable<ResolvedEvent> AllEvents();
+        Task<IDisposable> AllEvents(Action<ResolvedEvent> onEventReceived);
         IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion = null);
         IObservable<string> GetNewEvents(string streamName);
         
         Task<int> GetHeadVersion(string streamName);
         Task SaveEvent(string streamName, int expectedVersion, Guid eventId, string eventType, string jsonData,
-            string jsonMetaData = null);      
+            string jsonMetaData = null);
+
+        Task SaveBatch(string streamName, int expectedVersion, string eventType, string[] jsonData);
     }
 
     internal static class EventStoreEx

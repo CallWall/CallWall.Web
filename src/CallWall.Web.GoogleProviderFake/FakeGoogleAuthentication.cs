@@ -26,7 +26,7 @@ namespace CallWall.Web.GoogleProviderFake
             return new Uri(uriBuilder.ToString());
         }
 
-        public bool CanCreateSessionFromState(string code, string state)
+        public bool CanCreateAccountFromState(string code, string state)
         {
             return AuthState.IsValidOAuthState(state);
         }

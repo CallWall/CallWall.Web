@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using CallWall.Web.EventStore.Users;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Common.Utils;
@@ -12,9 +12,10 @@ namespace CallWall.Web.EventStore.Contacts
         private readonly Dictionary<string, Guid> _accountIdToUserId = new Dictionary<string, Guid>();
         private readonly Dictionary<Guid, UserContacts> _users = new Dictionary<Guid, UserContacts>();
 
-        public UserContactSynchronizationService(IEventStoreClient eventStoreClient)
-            : base(eventStoreClient)
+        public UserContactSynchronizationService(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
+            : base(eventStoreClient, loggerFactory)
         {
+            Logger.Info("UserContactSynchronizationService ctor");
         }
         
         protected override void OnEventReceived(ResolvedEvent resolvedEvent)
@@ -40,13 +41,14 @@ namespace CallWall.Web.EventStore.Contacts
         private void AddUser(RecordedEvent userCreatedEvent)
         {
             var payload = userCreatedEvent.Deserialize<UserCreatedEvent>();
-            Trace.WriteLine("Adding account '" + payload.Account.AccountId + "' to user '" + payload.Id + "'");
+            Logger.Trace("Adding account '{0}' to user '{1}'", payload.Account.AccountId, payload.Id);
             _accountIdToUserId[payload.Account.AccountId] = payload.Id;
         }
 
         private void UpdateContact(RecordedEvent originalEvent)
         {
             var payload = originalEvent.Deserialize<AccountContactBatchUpdateRecord>();
+            Logger.Trace("Updating {0} contact(s) for Account '{1}' on user '{2}'", payload.Contacts.Length, payload.AccountId, payload.UserId);
             var userContacts = GetUserContacts(payload);
 
             using (userContacts.TrackChanges())
@@ -65,14 +67,21 @@ namespace CallWall.Web.EventStore.Contacts
         private void SaveUpdates(UserContacts userContacts)
         {
             var streamName = ContactStreamNames.UserContacts(userContacts.UserId);
-            var payload = userContacts.GetChangesSnapshot().ToJson();
-            SaveEvent(streamName, userContacts.Version, Guid.NewGuid(), ContactEventType.UserAggregateContactUpdate, payload)
+            var payload = userContacts.GetChangesSnapshot().Select(change=>change.ToJson()).ToArray();
+
+            SaveBatch(streamName, userContacts.Version, ContactEventType.UserAggregateContactUpdate, payload)
                 .Wait();
         }
 
 
         private UserContacts GetUserContacts(AccountContactBatchUpdateRecord payload)
         {
+            if (!_accountIdToUserId.ContainsKey(payload.AccountId))
+            {
+                Logger.Error("AccountId '{0}' not found in cache.", payload.AccountId);
+                Logger.Info("Existing keys : {0}", string.Join(",", _accountIdToUserId.Keys));
+            }
+
             var userId = _accountIdToUserId[payload.AccountId];
 
             //I believe that this is serialized and non reentrant, thus thread safe.

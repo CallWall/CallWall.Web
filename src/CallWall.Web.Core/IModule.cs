@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace CallWall.Web
 {
@@ -10,6 +11,6 @@ namespace CallWall.Web
 
     public interface IProcess
     {
-        void Run();
+        Task Run();
     }
 }
