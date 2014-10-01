@@ -80,7 +80,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         private void UpdateContact(IAccountContactSummary updatedContact)
         {
-            _logger.Trace("Updating contact - '{0}'", updatedContact.AccountId);
+            _logger.Trace("Updating contact - '{0}'", updatedContact.ProviderId);
             IAccountContactSummary existingContact;
             if (_contactSummaries.TryGetValue(updatedContact.ProviderId, out existingContact))
             {
