@@ -15,5 +15,10 @@ namespace CallWall.Web.EventStore.Contacts
         {
             return _userContactRepository.GetContactSummariesFrom(user, fromEventId);
         }
+
+        public IObservable<int> ObserveContactUpdatesHeadVersion(User user)
+        {
+            return _userContactRepository.ObserveContactUpdatesHeadVersion(user);
+        }
     }
 }

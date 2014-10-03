@@ -4,10 +4,10 @@
 (function (ko, callWall) {
     var ContactSummaryViewModel = function (contact) {
         var self = this;
-        self.title = contact.Title;
+        self.title = contact.newTitle;
         self.titleUpperCase = self.title.toUpperCase();
-        self.primaryAvatar = contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
-        self.tags = contact.Tags;
+        self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        self.tags = [];//contact.Tags;
         self.isVisible = ko.observable(true);
         self.filter = function(prefixTest) {
             var isVisible = (self.titleUpperCase.lastIndexOf(prefixTest, 0) === 0);
@@ -57,7 +57,7 @@
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
-            return contact.Title.toUpperCase().lastIndexOf(self.header, 0) === 0;
+            return contact.newTitle.toUpperCase().lastIndexOf(self.header, 0) === 0;
         };
     };
 
@@ -65,13 +65,25 @@
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
-        self.totalResults = ko.observable(0);
-        self.receivedResults = ko.observable(0);
-        self.progress = ko.computed(function() {
-            return 100 * self.receivedResults() / self.totalResults();
+        self.startingServerVersion = ko.observable(0);
+        self.startingClientVersion = ko.observable(0);
+        self.currentClientVersion = ko.observable(0);
+        self.progress = ko.computed(function () {
+            if (self.currentClientVersion() >= self.startingServerVersion())
+                return 100;
+            
+            var batchSize = self.startingServerVersion() - self.startingClientVersion();
+            var progress = self.currentClientVersion() - self.startingClientVersion();
+            if (batchSize <= 0)
+                return 100;
+
+            return 100 * progress / batchSize;
         });
         self.currentState = ko.observable('Initialising');
-        self.isProcessing = ko.observable(true);
+        self.isProcessing = ko.computed(function () {
+            return self.progress() < 100;
+        });
+        self.errorMessage = ko.observable('');
 
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {
             var cgs = self.contactGroups();
@@ -102,11 +114,22 @@
                 }
             }
         };
+        self.processUpdate = function (contactUpdate) {
+            console.log(contactUpdate);
+            self.incrementProgress();
+            if (contactUpdate.isDeleted) {
+                //TODO: Will have to find this record by Id to remove it. -LC
+            } else {//if (contactUpdate._rev == 1) {
+                self.addContact(contactUpdate);
+            //} else {
+            //    console.log("Updates not supported...yet.");
+            }
+        };
 
-        self.IncrementProgress = function() {
-            var i = self.receivedResults();
+        self.incrementProgress = function() {
+            var i = self.currentClientVersion();
             i += 1;
-            self.receivedResults(i);
+            self.currentClientVersion(i);
         };
     };
     //Publicly exposed object are attached to the callWall namespace

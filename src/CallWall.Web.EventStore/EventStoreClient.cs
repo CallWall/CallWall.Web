@@ -24,19 +24,20 @@ namespace CallWall.Web.EventStore
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public IObservable<string> GetNewEvents(string streamName)
+        public IObservable<ResolvedEvent> GetNewEvents(string streamName)
         {
-            return Observable.Create<byte[]>(o =>
-            {
-                var conn = _connectionFactory.Connect();
+            return Observable.Create<ResolvedEvent>(o =>
+                {
+                    var conn = _connectionFactory.Connect();
 
-                Action<EventStoreSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2.OriginalEvent.Data);
+                    Action<EventStoreSubscription, ResolvedEvent> callback =
+                        (arg1, arg2) => o.OnNext(arg2);
 
-                var subscription = conn.SubscribeToStream(streamName, false, callback);
+                    var subscription = conn.SubscribeToStream(streamName, false,
+                        callback);
 
-                return new CompositeDisposable(subscription, conn);
-            })
-            .Select(Encoding.UTF8.GetString);
+                    return new CompositeDisposable(subscription, conn);
+                });
         }
 
         [Obsolete("Use GetEvents and don't provide a version/EventId")]

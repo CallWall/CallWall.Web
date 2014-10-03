@@ -13,7 +13,7 @@ namespace CallWall.Web.EventStore
     {
         Task<IDisposable> AllEvents(Action<ResolvedEvent> onEventReceived);
         IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion = null);
-        IObservable<string> GetNewEvents(string streamName);
+        IObservable<ResolvedEvent> GetNewEvents(string streamName);
         
         Task<int> GetHeadVersion(string streamName);
         Task SaveEvent(string streamName, int expectedVersion, Guid eventId, string eventType, string jsonData,
@@ -32,7 +32,9 @@ namespace CallWall.Web.EventStore
         public static IObservable<T> GetNewEvents<T>(this IEventStoreClient eventStoreClient, string streamName)
         {
             return eventStoreClient.GetNewEvents(streamName)
-                             .Select(JsonConvert.DeserializeObject<T>);
+                .Select(re=>re.OriginalEvent.Data)
+                .Select(Encoding.UTF8.GetString)
+                .Select(JsonConvert.DeserializeObject<T>);
         }
         public static IObservable<T> GetEvents<T>(this IEventStoreClient eventStoreClient, string streamName)
         {

@@ -85,6 +85,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 while (batchPage.NextPageStartIndex > 0)
                 {
                     //HACK:Google doesn't like being DOS'ed.
+                    //TODO: Look into if this is because I may not be using http-connection keep-alives or something like that -LC
                     //Thread.Sleep(1000);  //HACK:Google doesn't like being DOS'ed.
                     Thread.Sleep(500);
                     //Thread.Sleep(250);  

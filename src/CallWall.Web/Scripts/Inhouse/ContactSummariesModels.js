@@ -65,22 +65,25 @@
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
-        self.totalResults = ko.observable(0);
-        self.receivedResults = ko.observable(0);
+        self.startingServerVersion = ko.observable(0);
+        self.startingClientVersion = ko.observable(0);
+        self.currentClientVersion = ko.observable(0);
         self.progress = ko.computed(function() {
-            return 100 * self.receivedResults() / self.totalResults();
+            if (self.currentClientVersion() >= self.startingServerVersion())
+                return 100;
+            
+            var batchSize = self.startingServerVersion() - self.startingClientVersion();
+            var progress = self.currentClientVersion() - self.startingClientVersion();
+            if (batchSize <= 0)
+                return 100;
+
+            return 100 * progress / batchSize;
         });
         self.currentState = ko.observable('Initialising');
-        self.isProcessing = ko.observable(true);
-
-        var incrementProgress = function () {
-            var i = self.receivedResults();
-            i += 1;
-            self.receivedResults(i);
-            if (i == self.totalResults()) {
-                self.isProcessing(false);
-            }
-        };
+        self.isProcessing = ko.computed(function () {
+            return self.progress() < 100;
+        });
+        self.errorMessage = ko.observable('');
 
         var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {
             var cgs = self.contactGroups();
@@ -107,15 +110,13 @@
                 var cg = self.contactGroups()[j];
                 if (cg.isValid(contact)) {
                     cg.addContact(contact);
-
                     break;
                 }
             }
-            incrementProgress();
         };
         self.processUpdate = function (contactUpdate) {
-            console.log("processUpdate:");
             console.log(contactUpdate);
+            self.incrementProgress();
             if (contactUpdate.isDeleted) {
                 //TODO: Will have to find this record by Id to remove it. -LC
             } else {//if (contactUpdate._rev == 1) {
@@ -125,14 +126,11 @@
             }
         };
 
-        self.IncrementCount = function(addition) {
-            console.log('append to count = ' + addition);
-            var aggregateCount = self.totalResults() + addition;
-            console.log('new count = ' + aggregateCount);
-            self.totalResults(aggregateCount);
+        self.incrementProgress = function() {
+            var i = self.currentClientVersion();
+            i += 1;
+            self.currentClientVersion(i);
         };
-
-        
     };
     //Publicly exposed object are attached to the callWall namespace
     callWall.ContactSummariesViewModel = ContactSummariesViewModel;

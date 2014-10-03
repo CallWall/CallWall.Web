@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 
 namespace CallWall.Web.EventStore.Contacts
 {
@@ -18,6 +19,16 @@ namespace CallWall.Web.EventStore.Contacts
             return _eventStoreClient.GetEvents(streamName, versionId)
                 .Where(resolvedEvent => resolvedEvent.OriginalEvent!=null)
                 .Select(resolvedEvent => resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate>());
+        }
+
+        public IObservable<int> ObserveContactUpdatesHeadVersion(User user)
+        {
+            var streamName = ContactStreamNames.UserContacts(user.Id);
+
+            return Observable.Concat(
+                _eventStoreClient.GetHeadVersion(streamName).ToObservable(),
+                _eventStoreClient.GetNewEvents(streamName).Select(resolvedEvent => resolvedEvent.OriginalEventNumber));
+
         }
     }
 }
