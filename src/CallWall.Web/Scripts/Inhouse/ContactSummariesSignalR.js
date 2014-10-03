@@ -26,7 +26,7 @@
             return {
                 //_id: dto.Id.toString(),
                 //_rev: dto.Version.toString(),
-                NewTitle: dto.NewTitle
+                newTitle: dto.newTitle
                 /*addedTags: dto.AddedTags,
                 removedTags: dto.RemovedTags,
                 addedAvatars: dto.AddedAvatars,
@@ -147,6 +147,7 @@
         //};
 
         contactsHub.client.ReceiveContactSummaryUpdate = function (contactUpdate) {
+            console.log(contactUpdate);
             callWall.Db.persistContactUpdate(contactUpdate);
             //model.addContact(contact);
             //model.IncrementProgress();

@@ -4,7 +4,7 @@
 (function (ko, callWall) {
     var ContactSummaryViewModel = function (contact) {
         var self = this;
-        self.title = contact.NewTitle;
+        self.title = contact.newTitle;
         self.titleUpperCase = self.title.toUpperCase();
         self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
         self.tags = [];//contact.Tags;
@@ -57,7 +57,7 @@
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
-            return contact.NewTitle.toUpperCase().lastIndexOf(self.header, 0) === 0;
+            return contact.newTitle.toUpperCase().lastIndexOf(self.header, 0) === 0;
         };
     };
 
