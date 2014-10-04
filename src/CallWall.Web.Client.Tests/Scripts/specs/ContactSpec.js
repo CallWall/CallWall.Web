@@ -5,7 +5,7 @@
 describe("Contacts", function () {
     var anoncontactSvg = '/Content/images/AnonContact.svg';
 
-    describe("ContactSummaryViewModel", function () {
+    describe("contactSummaryViewModel", function () {
         var contact, contactViewModel;
 
         beforeEach(function () {
@@ -45,7 +45,7 @@ describe("Contacts", function () {
         });
     });
     
-    describe("AnyContactSummaryGroup", function () {
+    describe("anyContactSummaryGroup", function () {
         var alphaContactGroup;
         beforeEach(function() {
             alphaContactGroup = new callWall.AnyContactSummaryGroup('');
@@ -65,7 +65,7 @@ describe("Contacts", function () {
         });
     });
     
-    describe("AlphaContactSummaryGroup", function () {
+    describe("alphaContactSummaryGroup", function () {
         var groupPrefix = 'X';
         var alphaContactGroup;
         beforeEach(function () {

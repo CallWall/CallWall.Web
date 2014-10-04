@@ -2,7 +2,7 @@
 //TODO: provide search/filter while contacts still being loaded
 
 (function (ko, callWall) {
-    var ContactSummaryViewModel = function (contact) {
+    var contactSummaryViewModel = function (contact) {
         var self = this;
         self.title = contact.newTitle;
         self.titleUpperCase = self.title.toUpperCase();
@@ -15,7 +15,7 @@
         };
     };
     
-    var ContactSummaryGroup = function () {
+    var contactSummaryGroup = function () {
         var self = this,
             filterText = '';
         self.contacts = ko.observableArray();
@@ -31,7 +31,7 @@
             throw 'This is intended to be an abstract class please do not use';
         };
         self.addContact = function(contact) {
-            var vm = new ContactSummaryViewModel(contact);
+            var vm = new contactSummaryViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
             self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
@@ -45,15 +45,15 @@
             }
         };
     };
-    var AnyContactSummaryGroup = function () {
+    var anyContactSummaryGroup = function () {
         var self = this;
-        ContactSummaryGroup.call(self);
+        contactSummaryGroup.call(self);
         self.header = '';
         self.isValid = function() { return true; };
     };
-    var AlphaContactSummaryGroup = function(startsWith) {
+    var alphaContactSummaryGroup = function(startsWith) {
         var self = this;
-        ContactSummaryGroup.call(self);
+        contactSummaryGroup.call(self);
         self.header = startsWith;
         self.isValid = function(contact) {
             //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
@@ -61,7 +61,7 @@
         };
     };
 
-    var ContactSummariesViewModel = function () {
+    var contactSummariesViewModel = function () {
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
@@ -85,7 +85,7 @@
         });
         self.errorMessage = ko.observable('');
 
-        var filterTextChangeSubscription = self.filterText.subscribe(function(newFilterText) {
+        self.filterText.subscribe(function(newFilterText) {
             var cgs = self.contactGroups();
             for (var i = 0; i < cgs.length; i++) {
                 cgs[i].filter(newFilterText);
@@ -98,9 +98,9 @@
             for (var i = 0; i < charList.length; i++) {
                 var h = charList[i];
                 console.log('loading ' + h);
-                self.contactGroups.push(new AlphaContactSummaryGroup(charList[i]));
+                self.contactGroups.push(new alphaContactSummaryGroup(charList[i]));
             }
-            self.contactGroups.push(new AnyContactSummaryGroup('123'));
+            self.contactGroups.push(new anyContactSummaryGroup('123'));
         };
 
         self.addContact = function(contact) {
@@ -115,7 +115,7 @@
             }
         };
         self.processUpdate = function (contactUpdate) {
-            console.log(contactUpdate);
+            console.log("Processing contactUpdate _id:" + contactUpdate._id);
             self.incrementProgress();
             if (contactUpdate.isDeleted) {
                 //TODO: Will have to find this record by Id to remove it. -LC
@@ -133,11 +133,11 @@
         };
     };
     //Publicly exposed object are attached to the callWall namespace
-    callWall.ContactSummariesViewModel = ContactSummariesViewModel;
+    callWall.ContactSummariesViewModel = contactSummariesViewModel;
     //Exposed for testing, but not necessary to be hidden either
-    callWall.ContactSummaryViewModel = ContactSummaryViewModel;
-    callWall.AnyContactSummaryGroup = AnyContactSummaryGroup;
-    callWall.AlphaContactSummaryGroup = AlphaContactSummaryGroup;
+    callWall.ContactSummaryViewModel = contactSummaryViewModel;
+    callWall.AnyContactSummaryGroup = anyContactSummaryGroup;
+    callWall.AlphaContactSummaryGroup = alphaContactSummaryGroup;
 
     
 // ReSharper disable ThisInGlobalContext

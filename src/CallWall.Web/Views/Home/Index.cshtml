@@ -52,7 +52,6 @@
     @Scripts.Render("~/bundles/contacts")
     <script>
         $(function () {
-            // $.connection.contacts =  the generated client-side hub proxy
             var model = new callWall.ContactSummariesViewModel();
             model.LoadContactGroups();
             callWall.createCustomProgressbarBindings();

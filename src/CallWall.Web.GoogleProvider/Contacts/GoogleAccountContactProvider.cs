@@ -13,7 +13,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 {
     internal sealed class GoogleAccountContactProvider : IAccountContactProvider
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public GoogleAccountContactProvider(ILoggerFactory loggerFactory)
         {

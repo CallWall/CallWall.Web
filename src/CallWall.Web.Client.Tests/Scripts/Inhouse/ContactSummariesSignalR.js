@@ -9,6 +9,8 @@
                 console.error(contactUpdate);
                 console.error(record);
                 console.error(err);
+            //} else {
+            //    console.log(result);//Object {ok: true, id: "2960F6F4-571C-1FF9-83AF-11D1FED3D9DA", rev: "1-39c2b8e3a5f72339fbc51ccc4ed97752"} 
             }
         });
     };
@@ -85,8 +87,7 @@
 (function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
-    //TODO: Rename to ContactSummariesAdapter -LC
-    callWall.SignalR.ContactAdapter = function (contactsHub, model) {
+    callWall.SignalR.ContactSummariesAdapter = function (contactSummariesHub, model) {
         var self = this;
         self.StartHub = function () {
             callWall.Db.observeChanges()
@@ -95,22 +96,19 @@
                         model.processUpdate(contactUpdate);
                     });
 
-            //TODO: Should this not be 'contactsHub.start().done...' instead of reaching out to $.connection.hub? -LC
+            //TODO: Should this not be 'contactSummariesHub.start().done...' instead of reaching out to $.connection.hub? -LC
             //check for updates
             $.connection.hub.start().done(function () {
-                console.log('Getting server head version');
-                contactsHub.server.getHeadVersion().done(function (serverHeadVersion) {
-                    console.log("server headVersion : " + serverHeadVersion);
-                    model.startingServerVersion(serverHeadVersion);
-                });
-
 
                 console.log('Subscribe');
                 try {
+                    console.log('Getting server head version');
+                    contactSummariesHub.server.requestHeadVersionStream();
+
                     callWall.Db.getContactsHeadVersion(function (clientHeadVersion) {
-                        console.log("client headVersion : " + clientHeadVersion);
-                        self.startingClientVersion(clientHeadVersion);
-                        contactsHub.server.requestContactSummaryStream(clientHeadVersion);
+                        console.log("clientDb-> headVersion : " + clientHeadVersion);
+                        model.startingClientVersion(clientHeadVersion);
+                        contactSummariesHub.server.requestContactSummaryStream(clientHeadVersion);
                     });
                 } catch (ex) {
                     console.log("failed on start-up of ContactSummaries Hub");
@@ -125,13 +123,17 @@
                 }
             });
         };
-
-        contactsHub.client.ReceiveContactSummaryUpdate = function (contactUpdate) {
-            console.log(contactUpdate);
+        
+        contactSummariesHub.client.ReceiveContactSummaryUpdate = function (contactUpdate) {
+            console.log("Server-> ContactUpdate id:" + contactUpdate.id + " ver:" + contactUpdate.version);
             callWall.Db.persistContactUpdate(contactUpdate);
         };
+        contactSummariesHub.client.ReceiveContactSummaryServerHeadVersion = function (serverHeadVersion) {
+            console.log("Server-> headVersion : " + serverHeadVersion);
+            model.startingServerVersion(serverHeadVersion);
+        };
 
-        contactsHub.client.ReceiveError = function (error) {
+        contactSummariesHub.client.ReceiveError = function (error) {
             console.error(error);
             //TODO: Need a better resilience strategy -LC
             model.errorMessage('Sorry we are having connectivity problems');
