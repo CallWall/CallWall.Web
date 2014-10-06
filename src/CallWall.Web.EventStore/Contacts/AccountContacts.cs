@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
+using System.Threading;
 using System.Threading.Tasks;
 using CallWall.Web.EventStore.Accounts;
 using CallWall.Web.Providers;
@@ -57,25 +60,28 @@ namespace CallWall.Web.EventStore.Contacts
         {
             //TODO: Check if it is valid to execute a refresh (isRunning, lastCompletedTime) -LC
             //TODO: Only run if not in replay mode? -LC
+            //TODO: Only run if last request was more than XXX time period ago -LC
 
-            TakeSnapshot();
+
             var account = GenerateAccount();
 
-            var query = from feed in _contactProvider.GetContactsFeed(account, _lastRefresh)
-                        from row in feed.Values
-                        select row;
 
-            _currentFeedRequest.Disposable = Observable.Create<Unit>(
-                async (o, ct) =>
-                {
-                    var contacts = await query.ToList();
-                    foreach (var contact in contacts)
-                    {
-                        UpdateContact(contact);
-                    }
-                    await UpdateComplete(userId);
-                }).Subscribe(_ => { }, UpdateFailed);
-
+            _currentFeedRequest.Disposable = _contactProvider.GetContactsFeed(account, _lastRefresh)
+                .Buffer(TimeSpan.FromSeconds(1))
+                .Where(batch => batch.Any())
+                .Select(batch => Observable.Create<Unit>(
+                        async (o, ct) =>
+                              {
+                                  TakeSnapshot();
+                                  foreach (var contact in batch)
+                                  {
+                                      UpdateContact(contact);
+                                  }
+                                  await UpdateComplete(userId);
+                                  o.OnCompleted();
+                              }))
+                .Concat()
+                .Subscribe(_ => { }, UpdateFailed);
         }
 
         private void UpdateContact(IAccountContactSummary updatedContact)
@@ -98,12 +104,16 @@ namespace CallWall.Web.EventStore.Contacts
             //  Rollback any updates
             RollbackToSnapshot();
 
+            //If was Session expired failure, issue a Session refresh request (which if successful, will trigger a ContactRefreshRequest)
+            //If was Auth revoked, register event and do something in the UI. We should really purge our data of this Account  -LC
+
+
             //  Push the failure to the ES. (retry?)
-            //throw new NotImplementedException();
         }
 
         private async Task UpdateComplete(Guid userId)
         {
+
             var payload = GetChangesBatch(userId);
             await CommitChanges(payload);
         }

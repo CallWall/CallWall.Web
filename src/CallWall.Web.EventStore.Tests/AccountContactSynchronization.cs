@@ -88,7 +88,7 @@ namespace CallWall.Web.EventStore.Tests
             private readonly UserContactSynchronizationService _userContactSynchronizationService;
             private readonly IAccount _account;
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
-            private readonly StubFeed _expectedFeed;
+            private readonly IObservable<IAccountContactSummary> _expectedFeed;
 
             public UserRegistrationAccountContactSynchronizationScenario(IEventStoreClient eventStoreClient)
             {
@@ -117,7 +117,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public async Task Then_Account_contacts_are_available_from_User_contacts_feed()
             {
-                var expected = await _expectedFeed.Values.ToList().FirstAsync();
+                var expected = await _expectedFeed.ToList().FirstAsync();
 
                 Trace.WriteLine("Expecting " + expected.Count + " values");
 
@@ -155,7 +155,7 @@ namespace CallWall.Web.EventStore.Tests
             #region Factory methods
 
             private static AccountContactSynchronizationService CreateAccountContactSynchronizationService(
-                IEventStoreClient eventStoreClient, IAccount account, IFeed<IAccountContactSummary> expectedFeed)
+                IEventStoreClient eventStoreClient, IAccount account, IObservable<IAccountContactSummary> expectedFeed)
             {
                 var dummyAccountContactProvider = CreateAccountContactProvider(account, expectedFeed);
                 var accountContactsFactory = new AccountContactsFactory(eventStoreClient,
@@ -176,18 +176,18 @@ namespace CallWall.Web.EventStore.Tests
                 return account;
             }
 
-            private static IAccountContactProvider CreateAccountContactProvider(IAccount account, IFeed<IAccountContactSummary> expectedFeed)
+            private static IAccountContactProvider CreateAccountContactProvider(IAccount account, IObservable<IAccountContactSummary> expectedFeed)
             {
-                var accountContactProvider = new StubAccountContactProvider(account.Provider, expectedFeed.Values, expectedFeed.TotalResults);
+                var accountContactProvider = new StubAccountContactProvider(account.Provider, expectedFeed);
                 return accountContactProvider;
             }
 
 
-            private static StubFeed CreateStubFeed(IAccount account)
+            private static IObservable<IAccountContactSummary> CreateStubFeed(IAccount account)
             {
                 var accountId = account.AccountId;
                 var provider = account.Provider;
-                var stubFeed = new StubFeed(3,
+                return 
                     new[]
                     {
                         new StubContactSummary
@@ -227,8 +227,7 @@ namespace CallWall.Web.EventStore.Tests
                                 "Neighbour"
                             }
                         },
-                    }.ToObservable());
-                return stubFeed;
+                    }.ToObservable();
             }
 
             #endregion

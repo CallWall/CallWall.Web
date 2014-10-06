@@ -96,17 +96,15 @@
                         model.processUpdate(contactUpdate);
                     });
 
-            //TODO: Should this not be 'contactSummariesHub.start().done...' instead of reaching out to $.connection.hub? -LC
             //check for updates
             $.connection.hub.start().done(function () {
-
                 console.log('Subscribe');
                 try {
                     console.log('Getting server head version');
                     contactSummariesHub.server.requestHeadVersionStream();
 
                     callWall.Db.getContactsHeadVersion(function (clientHeadVersion) {
-                        console.log("clientDb-> headVersion : " + clientHeadVersion);
+                        console.log("ClientDb-> headVersion : " + clientHeadVersion);
                         model.startingClientVersion(clientHeadVersion);
                         contactSummariesHub.server.requestContactSummaryStream(clientHeadVersion);
                     });

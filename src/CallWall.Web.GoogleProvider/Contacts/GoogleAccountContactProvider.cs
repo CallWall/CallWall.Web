@@ -21,26 +21,16 @@ namespace CallWall.Web.GoogleProvider.Contacts
         }
         public string Provider { get { return "Google"; } }
 
-        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
+        public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
 
             if (account.Provider != Provider)
-                return Observable.Empty<ContactFeed>();
+                return Observable.Empty<IAccountContactSummary>();
 
-            
-            return Observable.Create<ContactFeed>(o =>
-              {
-                  try
-                  {
-                      var feed = new ContactFeed(account, lastUpdated, _logger);
-                      return Observable.Return(feed).Subscribe(o);
-                  }
-                  catch (Exception ex)
-                  {
-                      return Observable.Throw<ContactFeed>(ex).Subscribe(o);
-                  }
-              })
-              .Log(_logger, "GetContactsFeed(" + account.AccountId + ")");
+
+            return GetPages(account, lastUpdated)
+                .SelectMany(batch => batch.Items)
+                .Log(_logger, "GetContactsFeed(" + account.AccountId + ")");
         }
 
         public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
@@ -49,89 +39,61 @@ namespace CallWall.Web.GoogleProvider.Contacts
             return Observable.Empty<IContactProfile>();
         }
 
-        private sealed class ContactFeed : IFeed<IAccountContactSummary>
+        private IObservable<BatchOperationPage<IAccountContactSummary>> GetPages(IAccount account, DateTime lastUpdated)
         {
-            private readonly ILogger _logger;
-            private readonly int _totalResults;
-            private readonly IObservable<IAccountContactSummary> _values;
-
-            public ContactFeed(IAccount account, DateTime lastUpdated, ILogger logger)
-            {
-                _logger = logger;
-                var batchPage = GetContactPage(account, 1, lastUpdated);
-                _totalResults = batchPage.TotalResults;
-                _values = GenerateValues(account, lastUpdated, batchPage);
-            }
-
-            public int TotalResults { get { return _totalResults; } }
-
-            public IObservable<IAccountContactSummary> Values { get { return _values; } }
-
-            private IObservable<IAccountContactSummary> GenerateValues(IAccount account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
-            {
-                return Observable.Create<IAccountContactSummary>(o =>
+            return Observable.Create<BatchOperationPage<IAccountContactSummary>>(
+                async (o, ct) =>
                 {
-                    var pages = GetPages(account, lastUpdated, batchPage);
-                    var query = from page in pages
-                                from contact in page.Items
-                                select contact;
-                    return query.Subscribe(o);
+                    var batchPage = await GetContactPage(account, 1, lastUpdated, ct);
+                    o.OnNext(batchPage);
+                    while (batchPage.NextPageStartIndex > 0)
+                    {
+                        //This was an issue, but its impact is reduced by increasing the maximum page size form the default of 25 to 1000. The upper limit maybe 9999, however the rest of CallWall would need to be designed to cater for those volumes too. -LC
+                        await Task.Delay(TimeSpan.FromMilliseconds(500), ct);
+                        batchPage = await GetContactPage(account, batchPage.NextPageStartIndex, lastUpdated, ct);
+                        o.OnNext(batchPage);
+                    }
+                    o.OnCompleted();
                 });
-            }
+        }
 
-            private IEnumerable<BatchOperationPage<IAccountContactSummary>> GetPages(IAccount account, DateTime lastUpdated, BatchOperationPage<IAccountContactSummary> batchPage)
+        private async Task<BatchOperationPage<IAccountContactSummary>> GetContactPage(IAccount account, int startIndex, DateTime lastUpdated, CancellationToken ct)
+        {
+            _logger.Debug("GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
+            var client = new HttpClient();
+
+            var requestUriBuilder = new UriBuilder("https://www.google.com/m8/feeds/contacts/default/full");
+            requestUriBuilder.AddQuery("access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken))
+                             .AddQuery("start-index", startIndex.ToString(CultureInfo.InvariantCulture))
+                             .AddQuery("max-results", "1000");
+
+            if (lastUpdated != default(DateTime))
             {
-                yield return batchPage;
-                while (batchPage.NextPageStartIndex > 0)
-                {
-                    //HACK:Google doesn't like being DOS'ed.
-                    //TODO: Look into if this is because I may not be using http-connection keep-alives or something like that -LC
-                    //Thread.Sleep(1000);  //HACK:Google doesn't like being DOS'ed.
-                    Thread.Sleep(500);
-                    //Thread.Sleep(250);  
-                    batchPage = GetContactPage(account, batchPage.NextPageStartIndex, lastUpdated);
-                    yield return batchPage;
-                }
+                var formattedDate = lastUpdated.ToString("yyyy-MM-ddT00:00:00");
+                requestUriBuilder.AddQuery("updated-min", formattedDate);
             }
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Add("GData-Version", "3.0");
 
-            private BatchOperationPage<IAccountContactSummary> GetContactPage(IAccount account, int startIndex, DateTime lastUpdated)
+            //TODO: Add error handling (not just exceptions but also non 200 responses -LC
+            try
             {
-                _logger.Debug("GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
-                var client = new HttpClient();
+                var response = await client.SendAsync(request, ct);
+                //TODO: Handle Auth failure here. How can I refresh a token from here? -> Maybe throw and then have provider deal with it. It can then resubscribe once the session is refreshed. -LC
+                response.EnsureSuccessStatusCode();
+                var contentLength = response.Content.Headers.ContentLength;
+                var contactResponse = await response.Content.ReadAsStringAsync();
 
-                var requestUriBuilder = new UriBuilder("https://www.google.com/m8/feeds/contacts/default/full");
-                requestUriBuilder.AddQuery("access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken))
-                                 .AddQuery("start-index", startIndex.ToString(CultureInfo.InvariantCulture));
-
-                if (lastUpdated != default(DateTime))
-                {
-                    var formattedDate = lastUpdated.ToString("yyyy-MM-ddT00:00:00");
-                    requestUriBuilder.AddQuery("updated-min", formattedDate);
-                }
-                var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-                request.Headers.Add("GData-Version", "3.0");
-
-                //TODO: Add error handling (not just exceptions but also non 200 responses -LC
-                try
-                {
-                    var response = client.SendAsync(request);
-                    var contactResponse = response.ContinueWith(r =>
-                        {
-                            r.Result.EnsureSuccessStatusCode();
-                            return r.Result.Content.ReadAsStringAsync();
-                        }).Unwrap().Result;
-
-                    var translator = new GoogleContactProfileTranslator();
-                    var contacts = translator.Translate(contactResponse, account.CurrentSession.AccessToken, account);
-                    _logger.Debug("Contacts - Received : {0}, NextPageStartIndex : {1}, TotalResults : {2}", 
-                        contacts.Items.Count, contacts.NextPageStartIndex, contacts.TotalResults);
-                    return contacts;
-                }
-                catch (Exception exception)
-                {
-                    _logger.Error(exception, "GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
-                    return BatchOperationPage<IAccountContactSummary>.Empty();
-                }
+                var translator = new GoogleContactProfileTranslator();
+                var contacts = translator.Translate(contactResponse, account.CurrentSession.AccessToken, account);
+                _logger.Debug("Contacts - Received : {0}, NextPageStartIndex : {1}, TotalResults : {2}, ContentLength (from Http header) : {3}",
+                    contacts.Items.Count, contacts.NextPageStartIndex, contacts.TotalResults, contentLength);
+                return contacts;
+            }
+            catch (Exception exception)
+            {
+                _logger.Error(exception, "GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
+                return BatchOperationPage<IAccountContactSummary>.Empty();
             }
         }
     }

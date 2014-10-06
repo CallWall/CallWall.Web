@@ -81,9 +81,9 @@ namespace CallWall.Web.EventStore.Contacts
 
         public void CommitChanges()
         {
+            _version += _changes.Count;
             _changes.Clear();
             _snapshot.Clear();
-            _version++;
         }
     }
 }

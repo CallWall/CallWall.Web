@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
@@ -15,24 +14,45 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 {
     public class LinkedInAccountContactProvider : IAccountContactProvider
     {
+        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
+
         public string Provider { get { return "LinkedIn"; } }
 
-        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
+        public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
             if (account.Provider != Provider)
-                return Observable.Empty<ContactFeed>();
-            return Observable.Create<ContactFeed>(o =>
-            {
-                try
+                return Observable.Empty<IAccountContactSummary>();
+
+            return Observable.Create<IAccountContactSummary>(
+                async (o, ct) =>
                 {
-                    var feed = new ContactFeed(account, lastUpdated);
-                    return Observable.Return(feed).Subscribe(o);
-                }
-                catch (Exception ex)
-                {
-                    return Observable.Throw<ContactFeed>(ex).Subscribe(o);
-                }
-            });
+
+                    try
+                    {
+                        var client = new HttpClient();
+                        var request = CreateContactSummaryListRequest(account, lastUpdated);
+
+                        //TODO: Add error handling (not just exceptions but also non 200 responses -LC
+                        var response = await client.SendAsync(request, ct);
+                        response.EnsureSuccessStatusCode();
+                        var contactResponse = await response.Content.ReadAsStringAsync();
+
+                        var contacts = JsonConvert.DeserializeObject<ContactsResponse>(contactResponse);
+                        if (contacts.Total <= 0 || contacts.Contacts == null)
+                        {
+                            return Observable.Empty<IAccountContactSummary>().Subscribe(o);
+                        }
+                        return contacts.Contacts
+                            .Select(c => TranslateToContactSummary(account.AccountId, c))
+                            .ToObservable()
+                            .Subscribe(o);
+                    }
+                    catch (Exception e)
+                    {
+                        return Observable.Throw<IAccountContactSummary>(e).Subscribe(o);
+                    }
+                });
+
         }
 
         public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
@@ -41,51 +61,29 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             return Observable.Empty<IContactProfile>();
         }
 
-        private sealed class ContactFeed : IFeed<IAccountContactSummary>
+        private static HttpRequestMessage CreateContactSummaryListRequest(IAccount account, DateTime lastUpdated)
         {
-            private readonly int _totalResults;
-            private readonly IObservable<IAccountContactSummary> _values;
-            private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
+            var requestUriBuilder = new UriBuilder("https://api.linkedin.com/v1/people/~/connections");
 
-            public ContactFeed(IAccount account, DateTime lastUpdated)
+            requestUriBuilder.AddQuery("oauth2_access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken));
+            if (lastUpdated != default(DateTime))
             {
-                //TODO - this shouldnt be in a ctor - but it doesnt need to complexity of the Google provider - review with Lee - RC
-                var client = new HttpClient();
-                var requestUriBuilder = new UriBuilder("https://api.linkedin.com/v1/people/~/connections");
-
-                requestUriBuilder.AddQuery("oauth2_access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken));
-                if (lastUpdated != default(DateTime))
-                {
-                    var lastModifedAsUnixTimestamp = (lastUpdated - UnixEpoch).TotalMilliseconds.ToString(CultureInfo.InvariantCulture)
-                                                                             .Split('.')
-                                                                             .First();
-                    requestUriBuilder.AddQuery("modified", "updated")
-                                     .AddQuery("modified-since", lastModifedAsUnixTimestamp);
-                }
-                var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-
-                request.Headers.Add("x-li-format", "json");
-
-                //TODO: Add error handling (not just exceptions but also non 200 responses -LC
-                var response = client.SendAsync(request);
-                var contactResponse = response.ContinueWith(r => r.Result.Content.ReadAsStringAsync()).Unwrap().Result;
-
-                var contacts = JsonConvert.DeserializeObject<ContactsResponse>(contactResponse);
-                _totalResults = contacts.Total;
-                if (_totalResults > 0 && contacts.Contacts != null)
-                    _values = contacts.Contacts.Select(c => TranslateToContactSummary(account.AccountId, c)).ToObservable();
-                else
-                    _values = Observable.Empty<IAccountContactSummary>();
+                var lastModifedAsUnixTimestamp =
+                    (lastUpdated - UnixEpoch).TotalMilliseconds.ToString(CultureInfo.InvariantCulture)
+                        .Split('.')
+                        .First();
+                requestUriBuilder.AddQuery("modified", "updated")
+                    .AddQuery("modified-since", lastModifedAsUnixTimestamp);
             }
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
 
-            public int TotalResults { get { return _totalResults; } }
+            request.Headers.Add("x-li-format", "json");
+            return request;
+        }
 
-            public IObservable<IAccountContactSummary> Values { get { return _values; } }
-
-            private static IAccountContactSummary TranslateToContactSummary(string accountId, Contact c)
-            {
-                return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new[] { c.Industry, c.Headline });
-            }
+        private static IAccountContactSummary TranslateToContactSummary(string accountId, Contact c)
+        {
+            return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new[] { c.Industry, c.Headline });
         }
     }
 
