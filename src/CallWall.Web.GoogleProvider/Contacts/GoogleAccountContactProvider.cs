@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
 using System.Threading;
@@ -23,10 +22,8 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
-
             if (account.Provider != Provider)
                 return Observable.Empty<IAccountContactSummary>();
-
 
             return GetPages(account, lastUpdated)
                 .SelectMany(batch => batch.Items)

@@ -80,7 +80,6 @@
     <Compile Include="Doubles\StubAccount.cs" />
     <Compile Include="Doubles\StubAccountContactProvider.cs" />
     <Compile Include="Doubles\StubContactSummary.cs" />
-    <Compile Include="Doubles\StubFeed.cs" />
     <Compile Include="Doubles\StubSession.cs" />
     <Compile Include="NewUserRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

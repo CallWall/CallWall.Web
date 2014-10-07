@@ -12,9 +12,9 @@ namespace CallWall.Web.GoogleProviderFake
     {
         public string Provider { get { return "FakeGoogle"; } }
 
-        public IObservable<IFeed<IAccountContactSummary>> GetContactsFeed(IAccount account, DateTime lastUpdated)
+        public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
-            return Observable.Return(new ContactFeed());
+            return GetContactSummaries();
         }
 
         public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
@@ -63,51 +63,45 @@ namespace CallWall.Web.GoogleProviderFake
             };
         }
 
-        private sealed class ContactFeed : IFeed<IAccountContactSummary>
+        private const string Family = "Family";
+        private const string Colleague = "Colleague";
+        private const string Dolphins = "Dolphins";
+
+        private IObservable<IAccountContactSummary> GetContactSummaries()
         {
-            private const string Family = "Family";
-            private const string Colleague = "Colleague";
-            private const string Dolphins = "Dolphins";
+            return Observable.Interval(TimeSpan.FromSeconds(0.25))
+                .Zip(
+                    new[]
+                    {
+                        new ContactSummary {ProviderId = "1", Title = "Lee Campbell"},
+                        new ContactSummary {ProviderId = "2", Title = "Rhys Campbell", Tags = new[] {Family,Colleague,Dolphins}},
+                        new ContactSummary {ProviderId = "3", Title = "Erynne Campbell", Tags = new[] {Family,Dolphins}},
+                        new ContactSummary {ProviderId = "4", Title = "Tori Campbell", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "5", Title = "Jim Amm", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "6", Title = "Gaye Amm", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "7", Title = "Karen Morrogh", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "8", Title = "Grant Morrogh", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "9", Title = "Greg Fox", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "10", Title = "Matt Barrett", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "11", Title = "Jake Ginnivan", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "12", Title = "Paul Spiteri", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "13", Title = "Steph Campbell", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "14", Title = "Chris Campbell", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "15", Title = "Colin Campbell", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "16", Title = "Linda Campbell", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "17", Title = "Martine Harris", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "18", Title = "John Harris", Tags = new[] {Family}},
+                        new ContactSummary {ProviderId = "19", Title = "John Marks", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "20", Title = "Loic Roze", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "21", Title = "Olivier Dehuerles", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "22", Title = "John Bell", Tags = new[] {Dolphins}},
+                        new ContactSummary {ProviderId = "23", Title = "Nick Gianco", Tags = new[] {Colleague}},
+                        new ContactSummary {ProviderId = "24", Title = "Nick Harlin", Tags = new[] {Dolphins}},
+                        new ContactSummary {ProviderId = "25", Title = "Mark Entwistle", Tags = new[] {Dolphins}},
+                        new ContactSummary {ProviderId = "26", Title = "Mark Ridgewell", Tags = new[] {Dolphins}},
 
-            public ContactFeed()
-            {
-                var contacts = new[]
-                {
-                    new ContactSummary {ProviderId = "1", Title = "Lee Campbell"},
-                    new ContactSummary {ProviderId = "2", Title = "Rhys Campbell", Tags = new[] {Family,Colleague,Dolphins}},
-                    new ContactSummary {ProviderId = "3", Title = "Erynne Campbell", Tags = new[] {Family,Dolphins}},
-                    new ContactSummary {ProviderId = "4", Title = "Tori Campbell", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "5", Title = "Jim Amm", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "6", Title = "Gaye Amm", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "7", Title = "Karen Morrogh", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "8", Title = "Grant Morrogh", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "9", Title = "Greg Fox", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "10", Title = "Matt Barrett", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "11", Title = "Jake Ginnivan", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "12", Title = "Paul Spiteri", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "13", Title = "Steph Campbell", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "14", Title = "Chris Campbell", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "15", Title = "Colin Campbell", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "16", Title = "Linda Campbell", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "17", Title = "Martine Harris", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "18", Title = "John Harris", Tags = new[] {Family}},
-                    new ContactSummary {ProviderId = "19", Title = "John Marks", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "20", Title = "Loic Roze", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "21", Title = "Olivier Dehuerles", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "22", Title = "John Bell", Tags = new[] {Dolphins}},
-                    new ContactSummary {ProviderId = "23", Title = "Nick Gianco", Tags = new[] {Colleague}},
-                    new ContactSummary {ProviderId = "24", Title = "Nick Harlin", Tags = new[] {Dolphins}},
-                    new ContactSummary {ProviderId = "25", Title = "Mark Entwistle", Tags = new[] {Dolphins}},
-                    new ContactSummary {ProviderId = "26", Title = "Mark Ridgewell", Tags = new[] {Dolphins}},
-
-                };
-                TotalResults = contacts.Length;
-                Values = Observable.Interval(TimeSpan.FromSeconds(0.25))
-                                   .Zip(contacts.ToObservable(), (_, c) => c)
-                                   .Concat(Observable.Throw<IAccountContactSummary>(new IOException("Fake error")));
-            }
-            public int TotalResults { get; private set; }
-            public IObservable<IAccountContactSummary> Values { get; private set; }
+                    }.ToObservable(), (_, c) => c)
+                .Concat(Observable.Throw<IAccountContactSummary>(new IOException("Fake error")));
         }
 
         private sealed class ContactSummary : IAccountContactSummary

@@ -175,7 +175,6 @@
     <Compile Include="IAccountConfiguration.cs" />
     <Compile Include="Providers\IAccountContactProvider.cs" />
     <Compile Include="IAccountContactSummary.cs" />
-    <Compile Include="IFeed.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="ILoggerFactory.cs" />
     <Compile Include="IModule.cs" />

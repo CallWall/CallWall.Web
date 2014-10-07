@@ -124,7 +124,7 @@ namespace CallWall.Web.EventStore.Tests
                 var user = await _userRepository.Login(_account);
                 Trace.WriteLine("Account logged in");
 
-                var contacts = await _userContactRepository.GetContactSummariesFrom(user, null)
+                var contacts = await _userContactRepository.GetContactSummariesFrom(user, 0)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Take(expected.Count)
                     .ToList()
