@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CallWall.Web.Contracts
+namespace CallWall.Web
 {
     public interface IContactCollaboration
     {

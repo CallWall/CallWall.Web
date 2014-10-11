@@ -22,6 +22,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
             _tags = tags;
         }
 
+        public bool IsDeleted { get; private set; }
         public string Provider { get { return "LinkedIn"; } }
 
         public string AccountId

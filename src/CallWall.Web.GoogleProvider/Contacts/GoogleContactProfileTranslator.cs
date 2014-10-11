@@ -90,7 +90,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
             if (nextIndex > int.Parse(totalResults.Value))
                 return -1;
             return nextIndex;
-
         }
 
         public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccount account)
@@ -108,13 +107,20 @@ namespace CallWall.Web.GoogleProvider.Contacts
                     return null;
 
                 var providerId = GetId(xContactEntry);
-                var title = GetTitle(xContactEntry);
-                var avatar = GetAvatar(xContactEntry, accessToken);
-                var tags = GetTags(xContactEntry);
+                if (IsDeleted(xContactEntry))
+                {
+                    contacts.Add(new DeletedContactSummary(providerId, account.AccountId));
+                }
+                else
+                {
+                    var title = GetTitle(xContactEntry);
+                    var avatar = GetAvatar(xContactEntry, accessToken);
+                    var tags = GetTags(xContactEntry);
 
-                //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
-                var contact = new ContactSummary(providerId, account.AccountId, title, avatar, tags);
-                contacts.Add(contact);
+                    //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
+                    var contact = new ContactSummary(providerId, account.AccountId, title, avatar, tags);
+                    contacts.Add(contact);    
+                }
             }
 
 
@@ -128,6 +134,12 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 int.Parse(startIndex.Value),
                 int.Parse(totalResults.Value),
                 int.Parse(itemsPerPage.Value));
+        }
+
+        private static bool IsDeleted(XElement xContactEntry)
+        {
+            //Check from presence of a <gd:deleted/> element. Not sure what its contents will be.
+            return xContactEntry.XPathSelectElements("gd:deleted", Ns).Any();
         }
 
         private static string GetId(XElement xContactEntry)

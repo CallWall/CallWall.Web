@@ -73,7 +73,6 @@ namespace CallWall.Web.EventStore.Contacts
                 .Wait();
         }
 
-
         private UserContacts GetUserContacts(AccountContactBatchUpdateRecord payload)
         {
             if (!_accountIdToUserId.ContainsKey(payload.AccountId))

@@ -1,4 +1,4 @@
-namespace CallWall.Web.Contracts.Contact
+namespace CallWall.Web
 {
     public interface IContactAssociation
     {

@@ -168,15 +168,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         private string GetChangesBatch(Guid userId)
         {
-            var changes = _changes.Select(c => new AccountContactRecord
-                {
-                    AccountId = c.AccountId,
-                    Provider = c.Provider,
-                    ProviderId = c.ProviderId,
-                    Title = c.Title,
-                    PrimaryAvatar = c.PrimaryAvatar,
-                    Tags = c.Tags.ToArray()
-                })
+            var changes = _changes.Select(ToAccountContactRecord)
                 .ToArray();
 
             _logger.Trace("Changes.count = {0}", changes.Length);
@@ -189,6 +181,27 @@ namespace CallWall.Web.EventStore.Contacts
             };
             var payload = batch.ToJson();
             return payload;
+        }
+
+        private static AccountContactRecord ToAccountContactRecord(IAccountContactSummary contact)
+        {
+            var result = new AccountContactRecord
+            {
+                AccountId = contact.AccountId,
+                Provider = contact.Provider,
+                ProviderId = contact.ProviderId,                
+            };
+            if (contact.IsDeleted)
+            {
+                result.IsDeleted = true;
+            }
+            else
+            {
+                result.Title = contact.Title;
+                result.PrimaryAvatar = contact.PrimaryAvatar;
+                result.Tags = contact.Tags.ToArray();
+            }
+            return result;
         }
     }
 }

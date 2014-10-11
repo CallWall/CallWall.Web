@@ -34,12 +34,13 @@ namespace CallWall.Web.EventStore.Domain
         bool IsMatch(IAccountContactSummary contact);
 
         ContactAggregateUpdate Add(IAccountContactSummary contact);
-        ContactAggregateUpdate Remove(string provider, string accountId);
+        ContactAggregateUpdate Remove(IAccountContactSummary contact);
         ContactAggregateUpdate Update(IAccountContactSummary contact);
 
         IContactAggregate Merge(IContactAggregate other);
         IEnumerable<IAccountContactSummary> Purge();
 
         IContactAggregate Snapshot();
+        
     }
 }

@@ -59,10 +59,12 @@ namespace CallWall.Web.GoogleProvider.Contacts
             _logger.Debug("GetContactPage({0}, {1}, {2:o})", account.AccountId, startIndex, lastUpdated);
             var client = new HttpClient();
 
+            //See https://developers.google.com/google-apps/contacts/v3/reference?hl=es#Parameters for reference on query API.
             var requestUriBuilder = new UriBuilder("https://www.google.com/m8/feeds/contacts/default/full");
             requestUriBuilder.AddQuery("access_token", HttpUtility.UrlEncode(account.CurrentSession.AccessToken))
                              .AddQuery("start-index", startIndex.ToString(CultureInfo.InvariantCulture))
-                             .AddQuery("max-results", "1000");
+                             .AddQuery("max-results", "1000")
+                             .AddQuery("showdeleted", "true");  
 
             if (lastUpdated != default(DateTime))
             {

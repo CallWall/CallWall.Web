@@ -76,17 +76,21 @@ namespace CallWall.Web.EventStore.Domain
 
             throw new NotImplementedException();
         }
-       
-        public ContactAggregateUpdate Remove(string provider, string accountId)
+
+        public ContactAggregateUpdate Remove(IAccountContactSummary contact)
         {
+            if (contact == null) throw new ArgumentNullException();
+            if (!OwnsContact(contact)) throw new InvalidOperationException();
+
             Action removal = () =>
             {
                 var contactsSnapshot = _contacts.ToList()
-                    .Where(contact => contact.Provider == provider)
-                    .Where(contact => contact.AccountId == accountId);
-                foreach (var contact in contactsSnapshot)
+                    .Where(c => contact.Provider == c.Provider)
+                    .Where(c => contact.AccountId == c.AccountId)
+                    .Where(c => contact.ProviderId == c.ProviderId);
+                foreach (var c in contactsSnapshot)
                 {
-                    _contacts.Remove(contact);
+                    _contacts.Remove(c);
                 }
             };
             return CreateDelta(removal);
@@ -179,6 +183,8 @@ namespace CallWall.Web.EventStore.Domain
             var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
             var tagDelta = new CollectionDelta<string>(oldTags, Tags);
             var providerDelta = new CollectionDelta<ContactProviderSummary>(oldProviders, Providers);
+
+            //TODO: If the result is no change, then return null
 
             var delta = new ContactAggregateUpdate
             {

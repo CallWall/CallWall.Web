@@ -4,6 +4,7 @@ namespace CallWall.Web.EventStore.Contacts
 {
     public class AccountContactRecord : IAccountContactSummary
     {
+        public bool IsDeleted { get; set; }
         public string Provider { get; set; }
         public string AccountId { get; set; }
         public string ProviderId { get; set; }

@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CallWall.Web.EventStore.Accounts;
 using CallWall.Web.EventStore.Contacts;
-using CallWall.Web.EventStore.Domain;
 using CallWall.Web.EventStore.Tests.Doubles;
 using CallWall.Web.EventStore.Users;
 using CallWall.Web.Providers;
@@ -226,7 +225,7 @@ namespace CallWall.Web.EventStore.Tests
                             {
                                 "Neighbour"
                             }
-                        },
+                        }
                     }.ToObservable();
             }
 

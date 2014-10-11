@@ -83,7 +83,6 @@
     <Compile Include="Contacts\ContactEventType.cs" />
     <Compile Include="Contacts\ContactStreamNames.cs" />
     <Compile Include="Contacts\ContactSummaryRepository.cs" />
-    <Compile Include="Contacts\ContactSummaryUpdate.cs" />
     <Compile Include="Contacts\IAccountContactsFactory.cs" />
     <Compile Include="Contacts\UserContacts.cs" />
     <Compile Include="Contacts\UserContactSynchronizationService.cs" />
@@ -102,7 +101,6 @@
     <Compile Include="EventStoreClient.cs" />
     <Compile Include="EventStoreExtensions.cs" />
     <Compile Include="EventStoreModule.cs" />
-    <Compile Include="Events\ContactSummaryUpdate.cs" />
     <Compile Include="EventStoreConnectionFactory.cs" />
     <Compile Include="IDomainEventBase.cs" />
     <Compile Include="IEventStoreClient.cs" />

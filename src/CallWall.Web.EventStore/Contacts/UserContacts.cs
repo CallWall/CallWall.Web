@@ -9,19 +9,19 @@ namespace CallWall.Web.EventStore.Contacts
     public class UserContacts
     {
         private readonly Guid _userId;
-        private int _version = 0;
         private readonly List<IContactAggregate> _contacts = new List<IContactAggregate>();
         private readonly List<IContactAggregate> _snapshot = new List<IContactAggregate>();
         private readonly List<ContactAggregateUpdate> _changes = new List<ContactAggregateUpdate>();
 
         public UserContacts(Guid userId)
         {
+            Version = 0;
             _userId = userId;
         }
 
         public Guid UserId { get { return _userId; } }
 
-        public int Version { get { return _version; } }
+        public int Version { get; private set; }
 
         public IDisposable TrackChanges()
         {
@@ -45,7 +45,8 @@ namespace CallWall.Web.EventStore.Contacts
         public void Add(IAccountContactSummary contact)
         {
             var update = AddContact(contact);
-            _changes.Add(update);
+            if(update!=null)
+                _changes.Add(update);
         }
 
         private ContactAggregateUpdate AddContact(IAccountContactSummary contact)
@@ -53,7 +54,12 @@ namespace CallWall.Web.EventStore.Contacts
             //Look for matches
             var existing = _contacts.SingleOrDefault(c => c.OwnsContact(contact));
             if (existing != null)
-                return existing.Update(contact);
+            {
+                return contact.IsDeleted 
+                    ? existing.Remove(contact) 
+                    : existing.Update(contact);
+            }
+                
 
             //var match = _contacts.Select(c => c.Match(contact))
             //    .OrderBy(match => match.Weight)
@@ -81,7 +87,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         public void CommitChanges()
         {
-            _version += _changes.Count;
+            Version += _changes.Count;
             _changes.Clear();
             _snapshot.Clear();
         }

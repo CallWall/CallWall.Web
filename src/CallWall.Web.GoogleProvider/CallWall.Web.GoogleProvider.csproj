@@ -86,6 +86,7 @@
     <Compile Include="Contacts\BatchOperationPage.cs" />
     <Compile Include="Contacts\ContactSummary.cs" />
     <Compile Include="Auth\GoogleAuthentication.cs" />
+    <Compile Include="Contacts\DeletedContactSummary.cs" />
     <Compile Include="Contacts\GoogleContactProfileTranslator.cs" />
     <Compile Include="Contacts\GoogleAccountContactProvider.cs" />
     <Compile Include="GoogleModule.cs" />

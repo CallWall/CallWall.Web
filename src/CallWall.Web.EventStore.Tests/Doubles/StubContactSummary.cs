@@ -6,6 +6,8 @@ namespace CallWall.Web.EventStore.Tests.Doubles
     {
         private readonly List<string> _tags = new List<string>();
 
+        public bool IsDeleted { get; set; }
+
         public string Provider { get; set; }
 
         public string AccountId { get; set; }

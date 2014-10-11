@@ -52,6 +52,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         {
             get { return _primaryAvatar; }
         }
-    }
 
+        public bool IsDeleted { get { return false; } }
+    }
 }
