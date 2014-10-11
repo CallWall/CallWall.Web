@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.LinkedInProvider.Auth
 {
+    //https://developer.linkedin.com/documents/authentication
     public class LinkedInAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
         private readonly IAccountFactory _accountFactory;
@@ -23,14 +24,15 @@ namespace CallWall.Web.LinkedInProvider.Auth
             get { return "https://www.linkedin.com/uas/oauth2/accessToken"; }
         }
 
+        //LinkedIn API Key
         public override string ClientId
         {
-            get { return "751tu6va8d937l"; }
+            get { return "tawx8a0kimsi"; }
         }
 
         public override string ClientSecret
         {
-            get { return "MHOnHig0JXIwCd49"; }
+            get { return "37B0QPk8ptKbzKsE"; }
         }
 
         public override string ProviderName
@@ -50,7 +52,7 @@ namespace CallWall.Web.LinkedInProvider.Auth
 
         protected override IAccount CreateAccount(ISession session)
         {
-            //HACK: This should obviously go to Google and fetch the details. -LC
+            //HACK: This should obviously go to LinkedIn and fetch the details. -LC
             return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session);
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CallWall.Web
+namespace CallWall.Web.Domain
 {
     public interface IAccountContactSummary
     {
