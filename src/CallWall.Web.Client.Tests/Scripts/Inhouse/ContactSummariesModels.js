@@ -68,7 +68,7 @@
         self.startingServerVersion = ko.observable(0);
         self.startingClientVersion = ko.observable(0);
         self.currentClientVersion = ko.observable(0);
-        self.progress = ko.computed(function () {
+        self.progress = ko.computed(function() {
             if (self.currentClientVersion() >= self.startingServerVersion())
                 return 100;
             

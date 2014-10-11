@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CallWall.Web.Domain
+namespace CallWall.Web
 {
     public interface IAccountAuthentication
     {
@@ -12,5 +12,8 @@ namespace CallWall.Web.Domain
         bool CanCreateAccountFromState(string code, string state);
 
         IAccount CreateAccountFromOAuthCallback(string code, string state);
+
+        //TODO: Is this required anymore? -LC
+        bool TryDeserialiseSession(string payload, out ISession session);   
     }
 }

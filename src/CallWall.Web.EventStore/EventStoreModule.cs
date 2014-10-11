@@ -1,5 +1,6 @@
 
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Contacts;
 
 namespace CallWall.Web.EventStore

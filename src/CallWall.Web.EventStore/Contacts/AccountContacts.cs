@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Accounts;
 using CallWall.Web.Providers;
 using EventStore.ClientAPI;

@@ -5,8 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
 using System.Web;
-using CallWall.Web.Contracts;
-using CallWall.Web.Contracts.Contact;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 using Newtonsoft.Json;
 

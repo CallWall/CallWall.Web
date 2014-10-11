@@ -1,3 +1,5 @@
+using CallWall.Web.Domain;
+
 namespace CallWall.Web.EventStore.Accounts
 {
     public class AccountRecord : IAccount

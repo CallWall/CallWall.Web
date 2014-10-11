@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Security;
+using CallWall.Web.Domain;
 using CallWall.Web.Models;
 using CallWall.Web.Providers;
 

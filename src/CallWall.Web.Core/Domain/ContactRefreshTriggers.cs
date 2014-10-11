@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CallWall.Web
+namespace CallWall.Web.Domain
 {
     public enum ContactRefreshTriggers
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.Providers
 {

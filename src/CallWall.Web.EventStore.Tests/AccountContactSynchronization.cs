@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Accounts;
 using CallWall.Web.EventStore.Contacts;
 using CallWall.Web.EventStore.Tests.Doubles;

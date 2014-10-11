@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Web;
+using CallWall.Web.Domain;
 using Newtonsoft.Json.Linq;
-using CallWall.Web.Account;
 
 namespace CallWall.Web.OAuth2Implementation
 {

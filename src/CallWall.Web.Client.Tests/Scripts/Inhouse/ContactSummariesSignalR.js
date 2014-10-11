@@ -34,7 +34,7 @@
                 addedProviders : dto.AddedProviders,
                 removedProviders: dto.RemovedProviders*/
             };
-        }
+            }
     };
 
     var observeChanges = function () {
@@ -52,7 +52,7 @@
                         o.onNext(change.doc);
                     }).on('error', function (err) {
                         console.error('Error listening to contactsDb changes');
-                        console.error(err);
+                console.error(err);
                         o.onError(err);
                     });
                 }
@@ -94,7 +94,7 @@
                 .subscribe(
                     function (contactUpdate) {
                         model.processUpdate(contactUpdate);
-                    });
+                });
 
             //check for updates
             $.connection.hub.start().done(function () {

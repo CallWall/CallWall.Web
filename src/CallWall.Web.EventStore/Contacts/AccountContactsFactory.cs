@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.EventStore.Contacts

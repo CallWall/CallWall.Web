@@ -1,4 +1,4 @@
-﻿using CallWall.Web.Account;
+﻿using CallWall.Web.Domain;
 using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
 

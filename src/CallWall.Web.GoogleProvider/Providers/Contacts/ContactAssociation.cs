@@ -1,4 +1,4 @@
-using CallWall.Web.Contracts.Contact;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {

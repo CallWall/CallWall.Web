@@ -75,7 +75,7 @@
       <HintPath>..\..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\..\packages\Rx-PlatformServices.2.2.3\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+      <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -112,53 +112,53 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CallWallModuleSection.cs" />
-    <Compile Include="Contracts\ICalendarEntry.cs" />
-    <Compile Include="Contracts\IContactCollaboration.cs" />
-    <Compile Include="Contracts\IGalleryAlbum.cs" />
-    <Compile Include="ContactRefreshTriggers.cs" />
-    <Compile Include="Domain\ContactAggregateUpdate.cs" />
-    <Compile Include="Domain\ContactProviderSummary.cs" />
-    <Compile Include="Domain\ContactRefreshTriggers.cs" />
-    <Compile Include="Domain\IContactProviderSummary.cs" />
     <Compile Include="EnumerableEx.cs" />
-    <Compile Include="Domain\ICalendarEntry.cs" />
-    <Compile Include="Domain\IContactAssociation.cs" />
-    <Compile Include="Domain\IContactCollaboration.cs" />
-    <Compile Include="Domain\IContactProfile.cs" />
-    <Compile Include="Domain\IContactSummaryRepository.cs" />
-    <Compile Include="Domain\IGalleryAlbum.cs" />
-    <Compile Include="Domain\IMessage.cs" />
     <Compile Include="IRunnable.cs" />
     <Compile Include="ITypeRegistry.cs" />
+    <Compile Include="NotificationBase.cs" />
+    <Compile Include="NotificationExtensions.cs" />
+    <Compile Include="NotifyEventComparer.cs" />
+    <Compile Include="PropertyExtensions.cs" />
+    <Compile Include="ResharperAnnotations.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="ILoggerFactory.cs" />
+    <Compile Include="IModule.cs" />
+    <Compile Include="LoggerExtensions.cs" />
+    <Compile Include="LogLevel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Contracts\Communication\ICommunicationQueryProvider.cs" />
     <Compile Include="Contracts\Communication\IMessage.cs" />
     <Compile Include="Contracts\Communication\MessageDirection.cs" />
-    <Compile Include="Contracts\Contact\IContactAssociation.cs" />
-    <Compile Include="Contracts\Contact\IContactProfile.cs" />
     <Compile Include="Contracts\Contact\IContactQueryProvider.cs" />
     <Compile Include="Contracts\IAuthorizationTokenProvider.cs" />
     <Compile Include="Contracts\IPersonalIdentifier.cs" />
     <Compile Include="Contracts\IProfile.cs" />
     <Compile Include="Contracts\IProviderDescription.cs" />
     <Compile Include="Contracts\ISchedulerProvider.cs" />
+    <Compile Include="Domain\ContactAggregateUpdate.cs" />
+    <Compile Include="Domain\ContactProviderSummary.cs" />
+    <Compile Include="Domain\ContactRefreshTriggers.cs" />
+    <Compile Include="Domain\IAccount.cs" />
+    <Compile Include="Domain\IAccountAuthentication.cs" />
+    <Compile Include="Domain\IAccountContactSummary.cs" />
+    <Compile Include="Domain\IAccountFactory.cs" />
+    <Compile Include="Domain\ICalendarEntry.cs" />
+    <Compile Include="Domain\IContactAssociation.cs" />
+    <Compile Include="Domain\IContactCollaboration.cs" />
+    <Compile Include="Domain\IContactProfile.cs" />
+    <Compile Include="Domain\IContactProviderSummary.cs" />
+    <Compile Include="Domain\IContactSummaryRepository.cs" />
+    <Compile Include="Domain\IGalleryAlbum.cs" />
+    <Compile Include="Domain\IResourceScope.cs" />
+    <Compile Include="Domain\ISession.cs" />
+    <Compile Include="Domain\IUserRepository.cs" />
+    <Compile Include="Domain\User.cs" />
     <Compile Include="Http\HttpClient.cs" />
     <Compile Include="Http\HttpRequestParameters.cs" />
     <Compile Include="Http\IHttpClient.cs" />
     <Compile Include="OAuth2Implementation\AuthState.cs" />
     <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
     <Compile Include="OAuth2Implementation\Outh2Session.cs" />
-    <Compile Include="Contracts\Account\IAccount.cs" />
-    <Compile Include="IUserRepository.cs" />
-    <Compile Include="Domain\IUserRepository.cs" />
-    <Compile Include="NotificationBase.cs" />
-    <Compile Include="NotificationExtensions.cs" />
-    <Compile Include="NotifyEventComparer.cs" />
-    <Compile Include="OAuth2Implementation\AuthState.cs" />
-    <Compile Include="Domain\IAccountFactory.cs" />
-    <Compile Include="OAuth2Implementation\OAuth2AuthenticationBase.cs" />
-    <Compile Include="OAuth2Implementation\Outh2Session.cs" />
-    <Compile Include="Domain\IAccount.cs" />
-    <Compile Include="PropertyExtensions.cs" />
     <Compile Include="Providers\AuthenticationProviderGateway.cs" />
     <Compile Include="Providers\IAuthenticationProviderGateway.cs" />
     <Compile Include="Providers\ICalendarProvider.cs" />
@@ -168,35 +168,13 @@
     <Compile Include="Providers\ILoginProvider.cs" />
     <Compile Include="Providers\ISessionProvider.cs" />
     <Compile Include="Providers\LoginProvider.cs" />
-    <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Providers\UriExtensions.cs" />
-    <Compile Include="ResharperAnnotations.cs" />
-    <Compile Include="Contracts\Account\IAccountAuthentication.cs" />
-    <Compile Include="Contracts\Account\IAccountConfiguration.cs" />
-    <Compile Include="Providers\IContactsProvider.cs" />
-    <Compile Include="Contracts\IContactSummary.cs" />
-    <Compile Include="Contracts\IFeed.cs" />
-    <Compile Include="IAccountAuthentication.cs" />
-    <Compile Include="IAccountConfiguration.cs" />
-    <Compile Include="Domain\IAccountAuthentication.cs" />
     <Compile Include="Providers\IAccountConfiguration.cs" />
     <Compile Include="Providers\IAccountContactProvider.cs" />
-    <Compile Include="Domain\IAccountContactSummary.cs" />
-    <Compile Include="ILogger.cs" />
-    <Compile Include="ILoggerFactory.cs" />
-    <Compile Include="IModule.cs" />
-    <Compile Include="IResourceScope.cs" />
-    <Compile Include="ISession.cs" />
-    <Compile Include="Domain\IResourceScope.cs" />
-    <Compile Include="Domain\ISession.cs" />
-    <Compile Include="LoggerExtensions.cs" />
-    <Compile Include="LogLevel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unity\EnumerableResolutionStrategy.cs" />
     <Compile Include="Unity\GenericSupportExtension.cs" />
     <Compile Include="Unity\LazyResolveBuildPlanPolicy.cs" />
     <Compile Include="Unity\UnityContainerExtensions.cs" />
-    <Compile Include="Domain\User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CallWall.Web.Core.nuspec" />

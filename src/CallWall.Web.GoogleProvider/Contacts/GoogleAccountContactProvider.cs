@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProvider.Contacts

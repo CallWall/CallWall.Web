@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Accounts
 {

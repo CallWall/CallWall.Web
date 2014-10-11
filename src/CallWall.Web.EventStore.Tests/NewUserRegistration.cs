@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Accounts;
 using CallWall.Web.EventStore.Tests.Doubles;
 using CallWall.Web.EventStore.Users;

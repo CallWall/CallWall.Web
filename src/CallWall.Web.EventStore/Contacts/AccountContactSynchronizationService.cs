@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Users;
 using EventStore.ClientAPI;
 

@@ -1,4 +1,4 @@
-namespace CallWall.Web
+namespace CallWall.Web.Domain
 {
     public class ContactAggregateUpdate
     {

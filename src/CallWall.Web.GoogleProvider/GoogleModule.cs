@@ -1,4 +1,4 @@
-﻿using CallWall.Web.Account;
+﻿using CallWall.Web.Domain;
 using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
 using CallWall.Web.GoogleProvider.Auth;

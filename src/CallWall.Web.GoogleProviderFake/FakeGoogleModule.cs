@@ -1,5 +1,5 @@
-﻿using CallWall.Web.Providers;
-using CallWall.Web.Account;
+﻿using CallWall.Web.Domain;
+using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
 {

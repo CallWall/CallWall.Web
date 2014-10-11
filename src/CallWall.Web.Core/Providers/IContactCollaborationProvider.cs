@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CallWall.Web.Contracts;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.Providers
 {

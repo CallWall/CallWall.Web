@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Contacts;
 using CallWall.Web.EventStore.Tests.Doubles;
 using NUnit.Framework;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 using CallWall.Web.Contracts;
 

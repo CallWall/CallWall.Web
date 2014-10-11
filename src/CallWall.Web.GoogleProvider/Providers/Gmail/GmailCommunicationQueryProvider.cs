@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Security.Authentication;
 using CallWall.Web.Contracts.Communication;
+using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Auth;
 using CallWall.Web.GoogleProvider.Providers.Contacts;
 using CallWall.Web.GoogleProvider.Providers.Gmail.Imap;

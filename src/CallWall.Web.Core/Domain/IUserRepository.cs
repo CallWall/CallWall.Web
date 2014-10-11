@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace CallWall.Web
+namespace CallWall.Web.Domain
 {
     public interface IUserRepository : IRunnable, IDisposable
     {

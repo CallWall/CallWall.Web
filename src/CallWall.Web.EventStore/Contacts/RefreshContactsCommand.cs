@@ -1,4 +1,5 @@
 using System;
+using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Accounts;
 
 namespace CallWall.Web.EventStore.Contacts

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
@@ -106,6 +107,7 @@ namespace CallWall.Web.GoogleProviderFake
 
         private sealed class ContactSummary : IAccountContactSummary
         {
+            public bool IsDeleted { get { return false; } }
             public string Provider { get { return "FakeGoogle"; } }
 
             public string AccountId { get { return "lee.fake@gmail.com"; } }

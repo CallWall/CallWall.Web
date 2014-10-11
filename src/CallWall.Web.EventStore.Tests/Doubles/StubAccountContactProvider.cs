@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.EventStore.Tests.Doubles

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.LinkedInProvider.Auth
 {

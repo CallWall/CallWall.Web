@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CallWall.Web.Contracts.Communication;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.Providers
 {

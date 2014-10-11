@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.EventStore.Accounts
+﻿using CallWall.Web.Domain;
+
+namespace CallWall.Web.EventStore.Accounts
 {
     public class Account : IAccount
     {

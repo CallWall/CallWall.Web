@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.Hosting;
 using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
+using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Auth;
 using CallWall.Web.Http;
 
@@ -23,6 +25,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
                                           IGoogleContactProfileTranslator translator,
                                           ILoggerFactory loggerFactory)
         {
+            //TODO: Get auth from the user, not from a service now. -LC
             _authorization = authorization;
             _httpClient = httpClient;
             _translator = translator;
@@ -43,6 +46,14 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
 
         private IObservable<GoogleUser> RetrieveCurentUser()
         {
+            //Replace with something like ...
+            //var user = new User(Guid.Empty, null, null);
+            //var accessTokens = user.Accounts.Where(acc => acc.Provider == "Google")
+            //    .Where(acc => acc.CurrentSession != null && !acc.CurrentSession.HasExpired())
+            //    .Where(acc => acc.CurrentSession.AuthorizedResources.Contains(ResourceScope.Contacts.Resource))
+            //    .Select(acc => acc.CurrentSession.AccessToken);
+            
+
             var query = from accessToken in _authorization.RequestAccessToken(ResourceScope.Contacts).ToObservable()
                 from request in HttpParams.CreateRequestParams(accessToken).AsObservable()
                 from response in _httpClient.GetResponse(request)

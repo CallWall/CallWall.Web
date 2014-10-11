@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using CallWall.Web.Contracts;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
@@ -21,12 +21,10 @@ namespace CallWall.Web.GoogleProviderFake
             {
                 new ContactCollaboration("Design Standards", t.AddMinutes(-35), "Created Document", false,
                     "googleDrive"),
-                new ContactCollaboration("EOY 2013 Reports", t.AddDays(-8), "Modified Document", false, 
-                    "googleDrive"),
+                new ContactCollaboration("EOY 2013 Reports", t.AddDays(-8), "Modified Document", false, "googleDrive"),
                 new ContactCollaboration("Pricing a cross example", t.AddDays(-37), "Modified Document", false,
                     "googleDrive"),
-                new ContactCollaboration("CallWall #122 - install Https", t.AddDays(-40), "Closed issue", true, 
-                    "github"),
+                new ContactCollaboration("CallWall #122 - install Https", t.AddDays(-40), "Closed issue", true, "github"),
                 new ContactCollaboration("Pricing a cross example", t.AddDays(-45), "Created document", false,
                     "googleDrive")
             };

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CallWall.Web.Account;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProviderFake
 {
