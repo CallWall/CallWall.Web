@@ -37,21 +37,9 @@ namespace CallWall.Web.Domain
         /// </summary>
         IEnumerable<string> Tags { get; }
 
-        ///// <summary>
-        ///// Any identifying handles this contact may have e.g. phone numbers email address user names etc.
-        ///// </summary>
-        //IEnumerable<IContactHandle> Handles { get; } 
-    }
-
-    public abstract class ContactHandleTypes
-    {
-        public static readonly string Phone = "Phone";
-        public static readonly string Email = "Email";
-    }
-
-    public interface IContactHandle
-    {
-        string HandleType { get; }
-        string Handle { get; }
+        /// <summary>
+        /// Any identifying handles this contact may have e.g. phone numbers email address user names etc.
+        /// </summary>
+        IEnumerable<ContactHandle> Handles { get; } 
     }
 }

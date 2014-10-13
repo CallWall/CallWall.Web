@@ -12,6 +12,9 @@ namespace CallWall.Web.EventStore.Contacts
         public string Title { get; set; }
         public string PrimaryAvatar { get; set; }
         public string[] Tags { get; set; }
+        public ContactHandle[] Handles { get; set; }
+
         IEnumerable<string> IAccountContactSummary.Tags { get { return Tags; } }
+        IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles; } }
     }
 }

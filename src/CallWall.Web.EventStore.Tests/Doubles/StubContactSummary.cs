@@ -6,6 +6,7 @@ namespace CallWall.Web.EventStore.Tests.Doubles
     public class StubContactSummary : IAccountContactSummary
     {
         private readonly List<string> _tags = new List<string>();
+        private readonly List<ContactHandle> _handles = new List<ContactHandle>();
 
         public bool IsDeleted { get; set; }
 
@@ -20,6 +21,9 @@ namespace CallWall.Web.EventStore.Tests.Doubles
         public string PrimaryAvatar { get; set; }
 
         public List<string> Tags { get { return _tags; } }
-        IEnumerable<string> IAccountContactSummary.Tags { get { return Tags; } }        
+        IEnumerable<string> IAccountContactSummary.Tags { get { return Tags; } }
+
+        public List<ContactHandle> Handles { get { return _handles; } }
+        IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles; } }
     }
 }

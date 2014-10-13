@@ -12,7 +12,6 @@ namespace CallWall.Web.EventStore.Contacts
         private readonly Guid _userId;
         private readonly List<IContactAggregate> _contacts = new List<IContactAggregate>();
         private readonly List<IContactAggregate> _snapshot = new List<IContactAggregate>();
-        private readonly List<ContactAggregateUpdate> _changes = new List<ContactAggregateUpdate>();
 
         public UserContacts(Guid userId)
         {
@@ -33,63 +32,58 @@ namespace CallWall.Web.EventStore.Contacts
             return Disposable.Create(() =>
                                      {
                                          //If not committed, then rollback
-                                         if (_changes.Any())
+                                         //if (_changes.Any())
                                          {
                                              _contacts.Clear();
                                              _contacts.AddRange(_snapshot);
                                              _snapshot.Clear();
-                                             _changes.Clear();
+                                             //_changes.Clear();
                                          }
                                      });
         }
 
         public void Add(IAccountContactSummary contact)
         {
-            var update = AddContact(contact);
-            if(update!=null)
-                _changes.Add(update);
-        }
-
-        private ContactAggregateUpdate AddContact(IAccountContactSummary contact)
-        {
             //Look for matches
             var existing = _contacts.SingleOrDefault(c => c.OwnsContact(contact));
             if (existing != null)
             {
-                return contact.IsDeleted 
-                    ? existing.Remove(contact) 
-                    : existing.Update(contact);
+                if (contact.IsDeleted)
+                {
+                    existing.Remove(contact);
+                }
+                else
+                {
+                    existing.Update(contact);
+                }
+                return;
             }
-                
 
+            //This pattern produces different results with different order of input. If A & B can be linked on email, and B & C can be linked on phone, then Adding A, then B, thne C will result in one Aggregate contact (ABC). However adding A then C then B will result in two aggregates (AB & C)
             //var match = _contacts.Select(c => c.Match(contact))
             //    .OrderBy(match => match.Weight)
             //    .FirstOrDefault();
-            //if (match != null)
-            //    return match.Add(contact);
+
+            //TODO: Update to allow for the A,C,B scenario above.
+            var match = _contacts.FirstOrDefault(c => c.IsMatch(contact));
+            if (match != null)
+            {
+                match.Add(contact);
+                return;
+            }
 
             var newContact = new ContactAggregate(contact);
             _contacts.Add(newContact);
-            return new ContactAggregateUpdate
-            {
-                Id = newContact.Id,
-                Version = newContact.Version,
-                NewTitle = newContact.Title,
-                AddedAvatars = newContact.Avatars.ToArray(),
-                AddedProviders = newContact.Providers.ToArray(),
-                AddedTags = newContact.Tags.ToArray()
-            };
         }
 
         public ContactAggregateUpdate[] GetChangesSnapshot()
         {
-            return _changes.ToArray();
+            return _contacts.Select(c => c.GetChangesSinceSnapshot()).ToArray();
         }
 
         public void CommitChanges()
         {
-            Version += _changes.Count;
-            _changes.Clear();
+            Version++;
             _snapshot.Clear();
         }
     }

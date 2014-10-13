@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProvider.Contacts
@@ -36,5 +37,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         {
             get { throw new System.NotSupportedException(); }
         }
+
+        public IEnumerable<ContactHandle> Handles { get { return Enumerable.Empty<ContactHandle>(); } }
     }
 }

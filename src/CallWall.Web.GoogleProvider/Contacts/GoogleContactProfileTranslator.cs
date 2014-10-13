@@ -11,6 +11,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
     internal sealed class GoogleContactProfileTranslator
     {
         private static readonly XmlNamespaceManager Ns;
+        //HACK: This is a UI concept and should be dropped from here -LC
         private const string AnonContactAvatar = "/Content/images/AnonContact.svg";
 
         #region xml namespace resovers
@@ -117,10 +118,11 @@ namespace CallWall.Web.GoogleProvider.Contacts
                     var title = GetTitle(xContactEntry);
                     var avatar = GetAvatar(xContactEntry, accessToken);
                     var tags = GetTags(xContactEntry);
+                    var handles = GetHandles(xContactEntry);
 
                     //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
-                    var contact = new ContactSummary(providerId, account.AccountId, title, avatar, tags);
-                    contacts.Add(contact);    
+                    var contact = new ContactSummary(providerId, account.AccountId, title, avatar, tags, handles);
+                    contacts.Add(contact);
                 }
             }
 
@@ -151,7 +153,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         private static string GetTitle(XElement xContactEntry)
         {
             var title = XPathString(xContactEntry, "x:title", Ns);
-            if(string.IsNullOrWhiteSpace(title))
+            if (string.IsNullOrWhiteSpace(title))
                 title = XPathString(xContactEntry, "gd:name/gd:fullName", Ns);
             if (string.IsNullOrWhiteSpace(title))
             {
@@ -160,17 +162,66 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 title = string.Format("{0} {1}", givenName, familyName).Trim();
             }
             if (string.IsNullOrWhiteSpace(title))
-                title = GetEmailAddresses(xContactEntry).FirstOrDefault();
+                title = GetEmailAddresses(xContactEntry).Select(ch => ch.Handle).FirstOrDefault();
             return title;
         }
 
-        private static IEnumerable<string> GetEmailAddresses(XElement xContactEntry)
+        private static IEnumerable<ContactHandle> GetEmailAddresses(XElement xContactEntry)
         {
-            //<gd:email rel='http://schemas.google.com/g/2005#home' address='danrowe1978@gmail.com' primary='true'/>
+            //<gd:email rel='http://schemas.google.com/g/2005#home' address='bob@gmail.com' primary='true'/>
+            //<gd:email rel="http://schemas.google.com/g/2005#other" address="bob2@gmail.com" />
+            //TODO: Return "Other" email qualifier as null. -LC
+            //TODO: Perf test using xContactEntry.XPathSelectElements("gd:email", Ns) vs xContactEntry.Elements(Gd.Email) -LC
             var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", Ns)
-                         orderby (xElement.Attribute("primary")!=null) descending 
-                         select xElement.Attribute("address").Value;
+                         //var emails = from xElement in xContactEntry.Elements(Gd.Email)
+                         orderby (xElement.Attribute("primary") != null) descending
+                         select new ContactEmailAddress(xElement.Attribute("address").Value, StripAnchor(xElement.Attribute("rel")));
             return emails;
+        }
+
+
+        private static IEnumerable<ContactHandle> GetPhoneNumbers(XElement xContactEntry)
+        {
+            //<gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile" primary="true" uri="tel:+61-400-006-024">+61400006024</gd:phoneNumber>
+            //<gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile" uri="tel:+44-7766-558031">+44 77 66 55 8031</gd:phoneNumber>
+            //<gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile" primary="true">07816881423</gd:phoneNumber>
+
+            //TODO: Prefer Uri (with "tel:" removed) else use Element value -LC
+            var phoneNumbers = from xElement in xContactEntry.XPathSelectElements("gd:phoneNumber", Ns)
+                               orderby (xElement.Attribute("primary") != null) descending
+                               select new ContactEmailAddress(
+                                   ExtractTelephoneNumber(xElement),
+                                   StripAnchor(xElement.Attribute("rel")));
+            return phoneNumbers;
+        }
+
+        public static string ExtractTelephoneNumber(XElement phoneXElement)
+        {
+            if (phoneXElement.Attribute("uri") != null)
+            {
+                //uri="tel:+44-7766-558031"
+                var unparsedUri = phoneXElement.Attribute("uri").Value;
+                if (!string.IsNullOrWhiteSpace(unparsedUri))
+                {
+                    var schemeEndIdx = unparsedUri.IndexOf(':');
+                    return unparsedUri.Substring(schemeEndIdx + 1);
+                }
+            }
+            return phoneXElement.Value;
+        }
+
+
+        private static string StripAnchor(XAttribute attribute)
+        {
+            if (attribute != null && !string.IsNullOrWhiteSpace(attribute.Value))
+            {
+                var hashIdx = attribute.Value.LastIndexOf('#');
+                if (hashIdx > -1)
+                {
+                    return attribute.Value.Substring(hashIdx + 1);
+                }
+            }
+            return null;
         }
 
         private static string GetAvatar(XElement xContactEntry, string accessToken)
@@ -222,20 +273,17 @@ namespace CallWall.Web.GoogleProvider.Contacts
             //return contactProfile;
         }
 
+        public IEnumerable<ContactHandle> GetHandles(XElement xContactEntry)
+        {
+            return GetEmailAddresses(xContactEntry)
+                .Concat(GetPhoneNumbers(xContactEntry));
+
+        }
+
         private static string XPathString(XNode source, string expression, IXmlNamespaceResolver ns)
         {
             var result = source.XPathSelectElement(expression, ns);
             return result == null ? null : result.Value;
-        }
-
-        private static string ToContactAssociation(XAttribute relAttribute)
-        {
-            //Could be a look
-            if (relAttribute == null || relAttribute.Value == null)
-                return "Other";
-            var hashIndex = relAttribute.Value.LastIndexOf("#", StringComparison.Ordinal);
-            var association = relAttribute.Value.Substring(hashIndex + 1);
-            return PascalCase(association);
         }
 
         private static string PascalCase(string input)

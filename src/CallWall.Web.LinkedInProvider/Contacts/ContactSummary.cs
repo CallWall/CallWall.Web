@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.LinkedInProvider.Contacts
 {
     public class ContactSummary : IAccountContactSummary
     {
-        //TODO copy and paste job here - see google
-
         private readonly string _title;
         private readonly IEnumerable<string> _tags;
         private readonly string _primaryAvatar;
@@ -44,6 +43,8 @@ namespace CallWall.Web.LinkedInProvider.Contacts
         {
             get { return _tags; }
         }
+
+        public IEnumerable<ContactHandle> Handles { get { return Enumerable.Empty<ContactHandle>(); } }
 
         public string PrimaryAvatar
         {

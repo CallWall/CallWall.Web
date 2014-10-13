@@ -27,6 +27,11 @@ namespace CallWall.Web.EventStore.Domain
         IEnumerable<string> Avatars { get; }
 
         /// <summary>
+        /// The handles that can identify the contact e.g. Phone numbers, email addresses, userIds etc.
+        /// </summary>
+        IEnumerable<ContactHandle> Handles { get; }
+
+        /// <summary>
         /// All of the providers that this contact data is sourced from
         /// </summary>
         IEnumerable<ContactProviderSummary> Providers { get; }
@@ -34,14 +39,14 @@ namespace CallWall.Web.EventStore.Domain
         bool OwnsContact(IAccountContactSummary contact);
         bool IsMatch(IAccountContactSummary contact);
 
-        ContactAggregateUpdate Add(IAccountContactSummary contact);
-        ContactAggregateUpdate Remove(IAccountContactSummary contact);
-        ContactAggregateUpdate Update(IAccountContactSummary contact);
+        void Add(IAccountContactSummary contact);
+        void Remove(IAccountContactSummary contact);
+        void Update(IAccountContactSummary contact);
 
         IContactAggregate Merge(IContactAggregate other);
         IEnumerable<IAccountContactSummary> Purge();
 
         IContactAggregate Snapshot();
-        
+        ContactAggregateUpdate GetChangesSinceSnapshot();
     }
 }

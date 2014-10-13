@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Domain
 {
-
+    //TODO: Remove all the safety checking once Unit/COmponent tests prove the safety (else we will take a massive unnecessary perf hit) -LC
     internal sealed class ContactAggregate : IContactAggregate
     {
         private static int _nextId = 0;
         private readonly List<IAccountContactSummary> _contacts = new List<IAccountContactSummary>();
+        private ContactAggregate _snapshot;
 
         public ContactAggregate(IAccountContactSummary root)
         {
@@ -37,6 +37,8 @@ namespace CallWall.Web.EventStore.Domain
         /// </summary>
         public IEnumerable<string> Avatars { get; private set; }
 
+        public IEnumerable<ContactHandle> Handles { get; private set; }
+
         /// <summary>
         /// All of the providers that this contact data is sourced from
         /// </summary>
@@ -55,18 +57,22 @@ namespace CallWall.Web.EventStore.Domain
             if (OwnsContact(contact)) throw new InvalidOperationException();
 
             //Need to apply email/phone/name matching algs here.
-            return IsTitleMatch(contact);
+            return IsEmailMatch(contact)
+                || IsPhoneMatch(contact)
+                   || IsTitleMatch(contact);
+
         }
 
-        public ContactAggregateUpdate Add(IAccountContactSummary contact)
+        public void Add(IAccountContactSummary contact)
         {
             if (contact == null) throw new ArgumentNullException();
             if (OwnsContact(contact)) throw new InvalidOperationException();
 
-            return CreateDelta(() => _contacts.Add(contact));
+            //return CreateDelta(() => _contacts.Add(contact));
+            _contacts.Add(contact);
         }
 
-        public ContactAggregateUpdate Update(IAccountContactSummary contact)
+        public void Update(IAccountContactSummary contact)
         {
             if (contact == null) throw new ArgumentNullException();
             if (!OwnsContact(contact)) throw new InvalidOperationException();
@@ -78,7 +84,7 @@ namespace CallWall.Web.EventStore.Domain
             throw new NotImplementedException();
         }
 
-        public ContactAggregateUpdate Remove(IAccountContactSummary contact)
+        public void Remove(IAccountContactSummary contact)
         {
             if (contact == null) throw new ArgumentNullException();
             if (!OwnsContact(contact)) throw new InvalidOperationException();
@@ -94,7 +100,8 @@ namespace CallWall.Web.EventStore.Domain
                     _contacts.Remove(c);
                 }
             };
-            return CreateDelta(removal);
+            //return CreateDelta(removal);
+            removal();
         }
 
         public IContactAggregate Merge(IContactAggregate other)
@@ -123,13 +130,69 @@ namespace CallWall.Web.EventStore.Domain
             {
                 copy.Add(contact);
             }
+            _snapshot = copy;
             return copy;
         }
 
-        private bool IsTitleMatch(IAccountContactSummary contact)
+        public ContactAggregateUpdate GetChangesSinceSnapshot()
         {
-            return string.Equals(Title, contact.Title, StringComparison.InvariantCultureIgnoreCase);
+            if (_snapshot == null)
+            {
+                Refresh();
+                return new ContactAggregateUpdate
+                {
+                    Id = this.Id,
+                    Version = this.Version,
+                    NewTitle = this.Title,
+                    AddedAvatars = this.Avatars.ToArray(),
+                    AddedProviders = this.Providers.ToArray(),
+                    AddedTags = this.Tags.ToArray(),
+                    AddedHandles = this.Handles.ToArray()
+                };
+            }
+
+
+            var oldTitle = _snapshot.Title;
+            var oldAvatars = _snapshot.Avatars.ToSet();
+            var oldTags = _snapshot.Tags.ToSet();
+            var oldProviders = _snapshot.Providers.ToSet();
+
+            
+            Refresh();
+
+            var newContactsCount = _contacts.Count;
+
+            if (newContactsCount == 0)
+                return new ContactAggregateUpdate
+                {
+                    Id = this.Id,
+                    Version = this.Version,
+                    IsDeleted = true
+                };
+
+
+            var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
+            var tagDelta = new CollectionDelta<string>(oldTags, Tags);
+            var providerDelta = new CollectionDelta<ContactProviderSummary>(oldProviders, Providers);
+
+            //TODO: If the result is no change, then return null
+
+            var delta = new ContactAggregateUpdate
+            {
+                Id = this.Id,
+                Version = this.Version,
+                NewTitle = string.Equals(oldTitle, Title, StringComparison.Ordinal) ? null : Title,
+                AddedAvatars = avatarDelta.AddedItems.ToArray(),
+                RemovedAvatars = avatarDelta.RemovedItems.ToArray(),
+                AddedProviders = providerDelta.AddedItems.ToArray(),
+                RemovedProviders = providerDelta.RemovedItems.ToArray(),
+                AddedTags = tagDelta.AddedItems.ToArray(),
+                RemovedTags = tagDelta.RemovedItems.ToArray(),
+            };
+
+            return delta;
         }
+
 
         private void Refresh()
         {
@@ -137,6 +200,8 @@ namespace CallWall.Web.EventStore.Domain
             Title = _contacts.Aggregate(string.Empty, (acc, cur) => TitleQuality(acc) >= TitleQuality(cur.Title) ? acc : cur.Title);
             Avatars = _contacts.Select(c => c.PrimaryAvatar).Where(a => a != null).Distinct().ToArray();
             Tags = _contacts.SelectMany(c => c.Tags).Distinct().ToArray();
+            //TODO: This may need a custom IComparer instance  -LC
+            Handles = _contacts.SelectMany(c => c.Handles).Distinct().ToArray();
             Providers = _contacts.Select(c => new ContactProviderSummary(c.Provider, c.AccountId, c.ProviderId)).ToArray();
         }
 
@@ -202,6 +267,76 @@ namespace CallWall.Web.EventStore.Domain
 
             return delta;
         }
+        
+
+        #region Matching Algos
+
+        private bool IsTitleMatch(IAccountContactSummary contact)
+        {
+            return string.Equals(Title, contact.Title, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private bool IsEmailMatch(IAccountContactSummary contact)
+        {
+            //Normalize Email Handles
+            //Check total count
+            //Union the two sets
+            //return Union < prior count
+            var myEmails = Handles.Where(h => h.HandleType == ContactHandleTypes.Email)
+                .Select(h => NormailizeEmail(h.Handle))
+                .ToArray();
+            var otherEmails = contact.Handles.Where(h => h.HandleType == ContactHandleTypes.Email)
+                .Select(h => NormailizeEmail(h.Handle))
+                .ToArray();
+
+            var sumCount = myEmails.Length + otherEmails.Length;
+            return myEmails.Concat(otherEmails).Distinct().Count() < sumCount;
+        }
+
+        private string NormailizeEmail(string emailAddress)
+        {
+            var lowerCased = emailAddress.ToLowerInvariant();
+            if (IsGmail(lowerCased))
+            {
+                return StripForGmail(lowerCased);
+            }
+            return lowerCased;
+        }
+
+        private static string StripForGmail(string lowerCased)
+        {
+            //replace googlemail.com with gmail.com
+            //remove any thing between + and @
+            //strip all .
+
+            var standardisedDomain = lowerCased.Replace("@googlemail.com", "@gmail.com");
+            var filterRemoved = RemoveFilterSuffix(standardisedDomain);
+            var filteredPeriods = filterRemoved.Replace(".", string.Empty);
+            return filteredPeriods;
+        }
+
+        private static string RemoveFilterSuffix(string emailAddress)
+        {
+            var plusSignIdx = emailAddress.IndexOf('+');
+            if (plusSignIdx != -1)
+            {
+                var atSignIndex = emailAddress.IndexOf('@');
+                return emailAddress.Remove(plusSignIdx, atSignIndex - plusSignIdx);
+            }
+            return emailAddress;
+        }
+
+        private static bool IsGmail(string lowerCased)
+        {
+            return lowerCased.EndsWith("@gmail.com", StringComparison.Ordinal)
+                   || lowerCased.EndsWith("@googlemail.com", StringComparison.Ordinal);
+        }
+
+        private bool IsPhoneMatch(IAccountContactSummary contact)
+        {
+            return false;
+        }
+        #endregion
 
         private sealed class CollectionDelta<T>
         {

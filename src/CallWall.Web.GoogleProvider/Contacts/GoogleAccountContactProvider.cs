@@ -13,12 +13,14 @@ namespace CallWall.Web.GoogleProvider.Contacts
 {
     internal sealed class GoogleAccountContactProvider : IAccountContactProvider
     {
+        private static readonly GoogleContactProfileTranslator Translator = new GoogleContactProfileTranslator();
         private readonly ILogger _logger;
 
         public GoogleAccountContactProvider(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger(GetType());
         }
+
         public string Provider { get { return "Google"; } }
 
         public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
@@ -84,8 +86,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 var contentLength = response.Content.Headers.ContentLength;
                 var contactResponse = await response.Content.ReadAsStringAsync();
 
-                var translator = new GoogleContactProfileTranslator();
-                var contacts = translator.Translate(contactResponse, account.CurrentSession.AccessToken, account);
+                var contacts = Translator.Translate(contactResponse, account.CurrentSession.AccessToken, account);
                 _logger.Debug("Contacts - Received : {0}, NextPageStartIndex : {1}, TotalResults : {2}, ContentLength (from Http header) : {3}",
                     contacts.Items.Count, contacts.NextPageStartIndex, contacts.TotalResults, contentLength);
                 return contacts;

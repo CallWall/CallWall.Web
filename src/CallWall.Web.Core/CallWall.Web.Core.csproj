@@ -136,6 +136,7 @@
     <Compile Include="Contracts\IProviderDescription.cs" />
     <Compile Include="Contracts\ISchedulerProvider.cs" />
     <Compile Include="Domain\ContactAggregateUpdate.cs" />
+    <Compile Include="Domain\ContactHandle.cs" />
     <Compile Include="Domain\ContactProviderSummary.cs" />
     <Compile Include="Domain\ContactRefreshTriggers.cs" />
     <Compile Include="Domain\IAccount.cs" />
