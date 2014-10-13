@@ -41,7 +41,7 @@ namespace CallWall.Web.EventStore.Domain
 
         void Add(IAccountContactSummary contact);
         void Remove(IAccountContactSummary contact);
-        void Update(IAccountContactSummary contact);
+        void Update(IAccountContactSummary newValue);
 
         IContactAggregate Merge(IContactAggregate other);
         IEnumerable<IAccountContactSummary> Purge();

@@ -25,5 +25,24 @@ namespace CallWall.Web.EventStore.Tests.Doubles
 
         public List<ContactHandle> Handles { get { return _handles; } }
         IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles; } }
+
+        public StubContactSummary Clone()
+        {
+            var clone = new StubContactSummary
+            {
+                IsDeleted = this.IsDeleted,
+                Provider = this.Provider,
+                AccountId = this.AccountId,
+                ProviderId = this.ProviderId,
+                Title = this.Title,
+                PrimaryAvatar = this.PrimaryAvatar,
+
+            };
+
+            clone.Tags.AddRange(this.Tags);
+            clone.Handles.AddRange(this.Handles);
+
+            return clone;
+        }
     }
 }

@@ -33,18 +33,29 @@ namespace CallWall.Web.EventStore.Tests
                .BDDfy();
         }
 
-        //[Test]
-        //public void UpdatingContact()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        [Test]
+        public void UpdatingContact()
+        {
+            var contact = GenerateContact("PrimaryAccount", "John Doe", "Stub-John@doe.com", "John@doe.com");
+            var updated = contact.Clone();
+            updated.Title = "Jonny Doe";
+            new UserContactUpdateSingleContactAggregateScenario()
+               .Given(s => s.Given_a_UserContacts_instance())
+               .When(s => s.When_a_ContactSummary_is_added(contact))
+               .When(s => s.When_a_ContactSummary_is_added(updated))
+               .Then(s => s.Then_Snapshot_includes_contact(c => c.NewTitle == updated.Title
+                   && c.AddedProviders.Single().ProviderName == updated.Provider
+                   && c.AddedProviders.Single().AccountId == updated.AccountId
+                   && c.AddedProviders.Single().ContactId == updated.ProviderId
+                   ))
+               .BDDfy();
+        }
 
         //[Test]
         //public void RemovingContact()
         //{
         //    throw new NotImplementedException();
         //}
-
 
         [Test]
         public void UpdatingContactAggregateWithMatchingContact()
@@ -96,8 +107,7 @@ namespace CallWall.Web.EventStore.Tests
                .BDDfy();
         }
 
-
-        private IAccountContactSummary GenerateContact(string accountId, string title, string providerId, string email = null)
+        private static StubContactSummary GenerateContact(string accountId, string title, string providerId, string email = null)
         {
             var contact = new StubContactSummary
             {
@@ -111,7 +121,6 @@ namespace CallWall.Web.EventStore.Tests
 
             return contact;
         }
-
 
         public class UserContactUpdateSingleContactAggregateScenario
         {
@@ -179,6 +188,5 @@ namespace CallWall.Web.EventStore.Tests
                 return String.CompareOrdinal(x.ContactId, y.ContactId);
             }
         }
-
     }
 }

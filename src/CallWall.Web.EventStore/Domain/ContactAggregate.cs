@@ -72,16 +72,16 @@ namespace CallWall.Web.EventStore.Domain
             _contacts.Add(contact);
         }
 
-        public void Update(IAccountContactSummary contact)
+        public void Update(IAccountContactSummary newValue)
         {
-            if (contact == null) throw new ArgumentNullException();
-            if (!OwnsContact(contact)) throw new InvalidOperationException();
+            if (newValue == null) throw new ArgumentNullException();
+            if (!OwnsContact(newValue)) throw new InvalidOperationException();
 
-
-            //TODO: Compare to previous data and update as appropriate
-            //TODO: Remove old data from list, add this to the end of the list (?)
-
-            throw new NotImplementedException();
+            var oldValue = _contacts.Single(c => c.Provider == newValue.Provider
+                                      && c.AccountId == newValue.AccountId
+                                      && c.ProviderId == newValue.ProviderId);
+            _contacts.Remove(oldValue);
+            _contacts.Add(newValue);
         }
 
         public void Remove(IAccountContactSummary contact)
