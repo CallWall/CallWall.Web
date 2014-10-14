@@ -203,9 +203,9 @@ namespace CallWall.Web.EventStore.Domain
             Version++;
             Title = _contacts.Aggregate((string)null, (acc, cur) => TitleQuality(acc) >= TitleQuality(cur.Title) ? acc : cur.Title);
             Avatars = _contacts.Select(c => c.PrimaryAvatar).Where(a => a != null).Distinct().ToArray();
-            Tags = _contacts.SelectMany(c => c.Tags).Distinct().ToArray();
+            Tags = _contacts.SelectMany(c => c.Tags ?? Enumerable.Empty<string>()).Distinct().ToArray();
             //TODO: This may need a custom IComparer instance  -LC
-            Handles = _contacts.SelectMany(c => c.Handles).Distinct().ToArray();
+            Handles = _contacts.SelectMany(c => c.Handles ?? Enumerable.Empty<ContactHandle>()).Distinct().ToArray();
             Providers = _contacts.Select(c => new ContactProviderSummary(c.Provider, c.AccountId, c.ProviderId)).ToArray();
         }
 
@@ -243,10 +243,12 @@ namespace CallWall.Web.EventStore.Domain
             //Check total count
             //Union the two sets
             //return Union < prior count
-            var myEmails = Handles.Where(h => h.HandleType == ContactHandleTypes.Email)
+            var myEmails = (Handles ?? Enumerable.Empty<ContactHandle>())
+                .Where(h => h.HandleType == ContactHandleTypes.Email)
                 .Select(h => NormailizeEmail(h.Handle))
                 .ToArray();
-            var otherEmails = contact.Handles.Where(h => h.HandleType == ContactHandleTypes.Email)
+            var otherEmails = (contact.Handles ?? Enumerable.Empty<ContactHandle>())
+                .Where(h => h.HandleType == ContactHandleTypes.Email)
                 .Select(h => NormailizeEmail(h.Handle))
                 .ToArray();
 
