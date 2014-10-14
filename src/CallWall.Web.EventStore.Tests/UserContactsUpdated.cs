@@ -51,11 +51,28 @@ namespace CallWall.Web.EventStore.Tests
                .BDDfy();
         }
 
-        //[Test]
-        //public void RemovingContact()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        [Test]
+        public void RemovingContact()
+        {
+            var contactA = GenerateContact("PrimaryAccount", "Alex Albert", "Stub-AlexA@mail.com", "AlexA@mail.com");
+            var contactB = GenerateContact("PrimaryAccount", "Barry Bonds", "Stub-Barry.Bonds@gmail.com", "Barry.Bonds@gmail.com");
+            var contactC = GenerateContact("PrimaryAccount", "Charlie Campbell", "Stub-Chuck@Campbell.com", "Chuck@Campbell.com");
+
+            var contactBDeletion = contactB.Clone();
+            contactBDeletion.IsDeleted = true;
+
+            var expected = new ContactAggregateUpdate
+            {
+                Version = 2,
+                IsDeleted = true,
+            };
+
+            new UserContactUpdateSingleContactAggregateScenario()
+               .Given(s => s.Given_a_populated_UserContacts_instance(contactA, contactB, contactC))
+               .When(s => s.When_a_ContactSummary_is_removed(contactBDeletion))
+               .Then(s => s.Then_Snapshot_has_only(expected))
+               .BDDfy();
+        }
 
         [Test]
         public void UpdatingContactAggregateWithMatchingContact()
@@ -87,8 +104,6 @@ namespace CallWall.Web.EventStore.Tests
             {
                 Version = 2,
                 NewTitle = initialContact.Title,
-                AddedAvatars = new string[0],
-                AddedTags = new string[0],
                 AddedProviders = new[]
                 {
                     new ContactProviderSummary(initialContact.Provider, initialContact.AccountId,
@@ -130,9 +145,24 @@ namespace CallWall.Web.EventStore.Tests
             {
                 _userContacts = new UserContacts(Guid.NewGuid());
             }
+            public void Given_a_populated_UserContacts_instance(params IAccountContactSummary[] contacts)
+            {
+                _userContacts = new UserContacts(Guid.NewGuid());
+                foreach (var contact in contacts)
+                {
+                    _userContacts.Add(contact);    
+                }
+                _userContacts.GetChangesSnapshot();
+                _userContacts.CommitChanges();
+            }
 
             public void When_a_ContactSummary_is_added(IAccountContactSummary contactSummary)
             {
+                _userContacts.Add(contactSummary);
+            }
+            public void When_a_ContactSummary_is_removed(IAccountContactSummary contactSummary)
+            {
+                if(!contactSummary.IsDeleted) throw new ArgumentException("contactSummary must be flagged as deleted", "contactSummary");
                 _userContacts.Add(contactSummary);
             }
 

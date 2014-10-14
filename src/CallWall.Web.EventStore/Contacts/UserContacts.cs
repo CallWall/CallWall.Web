@@ -31,14 +31,9 @@ namespace CallWall.Web.EventStore.Contacts
             _snapshot.AddRange(snapshot);
             return Disposable.Create(() =>
                                      {
-                                         //If not committed, then rollback
-                                         //if (_changes.Any())
-                                         {
-                                             _contacts.Clear();
-                                             _contacts.AddRange(_snapshot);
-                                             _snapshot.Clear();
-                                             //_changes.Clear();
-                                         }
+                                         _contacts.Clear();
+                                         _contacts.AddRange(_snapshot);
+                                         _snapshot.Clear();
                                      });
         }
 
@@ -78,12 +73,19 @@ namespace CallWall.Web.EventStore.Contacts
 
         public ContactAggregateUpdate[] GetChangesSnapshot()
         {
-            return _contacts.Select(c => c.GetChangesSinceSnapshot()).ToArray();
+            return _contacts
+                .Select(c => c.GetChangesSinceSnapshot())
+                .Where(update => update != null)
+                .ToArray();
         }
 
         public void CommitChanges()
         {
             Version++;
+            foreach (var contactAggregate in _contacts)
+            {
+                contactAggregate.CommitChange();
+            }
             _snapshot.Clear();
         }
     }

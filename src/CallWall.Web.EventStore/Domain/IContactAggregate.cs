@@ -48,5 +48,6 @@ namespace CallWall.Web.EventStore.Domain
 
         IContactAggregate Snapshot();
         ContactAggregateUpdate GetChangesSinceSnapshot();
+        void CommitChange();
     }
 }

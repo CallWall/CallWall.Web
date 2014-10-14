@@ -6,12 +6,13 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Domain
 {
-    //TODO: Remove all the safety checking once Unit/COmponent tests prove the safety (else we will take a massive unnecessary perf hit) -LC
+    //TODO: Remove all the safety checking once Unit/Component tests prove the safety (else we will take a massive unnecessary perf hit) -LC
     internal sealed class ContactAggregate : IContactAggregate
     {
-        private static int _nextId = 0;
+        private static int _nextId;
         private readonly List<IAccountContactSummary> _contacts = new List<IAccountContactSummary>();
         private ContactAggregate _snapshot;
+        private bool _isDirty;
 
         public ContactAggregate(IAccountContactSummary root)
         {
@@ -19,6 +20,7 @@ namespace CallWall.Web.EventStore.Domain
             Id = _nextId++;
             Version = 0;
             Refresh();
+            _isDirty = true;
         }
 
         public int Id { get; private set; }
@@ -56,56 +58,59 @@ namespace CallWall.Web.EventStore.Domain
             if (contact == null) throw new ArgumentNullException();
             if (OwnsContact(contact)) throw new InvalidOperationException();
 
-            //Need to apply email/phone/name matching algs here.
             return IsEmailMatch(contact)
                 || IsPhoneMatch(contact)
-                   || IsTitleMatch(contact);
-
+                || IsTitleMatch(contact);
         }
 
         public void Add(IAccountContactSummary contact)
         {
+#if DEBUG
             if (contact == null) throw new ArgumentNullException();
             if (OwnsContact(contact)) throw new InvalidOperationException();
-
-            //return CreateDelta(() => _contacts.Add(contact));
+#endif
             _contacts.Add(contact);
+            _isDirty = true;
+            Refresh();
         }
 
         public void Update(IAccountContactSummary newValue)
         {
+#if DEBUG
             if (newValue == null) throw new ArgumentNullException();
             if (!OwnsContact(newValue)) throw new InvalidOperationException();
-
+#endif
             var oldValue = _contacts.Single(c => c.Provider == newValue.Provider
                                       && c.AccountId == newValue.AccountId
                                       && c.ProviderId == newValue.ProviderId);
             _contacts.Remove(oldValue);
             _contacts.Add(newValue);
+            _isDirty = true;
+            Refresh();
         }
 
         public void Remove(IAccountContactSummary contact)
         {
+#if DEBUG
             if (contact == null) throw new ArgumentNullException();
             if (!OwnsContact(contact)) throw new InvalidOperationException();
-
-            Action removal = () =>
+#endif
+            var contactsSnapshot = _contacts.ToList()
+                .Where(c => contact.Provider == c.Provider)
+                .Where(c => contact.AccountId == c.AccountId)
+                .Where(c => contact.ProviderId == c.ProviderId);
+            foreach (var c in contactsSnapshot)
             {
-                var contactsSnapshot = _contacts.ToList()
-                    .Where(c => contact.Provider == c.Provider)
-                    .Where(c => contact.AccountId == c.AccountId)
-                    .Where(c => contact.ProviderId == c.ProviderId);
-                foreach (var c in contactsSnapshot)
-                {
-                    _contacts.Remove(c);
-                }
-            };
-            //return CreateDelta(removal);
-            removal();
+                _contacts.Remove(c);
+            }
+
+            _isDirty = true;
+            Refresh();
         }
 
         public IContactAggregate Merge(IContactAggregate other)
         {
+            throw new NotImplementedException("Yet to prove this method fits the new design");
             var otherContacts = other.Purge();
             foreach (var otherContact in otherContacts)
             {
@@ -136,68 +141,67 @@ namespace CallWall.Web.EventStore.Domain
 
         public ContactAggregateUpdate GetChangesSinceSnapshot()
         {
+            if (!_isDirty)
+                return null;
+
             if (_snapshot == null)
             {
-                Refresh();
                 return new ContactAggregateUpdate
                 {
-                    Id = this.Id,
-                    Version = this.Version,
-                    NewTitle = this.Title,
-                    AddedAvatars = this.Avatars.ToArray(),
-                    AddedProviders = this.Providers.ToArray(),
-                    AddedTags = this.Tags.ToArray(),
-                    AddedHandles = this.Handles.ToArray()
+                    Id = Id,
+                    Version = Version,
+                    NewTitle = Title,
+                    AddedAvatars = Avatars.Any() ? Avatars.ToArray() : null,
+                    AddedProviders = Providers.Any() ? Providers.ToArray() : null,
+                    AddedTags = Tags.Any() ? Tags.ToArray() : null,
+                    AddedHandles = Handles.Any() ? Handles.ToArray() : null
                 };
             }
-
 
             var oldTitle = _snapshot.Title;
             var oldAvatars = _snapshot.Avatars.ToSet();
             var oldTags = _snapshot.Tags.ToSet();
             var oldProviders = _snapshot.Providers.ToSet();
 
-            
-            Refresh();
-
             var newContactsCount = _contacts.Count;
 
             if (newContactsCount == 0)
                 return new ContactAggregateUpdate
                 {
-                    Id = this.Id,
-                    Version = this.Version,
+                    Id = Id,
+                    Version = Version,
                     IsDeleted = true
                 };
-
 
             var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
             var tagDelta = new CollectionDelta<string>(oldTags, Tags);
             var providerDelta = new CollectionDelta<ContactProviderSummary>(oldProviders, Providers);
 
-            //TODO: If the result is no change, then return null
-
             var delta = new ContactAggregateUpdate
             {
-                Id = this.Id,
-                Version = this.Version,
+                Id = Id,
+                Version = Version,
                 NewTitle = string.Equals(oldTitle, Title, StringComparison.Ordinal) ? null : Title,
-                AddedAvatars = avatarDelta.AddedItems.ToArray(),
-                RemovedAvatars = avatarDelta.RemovedItems.ToArray(),
-                AddedProviders = providerDelta.AddedItems.ToArray(),
-                RemovedProviders = providerDelta.RemovedItems.ToArray(),
-                AddedTags = tagDelta.AddedItems.ToArray(),
-                RemovedTags = tagDelta.RemovedItems.ToArray(),
+                AddedAvatars = avatarDelta.AddedItems,
+                RemovedAvatars = avatarDelta.RemovedItems,
+                AddedProviders = providerDelta.AddedItems,
+                RemovedProviders = providerDelta.RemovedItems,
+                AddedTags = tagDelta.AddedItems,
+                RemovedTags = tagDelta.RemovedItems,
             };
 
             return delta;
         }
 
+        public void CommitChange()
+        {
+            _isDirty = false;
+        }
 
         private void Refresh()
         {
             Version++;
-            Title = _contacts.Aggregate(string.Empty, (acc, cur) => TitleQuality(acc) >= TitleQuality(cur.Title) ? acc : cur.Title);
+            Title = _contacts.Aggregate((string)null, (acc, cur) => TitleQuality(acc) >= TitleQuality(cur.Title) ? acc : cur.Title);
             Avatars = _contacts.Select(c => c.PrimaryAvatar).Where(a => a != null).Distinct().ToArray();
             Tags = _contacts.SelectMany(c => c.Tags).Distinct().ToArray();
             //TODO: This may need a custom IComparer instance  -LC
@@ -225,49 +229,6 @@ namespace CallWall.Web.EventStore.Domain
             return regex.IsMatch(value);
         }
 
-        private ContactAggregateUpdate CreateDelta(Action mutation)
-        {
-            var oldTitle = Title;
-            var oldAvatars = Avatars.ToSet();
-            var oldTags = Tags.ToSet();
-            var oldProviders = Providers.ToSet();
-
-            mutation();
-            Refresh();
-
-            var newContactsCount = _contacts.Count;
-
-            if (newContactsCount == 0)
-                return new ContactAggregateUpdate
-                {
-                    Id = this.Id,
-                    Version = this.Version,
-                    IsDeleted = true
-                };
-
-
-            var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
-            var tagDelta = new CollectionDelta<string>(oldTags, Tags);
-            var providerDelta = new CollectionDelta<ContactProviderSummary>(oldProviders, Providers);
-
-            //TODO: If the result is no change, then return null
-
-            var delta = new ContactAggregateUpdate
-            {
-                Id = this.Id,
-                Version = this.Version,
-                NewTitle = string.Equals(oldTitle, Title, StringComparison.Ordinal) ? null : Title,
-                AddedAvatars = avatarDelta.AddedItems.ToArray(),
-                RemovedAvatars = avatarDelta.RemovedItems.ToArray(),
-                AddedProviders = providerDelta.AddedItems.ToArray(),
-                RemovedProviders = providerDelta.RemovedItems.ToArray(),
-                AddedTags = tagDelta.AddedItems.ToArray(),
-                RemovedTags = tagDelta.RemovedItems.ToArray(),
-            };
-
-            return delta;
-        }
-        
 
         #region Matching Algos
 
@@ -340,24 +301,24 @@ namespace CallWall.Web.EventStore.Domain
 
         private sealed class CollectionDelta<T>
         {
-            private readonly HashSet<T> _removedItems;
-            private readonly HashSet<T> _addedItems;
+            private readonly HashSet<T> _removedSet;
+            private readonly HashSet<T> _addedSet;
 
             public CollectionDelta(IEnumerable<T> previousState, IEnumerable<T> currentState)
             {
                 var previousStateArray = previousState.ToArray();
-                _addedItems = currentState.ToSet();
+                _addedSet = currentState.ToSet();
 
                 var removedItems = previousStateArray.ToSet();
-                _removedItems = removedItems;
-                RemovedItems.ExceptWith(AddedItems);
+                _removedSet = removedItems;
+                _removedSet.ExceptWith(AddedItems);
 
-                AddedItems.ExceptWith(previousStateArray);
+                _addedSet.ExceptWith(previousStateArray);
             }
 
-            public HashSet<T> RemovedItems { get { return _removedItems; } }
+            public T[] RemovedItems { get { return _removedSet.Any() ? _removedSet.ToArray() : null; } }
 
-            public HashSet<T> AddedItems { get { return _addedItems; } }
+            public T[] AddedItems { get { return _addedSet.Any() ? _addedSet.ToArray() : null; } }
         }
     }
 }
