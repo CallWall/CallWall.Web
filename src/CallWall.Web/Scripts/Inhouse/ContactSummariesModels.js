@@ -114,15 +114,20 @@
                 }
             }
         };
+        self.removeContact = function(id) {
+            console.log("Deletes are not supported yet - id: %i", id);
+        };
+
         self.processUpdate = function (contactUpdate) {
-            console.log("Processing contactUpdate _id:" + contactUpdate._id);
+            console.log("Processing contactUpdate %O:", contactUpdate);
             self.incrementProgress();
             if (contactUpdate.isDeleted) {
                 //TODO: Will have to find this record by Id to remove it. -LC
-            } else {//if (contactUpdate._rev == 1) {
+                self.removeContact(contactUpdate._id);
+            } else if (parseInt(contactUpdate.version) == 1) {
                 self.addContact(contactUpdate);
-            //} else {
-            //    console.log("Updates not supported...yet.");
+            } else {
+                console.log("Updates not supported...yet.");
             }
         };
 

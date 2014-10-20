@@ -2,30 +2,71 @@
     callWall.Db = {};
     var contactDb = new PouchDB('callwall.contacts');    
     var persistContactUpdate = function (contactUpdate) {
-        var record = translate(contactUpdate);
-        contactDb.post(record, function (err, result) {
-            if (err) {
-                console.error('Could not save contact update:');
-                console.error(contactUpdate);
-                console.error(record);
-                console.error(err);
-            //} else {
-            //    console.log(result);//Object {ok: true, id: "2960F6F4-571C-1FF9-83AF-11D1FED3D9DA", rev: "1-39c2b8e3a5f72339fbc51ccc4ed97752"} 
-            }
+        console.log("persistContactUpdate(%O)", contactUpdate);
+        createRecord(contactUpdate, function (err, record) {
+          if (err) {
+              console.error('Could not translate contact:');
+              console.error(contactUpdate);
+              console.error(record);
+              console.error(err);
+          } else {
+              contactDb.put(record, function(err2, result) {
+                  if (err2) {
+                      console.error('Could not save contact update:');
+                      console.error(contactUpdate);
+                      console.error(record);
+                      console.error(err2);
+                      //} else {
+                      //    console.log(result);//Object {ok: true, id: "2960F6F4-571C-1FF9-83AF-11D1FED3D9DA", rev: "1-39c2b8e3a5f72339fbc51ccc4ed97752"} 
+                  }
+              });
+          }
         });
     };
 
-    var translate = function(dto) {
+    var createRecord = function(dto, callback) {
+        var id = dto.id.toString();
+        if (dto.version > 1) {
+            db.get(id, function(err, currentVersion) {
+                if (err) {
+                    callback(err);
+                } else {
+                    var record = translate(dto, currentVersion._rev);
+                    callback(null, record);
+                }
+            });
+        } else {
+            callback(null, translate(dto));
+        }
+    }
+
+    var translate = function (dto, rev) {
+        var id = dto.id.toString();
         if (dto.isDeleted) {
             return {
-                //_id: dto.Id.toString(),
-                //_rev: dto.Version.toString(),
+                _id: id,
+                _rev: rev,
+                version: dto.version.toString(),
                 isDeleted: true
             };
         } else {
+            if (rev) {
+                return {
+                    _id: id,
+                    _rev: rev,
+                    version: dto.version.toString(),
+                    newTitle: dto.newTitle
+                    /*addedTags: dto.AddedTags,
+                    removedTags: dto.RemovedTags,
+                    addedAvatars: dto.AddedAvatars,
+                    removedAvatars : dto.RemovedAvatars,
+                    addedProviders : dto.AddedProviders,
+                    removedProviders: dto.RemovedProviders*/
+                };  
+            }
             return {
-                //_id: dto.Id.toString(),
-                //_rev: dto.Version.toString(),
+                _id: dto.id.toString(),
+                version: dto.version.toString(),
                 newTitle: dto.newTitle
                 /*addedTags: dto.AddedTags,
                 removedTags: dto.RemovedTags,
@@ -36,6 +77,8 @@
             };
             }
     };
+
+
 
     var observeChanges = function () {
         return Rx.Observable.createWithDisposable(function (o) {

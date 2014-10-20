@@ -20,5 +20,14 @@ namespace CallWall.Web.Domain
 
         public ContactHandle[] AddedHandles { get; set; }
         public ContactHandle[] RemovedHandles { get; set; }
+
+        public override string ToString()
+        {
+            if (IsDeleted)
+            {
+                return string.Format("ContactAggregateUpdate{{ Id:{0}, Version:{1}, IsDeleted:true}}", Id, Version);
+            }
+            return string.Format("ContactAggregateUpdate{{ Id:{0}, Version:{1}, NewTitle:{2}}}", Id, Version, NewTitle);
+        }
     }
 }

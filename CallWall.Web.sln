@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repositories", "Repositorie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.EventStore.Tests", "src\CallWall.Web.EventStore.Tests\CallWall.Web.EventStore.Tests.csproj", "{19AE2B76-62BA-46D1-BD66-35EAE9167E5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProvider.Tests", "src\CallWall.Web.GoogleProvider.Tests\CallWall.Web.GoogleProvider.Tests.csproj", "{93AF0C51-D326-4A72-BB2A-DE341174F0BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (With Fakes)|Any CPU = Debug (With Fakes)|Any CPU
@@ -93,6 +95,12 @@ Global
 		{19AE2B76-62BA-46D1-BD66-35EAE9167E5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19AE2B76-62BA-46D1-BD66-35EAE9167E5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19AE2B76-62BA-46D1-BD66-35EAE9167E5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF}.Debug (With Fakes)|Any CPU.ActiveCfg = Debug|Any CPU
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF}.Debug (With Fakes)|Any CPU.Build.0 = Debug|Any CPU
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +111,7 @@ Global
 		{00269FFF-9346-4A9C-BEF7-113E311313CC} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
 		{493BF281-3FDA-4900-BECB-72A4AE60A237} = {B71E4E53-6185-4F0C-9262-340E744C3C20}
 		{19AE2B76-62BA-46D1-BD66-35EAE9167E5C} = {B71E4E53-6185-4F0C-9262-340E744C3C20}
+		{93AF0C51-D326-4A72-BB2A-DE341174F0BF} = {B71E4E53-6185-4F0C-9262-340E744C3C20}
 		{191B20F0-2E16-4075-83FD-7A151EE2820D} = {B3115B1E-7CB6-4D1D-8036-1571EE15803B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

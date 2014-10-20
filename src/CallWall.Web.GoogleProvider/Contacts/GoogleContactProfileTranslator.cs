@@ -74,6 +74,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         #endregion
 
+        //TODO: Delete this unused method? -LC
         public int CalculateNextPageStartIndex(string response)
         {
             var xDoc = XDocument.Parse(response);
@@ -242,7 +243,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             return googleAvatar;
         }
 
-        public IEnumerable<string> GetTags(XElement xContactEntry)
+        private static IEnumerable<string> GetTags(XElement xContactEntry)
         {
             return Enumerable.Empty<string>();
 
@@ -273,7 +274,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             //return contactProfile;
         }
 
-        public IEnumerable<ContactHandle> GetHandles(XElement xContactEntry)
+        private static IEnumerable<ContactHandle> GetHandles(XElement xContactEntry)
         {
             return GetEmailAddresses(xContactEntry)
                 .Concat(GetPhoneNumbers(xContactEntry));

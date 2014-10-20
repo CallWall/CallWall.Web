@@ -11,7 +11,10 @@ namespace CallWall.Web.EventStore.Contacts
     {
         private readonly Guid _userId;
         private readonly List<IContactAggregate> _contacts = new List<IContactAggregate>();
-        private readonly List<IContactAggregate> _snapshot = new List<IContactAggregate>();
+        private readonly List<IContactAggregate> _rollbackSnapshot = new List<IContactAggregate>();
+        private ContactAggregateUpdate[] _changesSnapshot;
+        private bool _isTrackingChanges;
+        private bool _isCommited;
 
         public UserContacts(Guid userId)
         {
@@ -25,20 +28,29 @@ namespace CallWall.Web.EventStore.Contacts
 
         public IDisposable TrackChanges()
         {
-            if (_snapshot.Any())
-                throw new InvalidOperationException("Nested Track changes calls are not supported");
+            if (_isTrackingChanges) throw new InvalidOperationException("Nested Track changes calls are not supported");
+
+            _isTrackingChanges = true;
+            _isCommited = false;
             var snapshot = _contacts.Select(c => c.Snapshot());
-            _snapshot.AddRange(snapshot);
+            _rollbackSnapshot.AddRange(snapshot);
             return Disposable.Create(() =>
                                      {
-                                         _contacts.Clear();
-                                         _contacts.AddRange(_snapshot);
-                                         _snapshot.Clear();
+                                         if (!_isCommited)
+                                         {
+                                             _contacts.Clear();
+                                             _contacts.AddRange(_rollbackSnapshot);
+                                             _rollbackSnapshot.Clear();    
+                                         }
+                                         _changesSnapshot = null;
+                                         _isTrackingChanges = false;
                                      });
         }
 
         public void Add(IAccountContactSummary contact)
         {
+            if (!_isTrackingChanges) throw new InvalidOperationException("Add must be called while tracking changes");
+
             //Look for matches
             var existing = _contacts.SingleOrDefault(c => c.OwnsContact(contact));
             if (existing != null)
@@ -73,20 +85,24 @@ namespace CallWall.Web.EventStore.Contacts
 
         public ContactAggregateUpdate[] GetChangesSnapshot()
         {
-            return _contacts
+            if (!_isTrackingChanges) throw new InvalidOperationException("Must be TrackingChanges() to be able to get a snapshot.");
+            if (_changesSnapshot != null) throw new InvalidOperationException("Nested snapshots not supported. Either CommitChanges() or rollback by disposing the TrackChanges() token.");
+            _changesSnapshot = _contacts
                 .Select(c => c.GetChangesSinceSnapshot())
                 .Where(update => update != null)
                 .ToArray();
+            return _changesSnapshot;
         }
 
         public void CommitChanges()
         {
-            Version++;
+            _isCommited = true;
+            Version += _changesSnapshot.Length;
             foreach (var contactAggregate in _contacts)
             {
                 contactAggregate.CommitChange();
             }
-            _snapshot.Clear();
+            _rollbackSnapshot.Clear();
         }
     }
 }

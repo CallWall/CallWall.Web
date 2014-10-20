@@ -15,8 +15,8 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As an end user",
         IWant = "I want to have changes to my contact data ",
         SoThat = "So that I can receive changes faster over poor network conditions")]
-    [Timeout(1000)]
-    public class UserContactsUpdated
+    //[Timeout(1000)]
+    public class UserContactsUpdatedFixture
     {
         [Test]
         public void AddingNewContact()
@@ -67,7 +67,7 @@ namespace CallWall.Web.EventStore.Tests
                 IsDeleted = true,
             };
 
-            new UserContactUpdateSingleContactAggregateScenario()
+            new UserContactRemovedScenario()
                .Given(s => s.Given_a_populated_UserContacts_instance(contactA, contactB, contactC))
                .When(s => s.When_a_ContactSummary_is_removed(contactBDeletion))
                .Then(s => s.Then_Snapshot_has_only(expected))
@@ -122,6 +122,36 @@ namespace CallWall.Web.EventStore.Tests
                .BDDfy();
         }
 
+        [TestCase(null)]
+        [TestCase("")]
+        public void Adding_contact_with_no_title_should_use_email_as_title(string title)
+        {
+            var emailHandle = "John@doe.com";
+            var contact = GenerateContact("PrimaryAccount", title, "Stub-John@doe.com", emailHandle);
+            new UserContactUpdateSingleContactAggregateScenario()
+               .Given(s => s.Given_a_UserContacts_instance())
+               .When(s => s.When_a_ContactSummary_is_added(contact))
+               .Then(s => s.Then_Snapshot_includes_contact(c=>
+                   c.NewTitle == emailHandle
+                   && c.AddedProviders.Single().ProviderName == contact.Provider
+                   && c.AddedProviders.Single().AccountId == contact.AccountId
+                   && c.AddedProviders.Single().ContactId == contact.ProviderId))
+               .BDDfy();
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void Adding_contact_with_no_title__and_no_handles_should_not_yeild_a_contact(string title)
+        {
+            var contact = GenerateContact("PrimaryAccount", title, "Stub-John@doe.com");
+            new UserContactUpdateSingleContactAggregateScenario()
+               .Given(s => s.Given_a_UserContacts_instance())
+               .When(s => s.When_a_ContactSummary_is_added(contact))
+               .Then(s => s.Then_Snapshot_is_empty())
+               .BDDfy();
+        }
+
+
         private static StubContactSummary GenerateContact(string accountId, string title, string providerId, string email = null)
         {
             var contact = new StubContactSummary
@@ -144,25 +174,11 @@ namespace CallWall.Web.EventStore.Tests
             public void Given_a_UserContacts_instance()
             {
                 _userContacts = new UserContacts(Guid.NewGuid());
-            }
-            public void Given_a_populated_UserContacts_instance(params IAccountContactSummary[] contacts)
-            {
-                _userContacts = new UserContacts(Guid.NewGuid());
-                foreach (var contact in contacts)
-                {
-                    _userContacts.Add(contact);    
-                }
-                _userContacts.GetChangesSnapshot();
-                _userContacts.CommitChanges();
+                _userContacts.TrackChanges();
             }
 
             public void When_a_ContactSummary_is_added(IAccountContactSummary contactSummary)
             {
-                _userContacts.Add(contactSummary);
-            }
-            public void When_a_ContactSummary_is_removed(IAccountContactSummary contactSummary)
-            {
-                if(!contactSummary.IsDeleted) throw new ArgumentException("contactSummary must be flagged as deleted", "contactSummary");
                 _userContacts.Add(contactSummary);
             }
 
@@ -171,6 +187,59 @@ namespace CallWall.Web.EventStore.Tests
                 var snapshot = _userContacts.GetChangesSnapshot();
                 Assert.NotNull(snapshot.SingleOrDefault(matchingContact));
             }
+            public void Then_Snapshot_has_only(ContactAggregateUpdate expected)
+            {
+                var snapshot = _userContacts.GetChangesSnapshot();
+                var actual = snapshot.Single();
+
+                //Assert.AreEqual(expected.Id);
+                Assert.AreEqual(expected.Version, actual.Version);
+                Assert.AreEqual(expected.NewTitle, actual.NewTitle);
+                CollectionAssert.AreEqual(expected.AddedAvatars, actual.AddedAvatars);
+                CollectionAssert.AreEqual(expected.RemovedAvatars, actual.RemovedAvatars);
+
+                CollectionAssert.AreEqual(expected.AddedTags, actual.AddedTags);
+                CollectionAssert.AreEqual(expected.RemovedTags, actual.RemovedTags);
+
+                CollectionAssert.AreEqual(expected.AddedProviders, actual.AddedProviders, ContactProviderSummaryComparer.Instance);
+                CollectionAssert.AreEqual(expected.RemovedProviders, actual.RemovedProviders, ContactProviderSummaryComparer.Instance);
+
+                CollectionAssert.AreEqual(expected.AddedHandles, actual.AddedHandles);
+                CollectionAssert.AreEqual(expected.RemovedHandles, actual.RemovedHandles);
+            }
+            public void Then_Snapshot_is_empty()
+            {
+                var snapshot = _userContacts.GetChangesSnapshot();
+                
+                CollectionAssert.IsEmpty(snapshot);
+            }
+        }
+
+        public class UserContactRemovedScenario
+        {
+            private UserContacts _userContacts;
+
+            public void Given_a_populated_UserContacts_instance(params IAccountContactSummary[] contacts)
+            {
+                _userContacts = new UserContacts(Guid.NewGuid());
+                using (_userContacts.TrackChanges())
+                {
+                    foreach (var contact in contacts)
+                    {
+                        _userContacts.Add(contact);
+                    }
+                    _userContacts.GetChangesSnapshot();
+                    _userContacts.CommitChanges();
+                }
+            }
+            
+            public void When_a_ContactSummary_is_removed(IAccountContactSummary contactSummary)
+            {
+                if (!contactSummary.IsDeleted) throw new ArgumentException("contactSummary must be flagged as deleted", "contactSummary");
+                _userContacts.TrackChanges();
+                _userContacts.Add(contactSummary);
+            }
+
             public void Then_Snapshot_has_only(ContactAggregateUpdate expected)
             {
                 var snapshot = _userContacts.GetChangesSnapshot();

@@ -144,6 +144,10 @@ namespace CallWall.Web.EventStore.Domain
             if (!_isDirty)
                 return null;
 
+            //TODO: Should also manage snapshots around invalid data.
+            if (!IsValid())
+                return null;
+
             if (_snapshot == null)
             {
                 return new ContactAggregateUpdate
@@ -193,6 +197,11 @@ namespace CallWall.Web.EventStore.Domain
             return delta;
         }
 
+        private bool IsValid()
+        {
+            return !string.IsNullOrWhiteSpace(Title);
+        }
+
         public void CommitChange()
         {
             _isDirty = false;
@@ -201,12 +210,30 @@ namespace CallWall.Web.EventStore.Domain
         private void Refresh()
         {
             Version++;
-            Title = _contacts.Aggregate((string)null, (acc, cur) => TitleQuality(acc) >= TitleQuality(cur.Title) ? acc : cur.Title);
+            Providers = _contacts.Select(c => new ContactProviderSummary(c.Provider, c.AccountId, c.ProviderId)).ToArray();
             Avatars = _contacts.Select(c => c.PrimaryAvatar).Where(a => a != null).Distinct().ToArray();
             Tags = _contacts.SelectMany(c => c.Tags ?? Enumerable.Empty<string>()).Distinct().ToArray();
             //TODO: This may need a custom IComparer instance  -LC
             Handles = _contacts.SelectMany(c => c.Handles ?? Enumerable.Empty<ContactHandle>()).Distinct().ToArray();
-            Providers = _contacts.Select(c => new ContactProviderSummary(c.Provider, c.AccountId, c.ProviderId)).ToArray();
+            Title = GetBestTitle();
+        }
+
+        private string GetBestTitle()
+        {
+            return GetBestTitle(_contacts.Select(c => !string.IsNullOrWhiteSpace(c.Title) 
+                ? c.Title
+                : GetBestTitle((c.Handles ?? Enumerable.Empty<ContactHandle>()).Select(ch => ch.Handle))));
+        }
+
+        private static string GetBestTitle(IEnumerable<string> candidates)
+        {
+            return candidates.Aggregate((string)null, GetBestTitle);
+        }
+        private static string GetBestTitle(string a, string b)
+        {
+            return TitleQuality(a) >= TitleQuality(b)
+                ? a
+                : b;
         }
 
         private static int TitleQuality(string value)
@@ -256,7 +283,7 @@ namespace CallWall.Web.EventStore.Domain
             return myEmails.Concat(otherEmails).Distinct().Count() < sumCount;
         }
 
-        private string NormailizeEmail(string emailAddress)
+        private static string NormailizeEmail(string emailAddress)
         {
             var lowerCased = emailAddress.ToLowerInvariant();
             if (IsGmail(lowerCased))
@@ -311,9 +338,8 @@ namespace CallWall.Web.EventStore.Domain
                 var previousStateArray = previousState.ToArray();
                 _addedSet = currentState.ToSet();
 
-                var removedItems = previousStateArray.ToSet();
-                _removedSet = removedItems;
-                _removedSet.ExceptWith(AddedItems);
+                _removedSet = previousStateArray.ToSet();
+                _removedSet.ExceptWith(_addedSet);
 
                 _addedSet.ExceptWith(previousStateArray);
             }
