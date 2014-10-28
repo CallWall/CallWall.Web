@@ -1,5 +1,8 @@
 namespace CallWall.Web.Domain
 {
+    //TODO: To send to the UI, only need Id, Version, IsDeleted, NewTitle & Add/Removed Avatars -LC
+    //TODO: Add EventId? This way the Hub can filter where NewTitle==null && Add/Removed Avatars==null
+    //TODO: May need to send empty update with eventId if the last batch was all filtered out (to prevent requesting data we have consumed but didn't want) -LC
     public class ContactAggregateUpdate
     {
         public int Id { get; set; }

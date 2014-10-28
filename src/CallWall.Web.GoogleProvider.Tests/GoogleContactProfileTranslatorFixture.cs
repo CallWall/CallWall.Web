@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Contacts;
 using NSubstitute;
@@ -90,6 +92,37 @@ namespace CallWall.Web.GoogleProvider.Tests
                 Assert.AreEqual(providerId, actual.ProviderId);
                 Assert.AreEqual(_account.AccountId, actual.AccountId);
             }
+        }
+
+        [Test]
+        public void Create_Json_from_GoogleResponse()
+        {
+            var account = Substitute.For<IAccount>();
+            account.AccountId.Returns("MyAccountId");
+            var httpReponse =
+                File.ReadAllText(
+                    @"C:\Users\Lee\SkyDrive\CallWall\Development\Google\SampleContactRequest_response_large.xml");
+            var translator = new GoogleContactProfileTranslator();
+            var results = translator.Translate(httpReponse, "junkAccessToken", account);
+
+            var titles = results.Items
+                .Where(summary => !summary.IsDeleted
+                    && !string.IsNullOrWhiteSpace(summary.Title)
+                    && summary.Title.ToLowerInvariant().Contains("erynne"))
+                .Select(summary => summary.Title);
+            foreach (var title in titles)
+            {
+                Console.WriteLine(title);
+            }
+
+
+            var count = results.Items.Count(
+                summary =>
+                    !summary.IsDeleted
+                    && !string.IsNullOrWhiteSpace(summary.Title)
+                    && summary.Title.ToLowerInvariant().Contains("erynne"));
+
+            Assert.AreEqual(3, count);
         }
     }
 }

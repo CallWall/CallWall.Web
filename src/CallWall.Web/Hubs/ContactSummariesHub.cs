@@ -29,30 +29,7 @@ namespace CallWall.Web.Hubs
             _logger = loggerFactory.CreateLogger(GetType());
             _logger.Info("ContactSummariesHub.ctor()");
         }
-
-        //public void RequestContactSummaryStream(ClientLastUpdated[] lastUpdatedDetails)
-        //{
-        //    Debug.Print("ContactSummariesHub.RequestContactSummaryStream(...)");
-        //    var sessions = _sessionProvider.GetSessions(Context.User);
-        //    var subscription = _contactsProviders
-        //                        .ToObservable()
-        //                        .SelectMany(c => c.GetContactsFeed(sessions, lastUpdatedDetails))
-        //                        .Do(feed => Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
-        //                        .SelectMany(feed => feed.Values)
-        //                        .Log(_logger, "GetContactsFeed")
-        //                        .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
-        //                                   ex => Clients.Caller.ReceiveError("Error receiving contacts"),
-        //                                   () => Clients.Caller.ReceiveComplete(sessions.Select(s => new ClientLastUpdated{
-        //                                        Provider = s.Provider,
-        //                                        LastUpdated = DateTime.UtcNow, 
-        //                                        Revision = lastUpdatedDetails.Where(l=>l.Provider == s.Provider)
-        //                                                                     .Select(l=>l.Revision)
-        //                                                                     .FirstOrDefault() 
-        //                                   })));
-
-        //    _contactsSummarySubsription.Disposable = subscription;
-        //}
-
+        
         public async Task RequestContactSummaryStream(int fromEventId)
         {
             try
@@ -61,6 +38,8 @@ namespace CallWall.Web.Hubs
                 var user = await _loginProvider.GetUser(Context.User.UserId());
                 _logger.Trace("Getting contacts for user : {0}", user.Id);
                 var subscription = _contactSummaryRepository.GetContactUpdates(user, fromEventId)
+                    .Select(cau=>new ContactAggregateUpdateSummary(cau))
+                    .Where(summary=>summary.IsRelevant)
                     .Log(_logger, "RequestContactSummaryStream")
                     .Subscribe(
                         contactUpdate => Clients.Caller.ReceiveContactSummaryUpdate(contactUpdate),
@@ -94,6 +73,46 @@ namespace CallWall.Web.Hubs
             _logger.Debug("ContactSummariesHub.OnDisconnected()");
             _contactsSummarySubsription.Dispose();
             return base.OnDisconnected();
+        }
+    }
+    public class ContactAggregateUpdateSummary
+    {
+        public ContactAggregateUpdateSummary(ContactAggregateUpdate source)
+        {
+            Id = source.Id;
+            Version = source.Version;
+            IsDeleted = source.IsDeleted;
+            NewTitle = source.NewTitle;
+            AddedAvatars = source.AddedAvatars;
+            RemovedAvatars = source.RemovedAvatars;
+        }
+
+        public int Id { get; set; }
+        public int Version { get; set; }
+        public bool IsDeleted { get; set; }
+        public string NewTitle { get; set; }
+        public string[] AddedAvatars { get; set; }
+        public string[] RemovedAvatars { get; set; }
+
+        public bool IsRelevant
+        {
+            get
+            {
+                return IsDeleted
+                    || !string.IsNullOrWhiteSpace(NewTitle)
+                    || AddedAvatars != null
+                    || RemovedAvatars != null;
+            }
+        }
+
+
+        public override string ToString()
+        {
+            if (IsDeleted)
+            {
+                return string.Format("ContactAggregateUpdate{{ Id:{0}, Version:{1}, IsDeleted:true}}", Id, Version);
+            }
+            return string.Format("ContactAggregateUpdate{{ Id:{0}, Version:{1}, NewTitle:{2}}}", Id, Version, NewTitle);
         }
     }
 }

@@ -60,7 +60,8 @@ namespace CallWall.Web.EventStore.Domain
 
             return IsEmailMatch(contact)
                 || IsPhoneMatch(contact)
-                || IsTitleMatch(contact);
+                || IsTitleMatch(contact)
+                || IsFuzzyTitleMatch(contact);
         }
 
         public void Add(IAccountContactSummary contact)
@@ -240,7 +241,12 @@ namespace CallWall.Web.EventStore.Domain
         {
             if (string.IsNullOrWhiteSpace(value)) return 0;
             if (IsEmail(value)) return 1;
-            if (IsName(value)) return 3;
+            if (IsName(value))
+            {
+                if( value.IndexOfAny(new []{':', ',', ';', '-'})==-1) 
+                    return 4;
+                return 3;
+            }
             return 2;
         }
 
@@ -257,11 +263,22 @@ namespace CallWall.Web.EventStore.Domain
         }
 
 
+        //TODO: Move algos out to separate set of rules. -LC
         #region Matching Algos
 
         private bool IsTitleMatch(IAccountContactSummary contact)
         {
             return string.Equals(Title, contact.Title, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        //TODO: Use regex instead?
+        private static readonly char[] WordDelimiters = { ' ', ',', ':', ':' };
+        private bool IsFuzzyTitleMatch(IAccountContactSummary contact)
+        {
+            var titleWords = Title.ToLowerInvariant().Split(WordDelimiters, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x);
+            var otherWords = contact.Title.ToLowerInvariant().Split(WordDelimiters, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x);
+
+            return string.Equals(string.Join(",", titleWords.ToArray()), string.Join(",", otherWords.ToArray()));
         }
 
         private bool IsEmailMatch(IAccountContactSummary contact)

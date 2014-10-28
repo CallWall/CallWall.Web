@@ -131,7 +131,7 @@ namespace CallWall.Web.EventStore.Tests
             new UserContactUpdateSingleContactAggregateScenario()
                .Given(s => s.Given_a_UserContacts_instance())
                .When(s => s.When_a_ContactSummary_is_added(contact))
-               .Then(s => s.Then_Snapshot_includes_contact(c=>
+               .Then(s => s.Then_Snapshot_includes_contact(c =>
                    c.NewTitle == emailHandle
                    && c.AddedProviders.Single().ProviderName == contact.Provider
                    && c.AddedProviders.Single().AccountId == contact.AccountId
@@ -148,6 +148,92 @@ namespace CallWall.Web.EventStore.Tests
                .Given(s => s.Given_a_UserContacts_instance())
                .When(s => s.When_a_ContactSummary_is_added(contact))
                .Then(s => s.Then_Snapshot_is_empty())
+               .BDDfy();
+        }
+
+        [Test]
+        public void Merging_multiple_contacts()
+        {
+            var accId = "ABC";
+            var barx = new StubContactSummary
+            {
+                Provider = "Google",
+                AccountId = accId,
+                Title = "Campbell, Erynne",
+                ProviderId = "http://www.google.com/m8/feeds/contacts/lee.ryan.campbell%40gmail.com/base/37cc52308c94e30f",
+                Handles =
+                {
+                    new ContactEmailAddress("erynne.campbell@barclays.com", "work"),
+                    new ContactEmailAddress("Erynne.Campbell@barclayscapital.com", "work"),
+                }
+            };
+            var old = new StubContactSummary
+            {
+                Provider = "Google",
+                AccountId = accId,
+                Title = "Erynne Campbell",
+                ProviderId = "http://www.google.com/m8/feeds/contacts/lee.ryan.campbell%40gmail.com/base/aa",
+                Handles =
+                {
+                    new ContactEmailAddress("Erynne.Campbell@googlemail.com", "Obsolete"),
+                    new ContactPhoneNumber("+61417910632", "mobile"),
+                    new ContactPhoneNumber("+447554257819", "mobile"),
+                }
+            };
+            var current = new StubContactSummary
+            {
+                Provider = "Google",
+                AccountId = accId,
+                Title = "Erynne Campbell",
+                ProviderId = "http://www.google.com/m8/feeds/contacts/lee.ryan.campbell%40gmail.com/base/78a2b08a3e7700",
+                Handles =
+                {
+                    new ContactEmailAddress("Erynne.Campbell@gmail.com", "Obsolete"),                    
+                }
+            };
+
+            var expected = new ContactAggregateUpdate()
+            {
+                //Id = ??
+                Version = 3,
+                NewTitle = "Erynne Campbell",
+                IsDeleted = false,
+                AddedProviders = new ContactProviderSummary[]
+                {
+                    new ContactProviderSummary{
+                        AccountId = accId,
+                        ContactId = "http://www.google.com/m8/feeds/contacts/lee.ryan.campbell%40gmail.com/base/37cc52308c94e30f",
+                        ProviderName = "Google"
+     
+                    },
+                    new ContactProviderSummary{
+                        AccountId = accId,
+                        ContactId =  "http://www.google.com/m8/feeds/contacts/lee.ryan.campbell%40gmail.com/base/aa",
+                        ProviderName = "Google"
+                    },
+                    new ContactProviderSummary{
+                        AccountId = accId,
+                        ContactId =  "http://www.google.com/m8/feeds/contacts/lee.ryan.campbell%40gmail.com/base/78a2b08a3e7700",
+                        ProviderName = "Google"
+                    }
+               },
+               AddedHandles = new ContactHandle[]
+               {
+                   new ContactEmailAddress("erynne.campbell@barclays.com", "work"),
+                   new ContactEmailAddress("Erynne.Campbell@barclayscapital.com", "work"),
+                   new ContactEmailAddress("Erynne.Campbell@googlemail.com", "Obsolete"),
+                   new ContactPhoneNumber("+61417910632", "mobile"),
+                   new ContactPhoneNumber("+447554257819", "mobile"),
+                   new ContactEmailAddress("Erynne.Campbell@gmail.com", "Obsolete"),                    
+               }
+            };
+
+            new UserContactUpdateSingleContactAggregateScenario()
+               .Given(s => s.Given_a_UserContacts_instance())
+               .When(s => s.When_a_ContactSummary_is_added(barx))
+               .When(s => s.When_a_ContactSummary_is_added(old))
+               .When(s => s.When_a_ContactSummary_is_added(current))
+               .Then(s => s.Then_Snapshot_has_only(expected))
                .BDDfy();
         }
 
@@ -210,7 +296,7 @@ namespace CallWall.Web.EventStore.Tests
             public void Then_Snapshot_is_empty()
             {
                 var snapshot = _userContacts.GetChangesSnapshot();
-                
+
                 CollectionAssert.IsEmpty(snapshot);
             }
         }
@@ -232,7 +318,7 @@ namespace CallWall.Web.EventStore.Tests
                     _userContacts.CommitChanges();
                 }
             }
-            
+
             public void When_a_ContactSummary_is_removed(IAccountContactSummary contactSummary)
             {
                 if (!contactSummary.IsDeleted) throw new ArgumentException("contactSummary must be flagged as deleted", "contactSummary");
