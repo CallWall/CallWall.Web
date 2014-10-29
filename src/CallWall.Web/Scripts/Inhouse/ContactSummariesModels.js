@@ -7,16 +7,42 @@
         self.id = contact._id;
         self.title = ko.observable(contact.newTitle);
         self.titleUpperCase = contact.newTitle.toUpperCase();
-        self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        //self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        self.avatars = ko.observableArray();
+        if (contact.addedAvatars) {
+            for (var i = 0; i < contact.addedAvatars.length; i++) {
+                self.avatars.push(contact.addedAvatars[i]);
+            }
+        }
         self.tags = [];//contact.Tags;
         self.isVisible = ko.observable(true);
+        self.primaryAvatar = ko.computed(function () {
+            if (self.avatars().length == 0) {
+                return '/Content/images/AnonContact.svg';
+            } else {
+                return self.avatars()[0];
+            }
+        });
         self.filter = function(prefixTest) {
             var isVisible = (self.titleUpperCase.lastIndexOf(prefixTest, 0) === 0);
             self.isVisible(isVisible);
         };
-        self.update = function(newTitle) {
+        self.update = function (contactUpdate) {
+            if (contactUpdate.newTitle != null) {
             self.title(newTitle);
             self.titleUpperCase = newTitle.toUpperCase();
+            }
+            if (contact.removedAvatars) {
+                for (var i = 0; i < contact.removedAvatars.length; i++) {
+                    self.avatars.remove(contact.removedAvatars[i]);
+                }
+            }
+            if (contact.addedAvatars) {
+                for (var i = 0; i < contact.addedAvatars.length; i++) {
+                    self.avatars.push(contact.addedAvatars[i]);
+                }
+            }
+
         };
     };
     
@@ -63,10 +89,7 @@
             for (var i = 0; i < contactCount; i++) {
                 var item = self.contacts()[i];
                 if (item.id == contact._id) {
-                    if (contact.newTitle != null) {
-                        item.update(contact.newTitle);
-                    }
-
+                    item.update(contact);
                     return true;
                 }
             }
@@ -101,15 +124,15 @@
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
-        self.startingServerVersion = ko.observable(0);
-        self.startingClientVersion = ko.observable(0);
-        self.currentClientVersion = ko.observable(0);
-        self.progress = ko.computed(function() {
-            if (self.currentClientVersion() >= self.startingServerVersion())
+        self.serverHead = ko.observable(0);
+        self.initialClientHead = ko.observable(0);
+        self.currentClientHead = ko.observable(0);
+        self.progress = ko.computed(function () {
+            if (self.currentClientHead() >= self.serverHead())
                 return 100;
             
-            var batchSize = self.startingServerVersion() - self.startingClientVersion();
-            var progress = self.currentClientVersion() - self.startingClientVersion();
+            var batchSize = self.serverHead() - self.initialClientHead();
+            var progress = self.currentClientHead() - self.initialClientHead();
             if (batchSize <= 0)
                 return 100;
 
@@ -173,8 +196,10 @@
         
 
         self.processUpdate = function (contactUpdate) {
-            console.log("Processing contactUpdate %O:", contactUpdate);
-            self.incrementProgress();
+            try {
+                var eventId = parseInt(contactUpdate.eventId);
+                self.currentClientHead(eventId);
+
             if (contactUpdate.isDeleted) {
                 self.removeContact(contactUpdate._id);
             } else if (parseInt(contactUpdate.version) == 1) {
@@ -182,12 +207,10 @@
             } else {
                 self.updateContact(contactUpdate);
             }
-        };
-
-        self.incrementProgress = function() {
-            var i = self.currentClientVersion();
-            i += 1;
-            self.currentClientVersion(i);
+            } catch (e) {
+                console.log("Processing contactUpdate %O:", contactUpdate);
+                console.error("Failed - %O", e);
+            } 
         };
     };
     //Publicly exposed object are attached to the callWall namespace

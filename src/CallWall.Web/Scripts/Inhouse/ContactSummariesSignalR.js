@@ -13,9 +13,9 @@
               contactDb.put(record, function(err2, result) {
                   if (err2) {
                       console.error('Could not save contact update:');
-                      console.error('  contactUpdate : O%', contactUpdate);
-                      console.error('  translate record O%', record);
-                      console.error('  error : O%', err2);
+                      console.error('  contactUpdate : %O', contactUpdate);
+                      console.error('  translate record %O', record);
+                      console.error('  error : %O', err2);
                       //} else {
                       //    console.log(result);//Object {ok: true, id: "2960F6F4-571C-1FF9-83AF-11D1FED3D9DA", rev: "1-39c2b8e3a5f72339fbc51ccc4ed97752"} 
                   }
@@ -36,7 +36,7 @@
                         callback(err);
                     }
                 } else {
-                    console.info('Updating existing contact : O%', currentVersion);
+                    console.info('Updating existing contact : %O', currentVersion);
                     var record = translate(dto, currentVersion._rev);
                     callback(null, record);
                 }
@@ -52,7 +52,8 @@
             return {
                 _id: id,
                 _rev: rev,
-                version: dto.version.toString(),
+                eventId : dto.eventId,
+                version: dto.version,
                 isDeleted: true
             };
         } else {
@@ -60,24 +61,26 @@
                 return {
                     _id: id,
                     _rev: rev,
-                    version: dto.version.toString(),
-                    newTitle: dto.newTitle
+                    eventId: dto.eventId,
+                    version: dto.version,
+                    newTitle: dto.newTitle,
+                    addedAvatars: dto.addedAvatars,
+                    removedAvatars: dto.removedAvatars
                     /*addedTags: dto.AddedTags,
                     removedTags: dto.RemovedTags,
-                    addedAvatars: dto.AddedAvatars,
-                    removedAvatars : dto.RemovedAvatars,
                     addedProviders : dto.AddedProviders,
                     removedProviders: dto.RemovedProviders*/
                 };  
             }
             return {
-                _id: dto.id.toString(),
+                _id: id,
+                eventId: dto.eventId,
                 version: dto.version.toString(),
-                newTitle: dto.newTitle
+                newTitle: dto.newTitle,
+                addedAvatars: dto.addedAvatars,
+                removedAvatars: dto.removedAvatars,
                 /*addedTags: dto.AddedTags,
                 removedTags: dto.RemovedTags,
-                addedAvatars: dto.AddedAvatars,
-                removedAvatars : dto.RemovedAvatars,
                 addedProviders : dto.AddedProviders,
                 removedProviders: dto.RemovedProviders*/
             };
@@ -110,6 +113,9 @@
             return function () { query.cancel(); };
         });
     };
+
+    //TODO: This is potentially wrong. This is the local EventId/SequenceNumber. In theory the server may have skipped some mssages so may be out of sync.
+    //  How do we get the eventId of the last record added/update/deleted?
     var getHeadVersion = function (callback) {
         contactDb.info(function (err, response) {
             if (err) {
@@ -154,7 +160,7 @@
 
                     callWall.Db.getContactsHeadVersion(function (clientHeadVersion) {
                         console.log("ClientDb-> headVersion : " + clientHeadVersion);
-                        model.startingClientVersion(clientHeadVersion);
+                        model.initialClientHead(clientHeadVersion);
                         contactSummariesHub.server.requestContactSummaryStream(clientHeadVersion);
                     });
                 } catch (ex) {
@@ -175,7 +181,7 @@
         };
         contactSummariesHub.client.ReceiveContactSummaryServerHeadVersion = function (serverHeadVersion) {
             console.log("Server-> headVersion : " + serverHeadVersion);
-            model.startingServerVersion(serverHeadVersion);
+            model.serverHead(serverHeadVersion);
         };
 
         contactSummariesHub.client.ReceiveError = function (error) {

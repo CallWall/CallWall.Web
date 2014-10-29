@@ -27,6 +27,7 @@ namespace CallWall.Web.Domain
         /// </summary>
         string Title { get; }
 
+        //TODO: Change to be an array/IEnum of avatars/strings.
         /// <summary>
         /// Link to an image or avatar of the contact
         /// </summary>

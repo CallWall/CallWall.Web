@@ -11,8 +11,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
     internal sealed class GoogleContactProfileTranslator
     {
         private static readonly XmlNamespaceManager Ns;
-        //HACK: This is a UI concept and should be dropped from here -LC
-        private const string AnonContactAvatar = "/Content/images/AnonContact.svg";
 
         #region xml namespace resovers
 
@@ -238,8 +236,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
                                 .Where(att => att != null)
                                 .Select(att => att.Value + "?access_token=" + accessToken)
                                 .FirstOrDefault();
-            if (googleAvatar == null)
-                return AnonContactAvatar;
             return googleAvatar;
         }
 

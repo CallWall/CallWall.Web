@@ -30,6 +30,7 @@ namespace CallWall.Web.Hubs
             _logger.Info("ContactSummariesHub.ctor()");
         }
         
+        //TODO: Add security here. user.Id has thrown NRE here before. -LC
         public async Task RequestContactSummaryStream(int fromEventId)
         {
             try
@@ -38,7 +39,7 @@ namespace CallWall.Web.Hubs
                 var user = await _loginProvider.GetUser(Context.User.UserId());
                 _logger.Trace("Getting contacts for user : {0}", user.Id);
                 var subscription = _contactSummaryRepository.GetContactUpdates(user, fromEventId)
-                    .Select(cau=>new ContactAggregateUpdateSummary(cau))
+                    .Select(evt=>new ContactAggregateUpdateSummary(evt.EventId, evt.Value))
                     .Where(summary=>summary.IsRelevant)
                     .Log(_logger, "RequestContactSummaryStream")
                     .Subscribe(
@@ -62,8 +63,8 @@ namespace CallWall.Web.Hubs
                 .Where(buffer=>buffer.Count > 0)
                 .Select(buffer=>buffer.Last())
                 .Subscribe(
-                serverVersion=>Clients.Caller.ReceiveContactSummaryServerHeadVersion(serverVersion),
-                        ex => _logger.Error(ex, "RequestHeadVersionStream errored."));                
+                    serverVersion=>Clients.Caller.ReceiveContactSummaryServerHeadVersion(serverVersion),
+                    ex => _logger.Error(ex, "RequestHeadVersionStream errored."));                
 
             _headVersionSubsription.Disposable = subscription;
         }
@@ -77,8 +78,9 @@ namespace CallWall.Web.Hubs
     }
     public class ContactAggregateUpdateSummary
     {
-        public ContactAggregateUpdateSummary(ContactAggregateUpdate source)
+        public ContactAggregateUpdateSummary(int eventId, ContactAggregateUpdate source)
         {
+            EventId = eventId;
             Id = source.Id;
             Version = source.Version;
             IsDeleted = source.IsDeleted;
@@ -87,6 +89,7 @@ namespace CallWall.Web.Hubs
             RemovedAvatars = source.RemovedAvatars;
         }
 
+        public int EventId { get; set; }
         public int Id { get; set; }
         public int Version { get; set; }
         public bool IsDeleted { get; set; }

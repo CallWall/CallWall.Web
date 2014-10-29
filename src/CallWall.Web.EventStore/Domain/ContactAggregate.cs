@@ -275,6 +275,8 @@ namespace CallWall.Web.EventStore.Domain
         private static readonly char[] WordDelimiters = { ' ', ',', ':', ':' };
         private bool IsFuzzyTitleMatch(IAccountContactSummary contact)
         {
+            if (Title == null || contact.Title == null) 
+                return false;
             var titleWords = Title.ToLowerInvariant().Split(WordDelimiters, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x);
             var otherWords = contact.Title.ToLowerInvariant().Split(WordDelimiters, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x);
 

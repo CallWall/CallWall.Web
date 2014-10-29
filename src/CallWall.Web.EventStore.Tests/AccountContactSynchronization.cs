@@ -126,6 +126,7 @@ namespace CallWall.Web.EventStore.Tests
 
                 var contacts = await _userContactRepository.GetContactSummariesFrom(user, 0)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
+                    .Select(evt=>evt.Value)
                     .Take(expected.Count)
                     .ToList()
                     .FirstAsync();

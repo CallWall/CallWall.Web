@@ -12,7 +12,7 @@ namespace CallWall.Web.EventStore.Contacts
             _userContactRepository = userContactRepository;
         }
 
-        public IObservable<ContactAggregateUpdate> GetContactUpdates(User user, int fromEventId)
+        public IObservable<Event<ContactAggregateUpdate>> GetContactUpdates(User user, int fromEventId)
         {
             return _userContactRepository.GetContactSummariesFrom(user, fromEventId);
         }

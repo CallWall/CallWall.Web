@@ -14,12 +14,12 @@ namespace CallWall.Web.EventStore.Contacts
             _eventStoreClient = eventStoreClient;
         }
 
-        public IObservable<ContactAggregateUpdate> GetContactSummariesFrom(User user, int? versionId)
+        public IObservable<Event<ContactAggregateUpdate>> GetContactSummariesFrom(User user, int? versionId)
         {
             var streamName = ContactStreamNames.UserContacts(user.Id);
             return _eventStoreClient.GetEvents(streamName, versionId)
                 .Where(resolvedEvent => resolvedEvent.OriginalEvent!=null)
-                .Select(resolvedEvent => resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate>());
+                .Select(resolvedEvent => new Event<ContactAggregateUpdate>(resolvedEvent.OriginalEventNumber, resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate>()));
         }
 
         public IObservable<int> ObserveContactUpdatesHeadVersion(User user)

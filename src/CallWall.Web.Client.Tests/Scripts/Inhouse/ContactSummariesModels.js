@@ -4,14 +4,45 @@
 (function (ko, callWall) {
     var contactSummaryViewModel = function (contact) {
         var self = this;
-        self.title = contact.newTitle;
-        self.titleUpperCase = self.title.toUpperCase();
-        self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        self.id = contact._id;
+        self.title = ko.observable(contact.newTitle);
+        self.titleUpperCase = contact.newTitle.toUpperCase();
+        //self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        self.avatars = ko.observableArray();
+        if (contact.addedAvatars) {
+            for (var i = 0; i < contact.addedAvatars.length; i++) {
+                self.avatars.push(contact.addedAvatars[i]);
+            }
+        }
         self.tags = [];//contact.Tags;
         self.isVisible = ko.observable(true);
+        self.primaryAvatar = ko.computed(function () {
+            if (self.avatars().length == 0) {
+                return '/Content/images/AnonContact.svg';
+            } else {
+                return self.avatars()[0];
+            }
+        });
         self.filter = function(prefixTest) {
             var isVisible = (self.titleUpperCase.lastIndexOf(prefixTest, 0) === 0);
             self.isVisible(isVisible);
+        };
+        self.update = function (contactUpdate) {
+            if (contactUpdate.newTitle != null) {
+                self.title(newTitle);
+                self.titleUpperCase = newTitle.toUpperCase();
+            }
+            if (contact.removedAvatars) {
+                for (var i = 0; i < contact.removedAvatars.length; i++) {
+                    self.avatars.remove(contact.removedAvatars[i]);
+                }
+            }
+            if (contact.addedAvatars) {
+                for (var i = 0; i < contact.addedAvatars.length; i++) {
+                    self.avatars.push(contact.addedAvatars[i]);
+                }
+            }
+
         };
     };
     
@@ -30,11 +61,39 @@
         self.isValid = function() {
             throw 'This is intended to be an abstract class please do not use';
         };
+        self.containsId = function(id) {
+            var contactCount = self.contacts().length;
+            for (var i = 0; i < contactCount; i++) {
+                var contact = self.contacts()[i];
+                if (contact.id == id) {
+                    return true;
+                }
+            }
+            return false;
+        };
         self.addContact = function(contact) {
             var vm = new contactSummaryViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
-            self.contacts.sort(function (left, right) { return left.title.toUpperCase() == right.title.toUpperCase() ? 0 : (left.title.toUpperCase() < right.title.toUpperCase() ? -1 : 1); });
+            self.contacts.sort(function (left, right) { return left.titleUpperCase == right.titleUpperCase ? 0 : (left.titleUpperCase < right.titleUpperCase ? -1 : 1); });
+        };
+        self.tryRemoveById = function(id) {
+            var removedItems = self.contacts.remove(function(item) { return item.id == id; });
+            if (removedItems == null || removedItems.length == 0)
+                return false;
+            return true;
+        };
+        self.tryUpdateContact = function (contact) {
+            //TODO: An update to title, could mean the contact needs to be moved -LC
+            var contactCount = self.contacts().length;
+            for (var i = 0; i < contactCount; i++) {
+                var item = self.contacts()[i];
+                if (item.id == contact._id) {
+                    item.update(contact);
+                    return true;
+                }
+            }
+            return false;
         };
         self.filter = function(filter) {
             filterText = filter.toUpperCase();
@@ -65,21 +124,21 @@
         var self = this;
         self.filterText = ko.observable('');
         self.contactGroups = ko.observableArray();
-        self.startingServerVersion = ko.observable(0);
-        self.startingClientVersion = ko.observable(0);
-        self.currentClientVersion = ko.observable(0);
-        self.progress = ko.computed(function() {
-            if (self.currentClientVersion() >= self.startingServerVersion())
+        self.serverHead = ko.observable(0);
+        self.initialClientHead = ko.observable(0);
+        self.currentClientHead = ko.observable(0);
+        self.progress = ko.computed(function () {
+            if (self.currentClientHead() >= self.serverHead())
                 return 100;
             
-            var batchSize = self.startingServerVersion() - self.startingClientVersion();
-            var progress = self.currentClientVersion() - self.startingClientVersion();
+            var batchSize = self.serverHead() - self.initialClientHead();
+            var progress = self.currentClientVersion() - self.initialClientHead();
             if (batchSize <= 0)
                 return 100;
 
             return 100 * progress / batchSize;
         });
-        self.currentState = ko.observable('Initialising');
+        self.currentState = ko.observable('Initializing');
         self.isProcessing = ko.computed(function () {
             return self.progress() < 100;
         });
@@ -114,27 +173,51 @@
                 }
             }
         };
+        self.updateContact = function (contact) {
+            var cgsLength = self.contactGroups().length;
+            for (var i = 0; i < cgsLength; i++) {
+                var cg = self.contactGroups()[i];
+                if (cg.tryUpdateContact(contact)) {
+                    return;
+                }
+            }
+            self.addContact(contact);
+        };
         self.removeContact = function(id) {
-            console.log("Deletes are not supported yet - id: %i", id);
+            var cgsLength = self.contactGroups().length;
+            for (var i = 0; i < cgsLength; i++) {
+                var cg = self.contactGroups()[i];
+                if (cg.tryRemoveById(id)) {
+                    break;
+                }
+            }            
+            console.error("Failed to delete contact - id: %i", id);
         };
 
+
         self.processUpdate = function (contactUpdate) {
-            console.log("Processing contactUpdate %O:", contactUpdate);
-            self.incrementProgress();
+            try {
+                var eventId = parseInt(contactUpdate.eventId);
+                self.currentClientHead(eventId);
+                if (self.progress() > 90.0) {
+                    console.log("self.progress()=%f, initialClientHead() = %i, currentClientVersion() = %i, serverHead() = %i",
+                        self.progress(),
+                        self.initialClientHead(),
+                        self.currentClientVersion(),
+                        self.serverHead());
+                }
+
             if (contactUpdate.isDeleted) {
-                //TODO: Will have to find this record by Id to remove it. -LC
                 self.removeContact(contactUpdate._id);
             } else if (parseInt(contactUpdate.version) == 1) {
                 self.addContact(contactUpdate);
             } else {
-                console.log("Updates not supported...yet.");
+                    self.updateContact(contactUpdate);
             }
-        };
-
-        self.incrementProgress = function() {
-            var i = self.currentClientVersion();
-            i += 1;
-            self.currentClientVersion(i);
+            } catch (e) {
+                console.log("Processing contactUpdate %O:", contactUpdate);
+                console.error("Failed - %O", e);
+            } 
         };
     };
     //Publicly exposed object are attached to the callWall namespace
