@@ -145,6 +145,15 @@ namespace CallWall.Web.EventStore.Domain
             if (!_isDirty)
                 return null;
 
+            var newContactsCount = _contacts.Count;
+            if (newContactsCount == 0)
+                return new ContactAggregateUpdate
+                {
+                    Id = Id,
+                    Version = Version,
+                    IsDeleted = true
+                };
+
             //TODO: Should also manage snapshots around invalid data.
             if (!IsValid())
                 return null;
@@ -167,16 +176,6 @@ namespace CallWall.Web.EventStore.Domain
             var oldAvatars = _snapshot.Avatars.ToSet();
             var oldTags = _snapshot.Tags.ToSet();
             var oldProviders = _snapshot.Providers.ToSet();
-
-            var newContactsCount = _contacts.Count;
-
-            if (newContactsCount == 0)
-                return new ContactAggregateUpdate
-                {
-                    Id = Id,
-                    Version = Version,
-                    IsDeleted = true
-                };
 
             var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
             var tagDelta = new CollectionDelta<string>(oldTags, Tags);
