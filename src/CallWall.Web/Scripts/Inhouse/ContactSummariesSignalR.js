@@ -75,7 +75,7 @@
             return {
                 _id: id,
                 eventId: dto.eventId,
-                version: dto.version.toString(),
+                version: dto.version,
                 newTitle: dto.newTitle,
                 addedAvatars: dto.addedAvatars,
                 removedAvatars: dto.removedAvatars,

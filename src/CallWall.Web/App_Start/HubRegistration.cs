@@ -28,8 +28,13 @@ namespace CallWall.Web
 
         private static void SetJsonSerializerSettings(IUnityContainer container)
         {
-            var settings = new JsonSerializerSettings();
-            settings.ContractResolver = new SignalRContractResolver();
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new SignalRContractResolver(),
+                Formatting = Formatting.None,
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
             var serializer = JsonSerializer.Create(settings);
             //GlobalHost.DependencyResolver.Register(typeof (JsonSerializer), () => serializer);
             container.RegisterInstance(typeof (JsonSerializer), serializer);

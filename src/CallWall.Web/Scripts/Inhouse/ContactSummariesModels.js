@@ -29,8 +29,8 @@
         };
         self.update = function (contactUpdate) {
             if (contactUpdate.newTitle != null) {
-            self.title(newTitle);
-            self.titleUpperCase = newTitle.toUpperCase();
+                self.title(newTitle);
+                self.titleUpperCase = newTitle.toUpperCase();
             }
             if (contact.removedAvatars) {
                 for (var i = 0; i < contact.removedAvatars.length; i++) {
@@ -200,13 +200,13 @@
                 var eventId = parseInt(contactUpdate.eventId);
                 self.currentClientHead(eventId);
 
-            if (contactUpdate.isDeleted) {
-                self.removeContact(contactUpdate._id);
-            } else if (parseInt(contactUpdate.version) == 1) {
-                self.addContact(contactUpdate);
-            } else {
-                self.updateContact(contactUpdate);
-            }
+                if (contactUpdate.isDeleted) {
+                    self.removeContact(contactUpdate._id);
+                } else if (contactUpdate.version == 1) {
+                    self.addContact(contactUpdate);
+                } else {
+                    self.updateContact(contactUpdate);
+                }
             } catch (e) {
                 console.log("Processing contactUpdate %O:", contactUpdate);
                 console.error("Failed - %O", e);
