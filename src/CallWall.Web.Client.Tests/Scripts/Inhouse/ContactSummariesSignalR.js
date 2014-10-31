@@ -53,7 +53,7 @@
                 _id: id,
                 _rev: rev,
                 eventId : dto.eventId,
-                version: dto.version.toString(),
+                version: dto.version,
                 isDeleted: true
             };
         } else {
@@ -62,7 +62,7 @@
                     _id: id,
                     _rev: rev,
                     eventId: dto.eventId,
-                    version: dto.version.toString(),
+                    version: dto.version,
                     newTitle: dto.newTitle,
                     addedAvatars: dto.addedAvatars,
                     removedAvatars: dto.removedAvatars
@@ -75,7 +75,7 @@
             return {
                 _id: id,
                 eventId: dto.eventId,
-                version: dto.version.toString(),
+                version: dto.version,
                 newTitle: dto.newTitle,
                 addedAvatars: dto.addedAvatars,
                 removedAvatars: dto.removedAvatars,
@@ -113,6 +113,9 @@
             return function () { query.cancel(); };
         });
     };
+
+    //TODO: This is potentially wrong. This is the local EventId/SequenceNumber. In theory the server may have skipped some mssages so may be out of sync.
+    //  How do we get the eventId of the last record added/update/deleted?
     var getHeadVersion = function (callback) {
         contactDb.info(function (err, response) {
             if (err) {

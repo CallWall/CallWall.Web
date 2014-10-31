@@ -6,6 +6,7 @@
         var self = this;
         self.id = contact._id;
         self.title = ko.observable(contact.newTitle);
+
         self.titleUpperCase = contact.newTitle.toUpperCase();
         //self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
         self.avatars = ko.observableArray();
@@ -71,7 +72,7 @@
             }
             return false;
         };
-        self.addContact = function(contact) {
+        self.addContact = function (contact) {
             var vm = new contactSummaryViewModel(contact);
             vm.filter(filterText);
             self.contacts.push(vm);
@@ -132,7 +133,7 @@
                 return 100;
             
             var batchSize = self.serverHead() - self.initialClientHead();
-            var progress = self.currentClientVersion() - self.initialClientHead();
+            var progress = self.currentClientHead() - self.initialClientHead();
             if (batchSize <= 0)
                 return 100;
 
@@ -183,7 +184,7 @@
             }
             self.addContact(contact);
         };
-        self.removeContact = function(id) {
+        self.removeContact = function (id) {
             var cgsLength = self.contactGroups().length;
             for (var i = 0; i < cgsLength; i++) {
                 var cg = self.contactGroups()[i];
@@ -193,27 +194,20 @@
             }            
             console.error("Failed to delete contact - id: %i", id);
         };
-
+        
 
         self.processUpdate = function (contactUpdate) {
             try {
                 var eventId = parseInt(contactUpdate.eventId);
                 self.currentClientHead(eventId);
-                if (self.progress() > 90.0) {
-                    console.log("self.progress()=%f, initialClientHead() = %i, currentClientVersion() = %i, serverHead() = %i",
-                        self.progress(),
-                        self.initialClientHead(),
-                        self.currentClientVersion(),
-                        self.serverHead());
-                }
 
-            if (contactUpdate.isDeleted) {
-                self.removeContact(contactUpdate._id);
-            } else if (parseInt(contactUpdate.version) == 1) {
-                self.addContact(contactUpdate);
-            } else {
+                if (contactUpdate.isDeleted) {
+                    self.removeContact(contactUpdate._id);
+                } else if (contactUpdate.version == 1) {
+                    self.addContact(contactUpdate);
+                } else {
                     self.updateContact(contactUpdate);
-            }
+                }
             } catch (e) {
                 console.log("Processing contactUpdate %O:", contactUpdate);
                 console.error("Failed - %O", e);

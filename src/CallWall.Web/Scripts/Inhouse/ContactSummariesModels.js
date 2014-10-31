@@ -6,6 +6,7 @@
         var self = this;
         self.id = contact._id;
         self.title = ko.observable(contact.newTitle);
+
         self.titleUpperCase = contact.newTitle.toUpperCase();
         //self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
         self.avatars = ko.observableArray();
