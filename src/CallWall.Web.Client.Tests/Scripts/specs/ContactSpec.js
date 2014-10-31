@@ -90,21 +90,24 @@ describe("Contacts", function () {
             it("should not be valid when title does not begin with the header", function () {
                 var invalidContactTitle = ['ABCD', 'a', 'B', 'ax', ' ', ' x', '_x', ':X'];
                 invalidContactTitle.forEach(function (title) {
-                    expect(alphaContactGroup.isValid({ newTitle: title })).toBeFalsy();
+                    var contactVm = new callWall.ContactSummaryViewModel({ newTitle: title });
+                    expect(alphaContactGroup.isValid(contactVm)).toBeFalsy();
                 });
             });
             it("should be valid when title does begin with the header", function () {
                 var validContactTitle = ['X', 'XYZ', 'xyz', 'x-men', 'Xavier Charles'];
                 validContactTitle.forEach(function (title) {
-                    expect(alphaContactGroup.isValid({ newTitle: title })).toBeTruthy();
+                    var contactVm = new callWall.ContactSummaryViewModel({ newTitle: title });
+                    expect(alphaContactGroup.isValid(contactVm)).toBeTruthy();
                 });
             });
         });
         describe('Add a contact', function () {
             //What about adding a bad contact - the model doesnt actually deal with this but hopes the caller does
             beforeEach(function () {
-                var contact = { newTitle: 'Xavier Charles', Tags: ['test1', 'beta2'] };
-                alphaContactGroup.addContact(contact);
+                var contactUpdate = { newTitle: 'Xavier Charles', Tags: ['test1', 'beta2'] };
+                var contactVm = new callWall.ContactSummaryViewModel(contactUpdate);
+                alphaContactGroup.addContact(contactVm);
             });
             it("should have 1 contact", function () {
                 expect(alphaContactGroup.contacts().length).toBe(1);
@@ -124,8 +127,9 @@ describe("Contacts", function () {
                                 { newTitle: 'Xerxes Khan', Tags: ['Fighter', 'Ruler'] },
                                 { newTitle: 'Xylon Forrest', Tags: ['Hippy', 'Dealer'] },
                                 { newTitle: 'Xioping Chang', Tags: ['Mathematician', 'Nerd'] }];
-                contacts.forEach(function (contact) {
-                    alphaContactGroup.addContact(contact);
+                contacts.forEach(function (contactUpdate) {
+                    var contactVm = new callWall.ContactSummaryViewModel(contactUpdate);
+                    alphaContactGroup.addContact(contactVm);
                 });
             });
             it("should have 4 contact", function () {

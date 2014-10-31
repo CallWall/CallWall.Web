@@ -1,14 +1,10 @@
-﻿//TODO: provide internal group sorting
-//TODO: provide search/filter while contacts still being loaded
-
+﻿//TODO: Support updates to title that should move it to another group e.g. Campbell, Lee -> Lee Campbell (from 'C' group to 'L' group)
 (function (ko, callWall) {
     var contactSummaryViewModel = function (contact) {
         var self = this;
         self.id = contact._id;
         self.title = ko.observable(contact.newTitle);
-
-        self.titleUpperCase = contact.newTitle.toUpperCase();
-        //self.primaryAvatar = '/Content/images/AnonContact.svg';//contact.PrimaryAvatar || '/Content/images/AnonContact.svg';
+        self.titleUpperCase = contact.newTitle.toUpperCase();        
         self.avatars = ko.observableArray();
         if (contact.addedAvatars) {
             for (var i = 0; i < contact.addedAvatars.length; i++) {
@@ -72,10 +68,10 @@
             }
             return false;
         };
-        self.addContact = function (contact) {
-            var vm = new contactSummaryViewModel(contact);
-            vm.filter(filterText);
-            self.contacts.push(vm);
+        self.addContact = function (contactViewModel) {
+            contactViewModel.filter(filterText);
+            self.contacts.push(contactViewModel);
+            //TODO: Consider more efficient alg than sorting after every add.
             self.contacts.sort(function (left, right) { return left.titleUpperCase == right.titleUpperCase ? 0 : (left.titleUpperCase < right.titleUpperCase ? -1 : 1); });
         };
         self.tryRemoveById = function(id) {
@@ -84,13 +80,13 @@
                 return false;
             return true;
         };
-        self.tryUpdateContact = function (contact) {
+        self.tryUpdateContact = function (contactUpdate) {
             //TODO: An update to title, could mean the contact needs to be moved -LC
             var contactCount = self.contacts().length;
             for (var i = 0; i < contactCount; i++) {
                 var item = self.contacts()[i];
-                if (item.id == contact._id) {
-                    item.update(contact);
+                if (item.id == contactUpdate._id) {
+                    item.update(contactUpdate);
                     return true;
                 }
             }
@@ -116,8 +112,7 @@
         contactSummaryGroup.call(self);
         self.header = startsWith;
         self.isValid = function(contact) {
-            //TODO - there is duplication here and in the nested view model - see if we can extract this or rethink how this should work
-            return contact.newTitle.toUpperCase().lastIndexOf(self.header, 0) === 0;
+            return contact.titleUpperCase.lastIndexOf(self.header, 0) === 0;
         };
     };
 
@@ -163,13 +158,14 @@
             self.contactGroups.push(new anyContactSummaryGroup('123'));
         };
 
-        self.addContact = function(contact) {
+        self.addContact = function (contactUpdate) {
+            var vm = new contactSummaryViewModel(contactUpdate);
             var cgsLength = self.contactGroups().length;
             for (var j = 0; j < cgsLength; j++) {
                 //TODO - switch this to just a look up? ie use the first char as the key look up? 
                 var cg = self.contactGroups()[j];
-                if (cg.isValid(contact)) {
-                    cg.addContact(contact);
+                if (cg.isValid(vm)) {
+                    cg.addContact(vm);
                     break;
                 }
             }
