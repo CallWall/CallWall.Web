@@ -29,7 +29,7 @@ namespace CallWall.Web
                        "~/Scripts/Inhouse/ImageScaling.js",
                        "~/Scripts/Inhouse/ProgressbarBindings.js",
                        "~/Scripts/Inhouse/ContactSummariesModels.js",
-                       "~/Scripts/pouchdb-nightly-{version}.js",
+                       "~/Scripts/pouchdb-{version}.js",
                        "~/Scripts/Inhouse/ContactSummaryPersistence.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
 

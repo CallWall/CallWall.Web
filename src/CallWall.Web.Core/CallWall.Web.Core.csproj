@@ -144,8 +144,6 @@
     <Compile Include="Domain\IAccountContactSummary.cs" />
     <Compile Include="Domain\IAccountFactory.cs" />
     <Compile Include="Domain\Event.cs" />
-    <Compile Include="Domain\IContactProviderSummary.cs" />
-    <Compile Include="EnumerableEx.cs" />
     <Compile Include="Domain\ICalendarEntry.cs" />
     <Compile Include="Domain\IContactAssociation.cs" />
     <Compile Include="Domain\IContactCollaboration.cs" />
