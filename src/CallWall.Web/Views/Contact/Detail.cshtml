@@ -16,7 +16,14 @@
 
 <div class="title">
     <img src="~/Content/images/AnonContact.svg" data-bind="attr: { alt: contactProfile.title }" height="80" style="float: left" />
+    <div style="float: right" >
+        <!-- ko foreach: contactProfile.tags -->
+        <span class="tag" data-bind="text: $data"></span>        
+        <!-- /ko -->
+    </div>
     <h2 data-bind="text: contactProfile.title"></h2>
+    <h4 data-bind="text: contactProfile.fullName"></h4>
+    <h5 data-bind="date: contactProfile.dateOfBirth"></h5>
 </div>
 <div style="clear: both" />
 <div class="row">
@@ -33,15 +40,6 @@
 <script type="text/html" id="ContactProfileTemplate">
     <h3>Details</h3>
     <div id="contactProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
-    <h4 data-bind="text: fullName"></h4>
-    @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
-    <h5 data-bind="date: dateOfBirth"></h5>
-    <div>
-        <!-- ko foreach: tags -->
-        <span class="tag" data-bind="text: $data"></span>
-        @*<span class="label" data-bind="text: $data"></span>*@
-        <!-- /ko -->
-    </div>
     <h4>Organizations</h4>
     <!-- ko foreach: organizations -->
     <div class="kvp">
@@ -56,18 +54,23 @@
         <div data-bind="text: association"></div>
     </div>
     <!-- /ko -->
-    <h4>Phone Numbers...</h4>
+    <h4>Contacts</h4>
     <!-- ko foreach: phoneNumbers -->
     <div class="kvp">
         <div class="key" data-bind="text: name"></div>
-        <div data-bind="text: association"></div>
+        <div>
+            <a data-bind="text: association,
+                          attr: { href: 'tel:' + association }" />
+        </div>
     </div>
     <!-- /ko -->
-    <h4>Email</h4>
     <!-- ko foreach: emailAddresses -->
     <div class="kvp">
         <div class="key" data-bind="text: name"></div>
-        <div data-bind="text: association"></div>
+        <div>
+            <a data-bind="text: association,
+                          attr: { href: 'mailto:' + association }" />
+        </div>
     </div>
     <!-- /ko -->
 </script>
