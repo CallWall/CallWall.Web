@@ -20,5 +20,10 @@ namespace CallWall.Web
         {
             _container.RegisterType<TFrom, TTo>(name);
         }
+
+        public void RegisterSingleton<TFrom, TTo>() where TTo : TFrom
+        {
+            _container.RegisterType<TFrom, TTo>(new ContainerControlledLifetimeManager());
+        }
     }
 }

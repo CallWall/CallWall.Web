@@ -5,20 +5,20 @@
 describe("Contacts", function () {
     var anoncontactSvg = '/Content/images/AnonContact.svg';
 
-    describe("ContactSummaryViewModel", function () {
-        var contact, contactViewModel;
+    describe("contactSummaryViewModel", function () {
+        var contactUpdate, contactViewModel;
 
         beforeEach(function () {
-            contact = { Title: 'abc', Tags: ['alpha', 'beta'] };
-            contactViewModel = new callWall.ContactSummaryViewModel(contact);
+            contactUpdate = { _id: '1-abc', eventId:1, newTitle: 'abc', Tags: ['alpha', 'beta'] };
+            contactViewModel = new callWall.ContactSummaryViewModel(contactUpdate);
         });
 
         it("should be able to created with a valid contact", function () {
             expect(contactViewModel).toBeDefined();
             expect(contactViewModel.titleUpperCase).toBe('ABC');
-            expect(contactViewModel.primaryAvatar).toBe(anoncontactSvg);
+            expect(contactViewModel.primaryAvatar()).toBe(anoncontactSvg);
             expect(contactViewModel.isVisible()).toBeTruthy();
-            expect(contactViewModel.tags).toEqual(contact.Tags);
+            //expect(contactViewModel.tags).toEqual(contactUpdate.Tags); Thinking of dropping tags-LC
         });
         it("should expose binding properties", function () {
             expect(contactViewModel.isVisible()).toBeDefined();
@@ -45,7 +45,7 @@ describe("Contacts", function () {
         });
     });
     
-    describe("AnyContactSummaryGroup", function () {
+    describe("anyContactSummaryGroup", function () {
         var alphaContactGroup;
         beforeEach(function() {
             alphaContactGroup = new callWall.AnyContactSummaryGroup('');
@@ -65,7 +65,7 @@ describe("Contacts", function () {
         });
     });
     
-    describe("AlphaContactSummaryGroup", function () {
+    describe("alphaContactSummaryGroup", function () {
         var groupPrefix = 'X';
         var alphaContactGroup;
         beforeEach(function () {
@@ -90,21 +90,24 @@ describe("Contacts", function () {
             it("should not be valid when title does not begin with the header", function () {
                 var invalidContactTitle = ['ABCD', 'a', 'B', 'ax', ' ', ' x', '_x', ':X'];
                 invalidContactTitle.forEach(function (title) {
-                    expect(alphaContactGroup.isValid({ Title: title })).toBeFalsy();
+                    var contactVm = new callWall.ContactSummaryViewModel({ newTitle: title });
+                    expect(alphaContactGroup.isValid(contactVm)).toBeFalsy();
                 });
             });
             it("should be valid when title does begin with the header", function () {
                 var validContactTitle = ['X', 'XYZ', 'xyz', 'x-men', 'Xavier Charles'];
                 validContactTitle.forEach(function (title) {
-                    expect(alphaContactGroup.isValid({ Title: title })).toBeTruthy();
+                    var contactVm = new callWall.ContactSummaryViewModel({ newTitle: title });
+                    expect(alphaContactGroup.isValid(contactVm)).toBeTruthy();
                 });
             });
         });
         describe('Add a contact', function () {
             //What about adding a bad contact - the model doesnt actually deal with this but hopes the caller does
             beforeEach(function () {
-                var contact = { Title: 'Xavier Charles', Tags: ['test1', 'beta2'] };
-                alphaContactGroup.addContact(contact);
+                var contactUpdate = { newTitle: 'Xavier Charles', Tags: ['test1', 'beta2'] };
+                var contactVm = new callWall.ContactSummaryViewModel(contactUpdate);
+                alphaContactGroup.addContact(contactVm);
             });
             it("should have 1 contact", function () {
                 expect(alphaContactGroup.contacts().length).toBe(1);
@@ -120,12 +123,13 @@ describe("Contacts", function () {
             //What about adding a bad contact - the model doesnt actually deal with this but hopes the caller does
             var contacts;
             beforeEach(function () {
-                contacts = [{ Title: 'Xavier Charles', Tags: ['SciFi', 'Legless'] },
-                                { Title: 'Xerxes Khan', Tags: ['Fighter', 'Ruler'] },
-                                { Title: 'Xylon Forrest', Tags: ['Hippy', 'Dealer'] },
-                                { Title: 'Xioping Chang', Tags: ['Mathematician', 'Nerd'] }];
-                contacts.forEach(function (contact) {
-                    alphaContactGroup.addContact(contact);
+                contacts = [{ newTitle: 'Xavier Charles', Tags: ['SciFi', 'Legless'] },
+                                { newTitle: 'Xerxes Khan', Tags: ['Fighter', 'Ruler'] },
+                                { newTitle: 'Xylon Forrest', Tags: ['Hippy', 'Dealer'] },
+                                { newTitle: 'Xioping Chang', Tags: ['Mathematician', 'Nerd'] }];
+                contacts.forEach(function (contactUpdate) {
+                    var contactVm = new callWall.ContactSummaryViewModel(contactUpdate);
+                    alphaContactGroup.addContact(contactVm);
                 });
             });
             it("should have 4 contact", function () {
@@ -138,10 +142,10 @@ describe("Contacts", function () {
                 expect(alphaContactGroup.visibleContacts().length).toBe(4);
             });
             it("should be sorted alphabetically by Title", function () {
-                expect(alphaContactGroup.contacts()[0].title).toBe(contacts[0].Title);
-                expect(alphaContactGroup.contacts()[1].title).toBe(contacts[1].Title);
-                expect(alphaContactGroup.contacts()[2].title).toBe(contacts[3].Title);
-                expect(alphaContactGroup.contacts()[3].title).toBe(contacts[2].Title);
+                expect(alphaContactGroup.contacts()[0].title()).toBe(contacts[0].newTitle);
+                expect(alphaContactGroup.contacts()[1].title()).toBe(contacts[1].newTitle);
+                expect(alphaContactGroup.contacts()[2].title()).toBe(contacts[3].newTitle);
+                expect(alphaContactGroup.contacts()[3].title()).toBe(contacts[2].newTitle);
             });
             describe('Filtering on multiple contacts with XA', function () {
                 describe('When filter should only match one contact', function () {

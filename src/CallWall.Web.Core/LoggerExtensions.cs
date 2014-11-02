@@ -266,7 +266,7 @@ namespace CallWall.Web
 
             logger.Debug("{0}.{1}{2}", typeName, method.Name, parenth);
         }
-
+        
         [System.Diagnostics.DebuggerStepThrough]
         public static IObservable<T> Log<T>(this IObservable<T> source, ILogger logger, string name)
         {

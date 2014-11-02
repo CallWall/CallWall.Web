@@ -1,71 +1,193 @@
 ﻿(function (callWall) {
+    callWall.Db = {};
+    var contactDb = new PouchDB('callwall.contacts');    
+    var persistContactUpdate = function (contactUpdate) {
+        //console.log("persistContactUpdate(%O)", contactUpdate);
+        createRecord(contactUpdate, function (err, record) {
+          if (err) {
+              console.error('Could not translate contact:');
+              console.error(contactUpdate);
+              console.error(record);
+              console.error(err);
+          } else {
+              contactDb.put(record, function(err2, result) {
+                  if (err2) {
+                      console.error('Could not save contact update:');
+                      console.error('  contactUpdate : %O', contactUpdate);
+                      console.error('  translate record %O', record);
+                      console.error('  error : %O', err2);
+                      //} else {
+                      //    console.log(result);//Object {ok: true, id: "2960F6F4-571C-1FF9-83AF-11D1FED3D9DA", rev: "1-39c2b8e3a5f72339fbc51ccc4ed97752"} 
+                  }
+              });
+          }
+        });
+    };
+
+    var createRecord = function(dto, callback) {
+        var id = dto.id.toString();
+        if (dto.version > 1) {
+            contactDb.get(id, function (err, currentVersion) {
+                if (err) {
+                    if (err.status == 404) {
+                        callback(null, translate(dto));
+                    } else {
+                        console.error("Failed to get contact. %O", err);
+                        callback(err);
+                    }
+                } else {
+                    console.info('Updating existing contact : %O', currentVersion);
+                    var record = translate(dto, currentVersion._rev);
+                    callback(null, record);
+                }
+            });
+        } else {
+            callback(null, translate(dto));
+        }
+    }
+
+    var translate = function (dto, rev) {
+        var id = dto.id.toString();
+        if (dto.isDeleted) {
+            return {
+                _id: id,
+                _rev: rev,
+                eventId : dto.eventId,
+                version: dto.version,
+                isDeleted: true
+            };
+        } else {
+            if (rev) {
+                return {
+                    _id: id,
+                    _rev: rev,
+                    eventId: dto.eventId,
+                    version: dto.version,
+                    newTitle: dto.newTitle,
+                    addedAvatars: dto.addedAvatars,
+                    removedAvatars: dto.removedAvatars
+                    /*addedTags: dto.AddedTags,
+                    removedTags: dto.RemovedTags,
+                    addedProviders : dto.AddedProviders,
+                    removedProviders: dto.RemovedProviders*/
+                };  
+            }
+            return {
+                _id: id,
+                eventId: dto.eventId,
+                version: dto.version,
+                newTitle: dto.newTitle,
+                addedAvatars: dto.addedAvatars,
+                removedAvatars: dto.removedAvatars,
+                /*addedTags: dto.AddedTags,
+                removedTags: dto.RemovedTags,
+                addedProviders : dto.AddedProviders,
+                removedProviders: dto.RemovedProviders*/
+            };
+            }
+    };
+
+
+
+    var observeChanges = function () {
+        return Rx.Observable.createWithDisposable(function (o) {
+
+            var query = contactDb.info(function (infoError, info) {
+                if (infoError != null) {
+                    o.onError(infoError);
+                } else {
+                    contactDb.changes({
+                        since: 0,
+                        live: true,
+                        include_docs: true,
+                    }).on('change', function (change) {
+                        o.onNext(change.doc);
+                    }).on('error', function (err) {
+                        console.error('Error listening to contactsDb changes');
+                console.error(err);
+                        o.onError(err);
+                    });
+                }
+            });
+
+            return function () { query.cancel(); };
+        });
+    };
+
+    //TODO: This is potentially wrong. This is the local EventId/SequenceNumber. In theory the server may have skipped some mssages so may be out of sync.
+    //  How do we get the eventId of the last record added/update/deleted?
+    var getHeadVersion = function (callback) {
+        contactDb.info(function (err, response) {
+            if (err) {
+                console.error('Could not retrieve head version');
+                console.error(err);
+            }
+            var headVersion = response.update_seq;
+            callback(headVersion);
+        });
+    };
+
+    //TODO: remove this from the API surface area?
+    callWall.Db.contactsDatabase = contactDb;
+    callWall.Db.persistContactUpdate = persistContactUpdate;
+    callWall.Db.observeChanges = observeChanges;
+    callWall.Db.getContactsHeadVersion = getHeadVersion;    
+    callWall.Db.NukeDbs = function () {
+        PouchDB.destroy('callwall.contacts');
+    };
+    // ReSharper disable ThisInGlobalContext
+}(this.callWall = this.callWall || {}));
+// ReSharper restore ThisInGlobalContext
+
+(function (callWall) {
     callWall.SignalR = callWall.SignalR || {};
 
-    callWall.SignalR.ContactSummariesAdapter = function (contactsHub, model) {
+    callWall.SignalR.ContactSummariesAdapter = function (contactSummariesHub, model) {
         var self = this;
         self.StartHub = function () {
-            //Load existing contacts
-            callWall.Db.getAllContacts(function (contactRecords) {
-                contactRecords.forEach(function (contactRecord) {
-                    model.addContact(contactRecord.doc);
+            callWall.Db.observeChanges()
+                .subscribe(
+                    function (contactUpdate) {
+                        model.processUpdate(contactUpdate);
                 });
-            });
-            
+
             //check for updates
             $.connection.hub.start().done(function () {
                 console.log('Subscribe');
                 try {
-                    callWall.Db.getProvidersLastUpdateTimestamps(function (timestamps) {
-                        console.log("timestamps");
-                        console.log(timestamps);
-                        var formattedTimestamps = $.map(timestamps, function (dbObject) {
-                            return {
-                                LastUpdated: dbObject.LastUpdated,
-                                Provider: dbObject.Provider,
-                                Revision: dbObject._rev
-                            };
-                        }); 
-                        contactsHub.server.requestContactSummaryStream(formattedTimestamps);
+                    console.log('Getting server head version');
+                    contactSummariesHub.server.requestHeadVersionStream();
+
+                    callWall.Db.getContactsHeadVersion(function (clientHeadVersion) {
+                        console.log("ClientDb-> headVersion : " + clientHeadVersion);
+                        model.initialClientHead(clientHeadVersion);
+                        contactSummariesHub.server.requestContactSummaryStream(clientHeadVersion);
                     });
                 } catch (ex) {
-                    console.log("failed on startup of ContactSummaries Hub");
-                    console.log(ex);
+                    console.error("failed on start-up of ContactSummaries Hub %O", ex);
                     console.log("Attempting to stop ContactSummaries Hub");
                     try {
                         $.connection.hub.stop();    
                     } catch (ex){
-                        console.log("failed to stop ContactSummaries Hub");
-                        console.log(ex);
+                        console.error("failed to stop ContactSummaries Hub %O", ex);
                     }
                 }
             });
         };
-
-        contactsHub.client.ReceivedExpectedCount = function (count) {
-            console.log('append to count = ' + count);
-            var aggregateCount = model.totalResults() + count;
-            console.log('new count = ' + aggregateCount);
-            model.totalResults(aggregateCount);
+        
+        contactSummariesHub.client.ReceiveContactSummaryUpdate = function (contactUpdate) {
+            console.log("Server-> ContactUpdate id:" + contactUpdate.id + " ver:" + contactUpdate.version);
+            callWall.Db.persistContactUpdate(contactUpdate);
+        };
+        contactSummariesHub.client.ReceiveContactSummaryServerHeadVersion = function (serverHeadVersion) {
+            console.log("Server-> headVersion : " + serverHeadVersion);
+            model.serverHead(serverHeadVersion);
         };
 
-        contactsHub.client.ReceiveContactSummary = function (contact) {
-            callWall.Db.persistContact(contact);
-            model.addContact(contact);
-            model.IncrementProgress();
-        };
-
-        contactsHub.client.ReceiveError = function (error) {
+        contactSummariesHub.client.ReceiveError = function (error) {
             console.error(error);
-            model.isProcessing(false);
-        };
-
-        contactsHub.client.ReceiveComplete = function (completionData) {
-            console.log('OnComplete');
-            var i = model.receivedResults();
-            console.log(i);
-            model.isProcessing(false);
-            $.connection.hub.stop();
-            callWall.Db.setProvidersLastUpdateTimestamps(completionData);
+            //TODO: Need a better resilience strategy -LC
+            model.errorMessage('Sorry we are having connectivity problems');
         };
     };
     // ReSharper disable ThisInGlobalContext

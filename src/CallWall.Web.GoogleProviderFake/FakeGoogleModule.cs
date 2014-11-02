@@ -1,5 +1,5 @@
-﻿using CallWall.Web.Providers;
-using CallWall.Web.Account;
+﻿using CallWall.Web.Domain;
+using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
 {
@@ -7,7 +7,7 @@ namespace CallWall.Web.GoogleProviderFake
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, FakeGoogleContactsProvider>();
+            registry.RegisterType<IAccountContactProvider, FakeGoogleAccountContactProvider>();
             registry.RegisterType<ICommunicationProvider, FakeGoogleCommunicationProvider>();
             registry.RegisterType<ICalendarProvider, FakeGoogleCalendarProvider>();
             registry.RegisterType<IGalleryProvider, FakeGoogleGalleryProvider>();

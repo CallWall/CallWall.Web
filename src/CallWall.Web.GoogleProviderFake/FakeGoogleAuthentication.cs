@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
+using CallWall.Web.Domain;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using CallWall.Web.Account;
 
 namespace CallWall.Web.GoogleProviderFake
 {
@@ -26,33 +26,22 @@ namespace CallWall.Web.GoogleProviderFake
             return new Uri(uriBuilder.ToString());
         }
 
-        public bool CanCreateSessionFromState(string code, string state)
+        public bool CanCreateAccountFromState(string code, string state)
         {
             return AuthState.IsValidOAuthState(state);
         }
 
-        public ISession CreateSession(string code, string state)
+        public IAccount CreateAccountFromOAuthCallback(string code, string state)
         {
             var authState = AuthState.Deserialize(state);
-            return new FakeSession(CreateFakeAccount(), authState.Scopes);
-        }
-
-
-        public bool TryDeserialiseSession(string payload, out ISession session)
-        {
-            if (AuthState.IsValidOAuthState(payload))
-            {
-                var authState = AuthState.Deserialize(payload);
-                session = new FakeSession(CreateFakeAccount(), authState.Scopes);
-                return true;
-            }
-            session = null;
-            return false;
+            var acc = CreateFakeAccount();
+            acc.CurrentSession = new FakeSession(authState.Scopes);
+            return acc;
         }
 
         private static FakeAccount CreateFakeAccount()
         {
-            return new FakeAccount { DisplayName = Environment.UserName, Username = Environment.UserDomainName };
+            return new FakeAccount { DisplayName = Environment.UserName, AccountId = Environment.UserDomainName };
         }
 
         private class AuthState

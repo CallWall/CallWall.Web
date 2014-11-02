@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -17,58 +16,106 @@ namespace CallWall.Web.Hubs
     [HubName("contactSummaries")]
     public class ContactSummariesHub : Hub
     {
-        private readonly IEnumerable<IContactsProvider> _contactsProviders;
-        private readonly ISessionProvider _sessionProvider;
-        private readonly ILogger _logger;
+        private readonly IContactSummaryRepository _contactSummaryRepository;
+        private readonly ILoginProvider _loginProvider;
+        private readonly ILogger _logger; 
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
+        private readonly SerialDisposable _headVersionSubsription = new SerialDisposable();
 
-        public ContactSummariesHub(IEnumerable<IContactsProvider> contactsProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactSummariesHub(IContactSummaryRepository contactSummaryRepository, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
         {
-            Debug.Print("ContactSummariesHub.ctor()");
-            _contactsProviders = contactsProviders;
-            _sessionProvider = sessionProvider;
+            _contactSummaryRepository = contactSummaryRepository;
+            _loginProvider = loginProvider;
             _logger = loggerFactory.CreateLogger(GetType());
-        }
-
-        public void RequestContactSummaryStream(ClientLastUpdated[] lastUpdatedDetails)
-        {
-            Debug.Print("ContactSummariesHub.RequestContactSummaryStream(...)");
-            var sessions = _sessionProvider.GetSessions(Context.User);
-            var subscription = _contactsProviders
-                                .ToObservable()
-                                .SelectMany(c => c.GetContactsFeed(sessions, lastUpdatedDetails))
-                                .Do(feed => Clients.Caller.ReceivedExpectedCount(feed.TotalResults))
-                                .SelectMany(feed => feed.Values)
-                                .Log(_logger, "GetContactsFeed")
-                                .Subscribe(contact => Clients.Caller.ReceiveContactSummary(contact),
-                                    ex =>
-                                    {
-                                        Clients.Caller.ReceiveError("Error receiving contacts");
-                                        _logger.Error(ex, "Error retrieving contacts");
-                                    },
-                                    () => Clients.Caller.ReceiveComplete(sessions.Select(s => new ClientLastUpdated{
-                                        Provider = s.Provider,
-                                        LastUpdated = DateTime.UtcNow, 
-                                        Revision = lastUpdatedDetails.Where(l=>l.Provider == s.Provider)
-                                                                        .Select(l=>l.Revision)
-                                                                        .FirstOrDefault() 
-                                    })));
-
-            _contactsSummarySubsription.Disposable = subscription;
+            _logger.Info("ContactSummariesHub.ctor()");
         }
         
+        //TODO: Add security here. user.Id has thrown NRE here before. -LC
+        public async Task RequestContactSummaryStream(int fromEventId)
+        {
+            try
+            {
+                _logger.Debug("ContactSummariesHub.RequestContactSummaryStream({0})", fromEventId);            
+                var user = await _loginProvider.GetUser(Context.User.UserId());
+                _logger.Trace("Getting contacts for user : {0}", user.Id);
+                var subscription = _contactSummaryRepository.GetContactUpdates(user, fromEventId)
+                    .Select(evt=>new ContactAggregateUpdateSummary(evt.EventId, evt.Value))
+                    .Where(summary=>summary.IsRelevant)
+                    .Log(_logger, "RequestContactSummaryStream")
+                    .Subscribe(
+                        contactUpdate => Clients.Caller.ReceiveContactSummaryUpdate(contactUpdate),
+                        ex => Clients.Caller.ReceiveError("Error receiving contacts"));
+
+                _contactsSummarySubsription.Disposable = subscription;
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error Requesting ContactSummaryStream in Hub.");
+                Clients.Caller.ReceiveError("Error receiving contacts");
+            }
+        }
+        
+        public async Task RequestHeadVersionStream()
+        {
+            var user = await _loginProvider.GetUser(Context.User.UserId());
+            var subscription = _contactSummaryRepository.ObserveContactUpdatesHeadVersion(user)
+                .Buffer(TimeSpan.FromSeconds(0.5))
+                .Where(buffer=>buffer.Count > 0)
+                .Select(buffer=>buffer.Last())
+                .Subscribe(
+                    serverVersion=>Clients.Caller.ReceiveContactSummaryServerHeadVersion(serverVersion),
+                    ex => _logger.Error(ex, "RequestHeadVersionStream errored."));                
+
+            _headVersionSubsription.Disposable = subscription;
+        }
+
         public override Task OnDisconnected()
         {
-            Debug.Print("ContactSummariesHub.OnDisconnected()");
+            _logger.Debug("ContactSummariesHub.OnDisconnected()");
             _contactsSummarySubsription.Dispose();
             return base.OnDisconnected();
         }
     }
-
-    public class ClientLastUpdated : IClientLastUpdated
+    public class ContactAggregateUpdateSummary
     {
-        public string Provider { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public string Revision { get; set; }
+        public ContactAggregateUpdateSummary(int eventId, ContactAggregateUpdate source)
+        {
+            EventId = eventId;
+            Id = source.Id;
+            Version = source.Version;
+            IsDeleted = source.IsDeleted;
+            NewTitle = source.NewTitle;
+            AddedAvatars = source.AddedAvatars;
+            RemovedAvatars = source.RemovedAvatars;
+        }
+
+        public int EventId { get; set; }
+        public int Id { get; set; }
+        public int Version { get; set; }
+        public bool IsDeleted { get; set; }
+        public string NewTitle { get; set; }
+        public string[] AddedAvatars { get; set; }
+        public string[] RemovedAvatars { get; set; }
+
+        public bool IsRelevant
+        {
+            get
+            {
+                return IsDeleted
+                    || !string.IsNullOrWhiteSpace(NewTitle)
+                    || AddedAvatars != null
+                    || RemovedAvatars != null;
+            }
+        }
+
+
+        public override string ToString()
+        {
+            if (IsDeleted)
+            {
+                return string.Format("ContactAggregateUpdate{{ Id:{0}, Version:{1}, IsDeleted:true}}", Id, Version);
+            }
+            return string.Format("ContactAggregateUpdate{{ Id:{0}, Version:{1}, NewTitle:{2}}}", Id, Version, NewTitle);
+        }
     }
 }

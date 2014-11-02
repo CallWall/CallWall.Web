@@ -1,4 +1,4 @@
-﻿using CallWall.Web.Account;
+﻿using CallWall.Web.Domain;
 using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
 using CallWall.Web.GoogleProvider.Auth;
@@ -14,7 +14,7 @@ namespace CallWall.Web.GoogleProvider
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, GoogleContactsProvider>("GoogleContactsProvider");
+            registry.RegisterType<IAccountContactProvider, GoogleAccountContactProvider>("GoogleContactsProvider");
             registry.RegisterType<IAccountAuthentication, GoogleAuthentication>("GoogleAuthentication");
 
             registry.RegisterType<ICommunicationProvider, GmailCommunicationQueryProvider>();

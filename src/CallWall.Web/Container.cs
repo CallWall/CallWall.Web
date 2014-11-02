@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using CallWall.Web.EventStore;
 using CallWall.Web.Contracts;
 using CallWall.Web.Http;
 using CallWall.Web.Hubs;
@@ -15,6 +17,7 @@ namespace CallWall.Web
     {
         public static IUnityContainer Create()
         {
+            new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Container creating..");
             var container = new UnityContainer();
 
             container.AddNewExtension<GenericSupportExtension>();
@@ -25,6 +28,7 @@ namespace CallWall.Web
             // e.g. container.RegisterType<ITestService, TestService>();    
             RegisterTypes(container);
 
+            new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Container created.");
             return container;
         }
 
@@ -32,19 +36,20 @@ namespace CallWall.Web
         {
             new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             container.RegisterType<ILoggerFactory, LoggerFactory>();
-            container.RegisterType<ISessionProvider, SessionProvider>();
+            container.RegisterType<ILoginProvider, LoginProvider>();
             //Core
             container.RegisterType<IHttpClient, HttpClient>();
             container.RegisterType<ISchedulerProvider, SchedulerProvider>();
 
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
             RegisterHubs(container);
-
+            
             InitialiseModules(container);
         }
 
         private static void RegisterHubs(IUnityContainer container)
         {
+            new LoggerFactory().CreateLogger(typeof(Bootstrapper)).Trace("Registering types");
             var types = typeof(ContactSummariesHub).Assembly.GetTypes();
             foreach (var hub in types.Where(IsAHub))
             {
@@ -61,6 +66,8 @@ namespace CallWall.Web
 
         private static void InitialiseModules(IUnityContainer container)
         {
+            var logger = new LoggerFactory().CreateLogger(typeof(Bootstrapper));
+            logger.Trace("Initializing modules");
             var typeRegistry = new TypeRegistry(container);
 
             var moduleConfig = CallWallModuleSection.GetConfig();
@@ -68,14 +75,20 @@ namespace CallWall.Web
             var modules = from moduleType in moduleConfig.Modules.Cast<ModuleElement>().Select(m => m.Type)
                           select (IModule)Activator.CreateInstance(moduleType);
 
-            var logger = new LoggerFactory().CreateLogger(typeof(Bootstrapper));
-            logger.Trace("Initialising modules...");
+            
+            logger.Trace("Initializing modules...");
             foreach (var module in modules)
             {
-                logger.Trace("Initialising module : {0}", module.GetType().Name);
+                logger.Trace("Initializing module : {0}", module.GetType().Name);
                 module.Initialise(typeRegistry);
             }
-            logger.Trace("Modules Initialised");
+            logger.Trace("Modules Initialized");
+
+
+            logger.Info("Starting processes");
+            var processes = container.ResolveAll<IProcess>();
+            Task.WhenAll(processes.Select(p => p.Run()))
+                .Wait();
         }
 
         public static bool IsModule(Type type)

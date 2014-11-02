@@ -43,6 +43,8 @@ Rx.Observable.prototype.log = function (sourceName, valueSelector) {
         if (hub == undefined)
             throw 'No hub provided. Available hubs are ' + availableHubNames();
 
+
+        //TODO: Investigate if I can convert these promises (hub.start(), server.subscribe()) to Observable with Rx.Observable.fromPromise and then just selectMany them? -LC
         return Rx.Observable.create(function (observer) {
             var subscribe = function (payload) {
                 console.log('Creating SignalR connection');

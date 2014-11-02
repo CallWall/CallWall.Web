@@ -1,7 +1,7 @@
-﻿using CallWall.Web.LinkedInProvider.Auth;
+﻿using CallWall.Web.Domain;
+using CallWall.Web.LinkedInProvider.Auth;
 using CallWall.Web.LinkedInProvider.Contacts;
 using CallWall.Web.Providers;
-using CallWall.Web.Account;
 
 namespace CallWall.Web.LinkedInProvider
 {
@@ -9,7 +9,7 @@ namespace CallWall.Web.LinkedInProvider
     {
         public void Initialise(ITypeRegistry registry)
         {
-            registry.RegisterType<IContactsProvider, LinkedInContactsProvider>("LinkedInContactsProvider");
+            registry.RegisterType<IAccountContactProvider, LinkedInAccountContactProvider>("LinkedInContactsProvider");
             registry.RegisterType<IAccountAuthentication, LinkedInAuthentication>("LinkedInAuthentication");
         }
     }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Web;
+using CallWall.Web.Domain;
 using Newtonsoft.Json.Linq;
-using CallWall.Web.Account;
 
 namespace CallWall.Web.OAuth2Implementation
 {
-    public abstract class OAuth2AuthenticationBase
+    public abstract class OAuth2AuthenticationBase : IAccountAuthentication
     {
         public abstract string RequestAuthorizationBaseUri { get; }
 
@@ -20,7 +20,7 @@ namespace CallWall.Web.OAuth2Implementation
 
         public abstract string ProviderName { get; }
 
-        protected abstract IAccount CreateAccount();
+        public abstract IAccountConfiguration Configuration { get; }
 
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
@@ -45,7 +45,7 @@ namespace CallWall.Web.OAuth2Implementation
             return new Uri(uriBuilder.ToString());
         }
 
-        public bool CanCreateSessionFromState(string code, string state)
+        public bool CanCreateAccountFromState(string code, string state)
         {
             return IsValidOAuthState(state);
         }
@@ -64,7 +64,14 @@ namespace CallWall.Web.OAuth2Implementation
             return false;
         }
 
-        public ISession CreateSession(string code, string state)
+        public IAccount CreateAccountFromOAuthCallback(string code, string state)
+        {
+            var session = CreateSession(code, state);
+            IAccount account = CreateAccount(session);
+            return account;
+        }
+
+        private ISession CreateSession(string code, string state)
         {
             var authState = AuthState.Deserialize(state);
             var request = CreateTokenRequest(code, authState.RedirectUri);
@@ -76,9 +83,7 @@ namespace CallWall.Web.OAuth2Implementation
 
             DemandValidTokenResponse(json);
 
-            var account = CreateAccount();
-
-            return new OAuthSession((string)json["access_token"], (string)json["refresh_token"], TimeSpan.FromSeconds((int)json["expires_in"]), DateTimeOffset.Now, ProviderName, account, authState.Scopes);
+            return new OAuthSession((string)json["access_token"], (string)json["refresh_token"], TimeSpan.FromSeconds((int)json["expires_in"]), DateTimeOffset.Now,/* ProviderName, account,*/ authState.Scopes);
         }
 
         public bool TryDeserialiseSession(string payload, out ISession session)
@@ -90,9 +95,7 @@ namespace CallWall.Web.OAuth2Implementation
                 var json = jsonContainer[ProviderName];
                 var authorizedResources = json["AuthorizedResources"].ToObject<IEnumerable<string>>();
 
-                var account = CreateAccount();
-
-                session = new OAuthSession((string)json["AccessToken"], (string)json["RefreshToken"], (DateTimeOffset)json["Expires"], ProviderName, account, authorizedResources);
+                session = new OAuthSession((string)json["AccessToken"], (string)json["RefreshToken"], (DateTimeOffset)json["Expires"], /*ProviderName, account,*/ authorizedResources);
                 return true;
             }
             catch (Exception)
@@ -101,6 +104,8 @@ namespace CallWall.Web.OAuth2Implementation
                 return false;
             }
         }
+
+        protected abstract IAccount CreateAccount(ISession session);
 
         private HttpRequestMessage CreateTokenRequest(string code, string redirectUri)
         {

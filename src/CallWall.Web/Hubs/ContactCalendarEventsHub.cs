@@ -16,10 +16,10 @@ namespace CallWall.Web.Hubs
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
         private readonly IEnumerable<ICalendarProvider> _calendarProviders;
-        private readonly ISessionProvider _sessionProvider;
+        private readonly ILoginProvider _sessionProvider;
         private readonly ILogger _logger;
 
-        public ContactCalendarEventsHub(IEnumerable<ICalendarProvider> calendarProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactCalendarEventsHub(IEnumerable<ICalendarProvider> calendarProviders, ILoginProvider sessionProvider, ILoggerFactory loggerFactory)
         {
             Debug.Print("ContactCalendarEventsHub.ctor()");
             _calendarProviders = calendarProviders.ToArray();
@@ -28,10 +28,11 @@ namespace CallWall.Web.Hubs
             _logger.Trace("ContactCalendarEventsHub.ctor(calendarProviders:{0})", string.Join(",", _calendarProviders.Select(cp=>cp.GetType().Name)));
         }
 
-        public void Subscribe(string[] contactKeys)
+        public async Task Subscribe(string[] contactKeys)
         {
-            Debug.Print("ContactProfileHub.Subscribe(...)");
-            var sessions = _sessionProvider.GetSessions(Context.User);
+            Debug.Print("ContactCalendarEventsHub.Subscribe(...)");
+            var user = await _sessionProvider.GetUser(Context.User.UserId());
+            var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
             var subscription = _calendarProviders
                                 .ToObservable()
                                 .SelectMany(c => c.GetCalendarEntries(sessions, contactKeys))

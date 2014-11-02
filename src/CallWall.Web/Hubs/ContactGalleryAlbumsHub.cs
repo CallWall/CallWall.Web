@@ -16,10 +16,10 @@ namespace CallWall.Web.Hubs
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
         private readonly IEnumerable<IGalleryProvider> _galleryProviders;
-        private readonly ISessionProvider _sessionProvider;
+        private readonly ILoginProvider _sessionProvider;
         private readonly ILogger _logger;
 
-        public ContactGalleryAlbumsHub(IEnumerable<IGalleryProvider> galleryProviders, ISessionProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactGalleryAlbumsHub(IEnumerable<IGalleryProvider> galleryProviders, ILoginProvider sessionProvider, ILoggerFactory loggerFactory)
         {
             Debug.Print("ContactGalleryAlbumsHub.ctor()");
             _galleryProviders = galleryProviders.ToArray();
@@ -28,10 +28,11 @@ namespace CallWall.Web.Hubs
             _logger.Trace("ContactGalleryAlbumsHub.ctor(galleryProviders:{0})", string.Join(",", _galleryProviders.Select(cp => cp.GetType().Name)));
         }
 
-        public void Subscribe(string[] contactKeys)
+        public async Task Subscribe(string[] contactKeys)
         {
             Debug.Print("ContactGalleryAlbumsHub.Subscribe(...)");
-            var sessions = _sessionProvider.GetSessions(Context.User);
+            var user = await _sessionProvider.GetUser(Context.User.UserId());
+            var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
             var subscription = _galleryProviders
                                 .ToObservable()
                                 .SelectMany(c => c.GetGalleryAlbums(sessions, contactKeys))

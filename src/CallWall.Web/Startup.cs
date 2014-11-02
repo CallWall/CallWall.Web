@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using CallWall.Web.Logging;
-using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Practices.Unity;
 using Owin;
@@ -22,6 +21,11 @@ namespace CallWall.Web
         static Startup()
         {
             _logger = new Log4NetLogger(typeof(Startup));
+            _logger.Info("--------------------------------------------------------------------------------");
+            _logger.Info("--------------------------------------------------------------------------------");
+            _logger.Info("--------------------------------------------------------------------------------");
+            _logger.Info("Startup");
+
             _container = Bootstrapper.Initialise();
         }
 
@@ -36,26 +40,14 @@ namespace CallWall.Web
             var ct = GetShutdownToken(app.Properties);
             ct.Register(Dispose);
 
-            RegisterHubs(app, Container);
+            HubRegistration.RegisterHubs(app, Container, _logger);
             AreaRegistration.RegisterAllAreas();
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            
+
             _logger.Info("Owin started.");
-        }
-
-        private static void RegisterHubs(IAppBuilder app, IUnityContainer container)
-        {
-            _logger.Info("SignalR Hubs registration starting ...");
-            var config = new HubConfiguration
-                {
-                    Resolver = new UnitySignalRDependencyResolver(container)
-                };
-
-            app.MapSignalR(config);
-            _logger.Info("SignalR Hubs registered.");
         }
 
         public void Dispose()

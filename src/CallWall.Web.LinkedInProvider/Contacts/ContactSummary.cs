@@ -1,27 +1,33 @@
 ﻿using System.Collections.Generic;
-using CallWall.Web.Contracts;
+using System.Linq;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.LinkedInProvider.Contacts
 {
-    public class ContactSummary : IContactSummary
+    public class ContactSummary : IAccountContactSummary
     {
-        //TODO copy and paste job here - see google
-
         private readonly string _title;
         private readonly IEnumerable<string> _tags;
         private readonly string _primaryAvatar;
         private readonly string _providerId;
+        private readonly string _accountId;
 
-        public ContactSummary(string id, string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags)
+        public ContactSummary(string accountId, string id, string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags)
         {
+            _accountId = accountId;
             _providerId = id;
             _title = string.Format("{0} {1}", firstname, lastname);
             _primaryAvatar = primaryAvatar;
             _tags = tags;
-
         }
 
+        public bool IsDeleted { get; private set; }
         public string Provider { get { return "LinkedIn"; } }
+
+        public string AccountId
+        {
+            get { return _accountId; }
+        }
 
         public string ProviderId
         {
@@ -37,6 +43,8 @@ namespace CallWall.Web.LinkedInProvider.Contacts
         {
             get { return _tags; }
         }
+
+        public IEnumerable<ContactHandle> Handles { get { return Enumerable.Empty<ContactHandle>(); } }
 
         public string PrimaryAvatar
         {

@@ -1,4 +1,4 @@
-﻿using CallWall.Web.Account;
+﻿using CallWall.Web.Domain;
 using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
 
@@ -6,6 +6,13 @@ namespace CallWall.Web.GoogleProvider.Auth
 {
     public class GoogleAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
+        private readonly IAccountFactory _accountFactory;
+
+        public GoogleAuthentication(IAccountFactory accountFactory)
+        {
+            _accountFactory = accountFactory;
+        }
+
         public override string RequestAuthorizationBaseUri
         {
             get { return "https://accounts.google.com/o/oauth2/auth"; }
@@ -31,16 +38,20 @@ namespace CallWall.Web.GoogleProvider.Auth
             get { return "Google"; }
         }
 
-        protected override IAccount CreateAccount()
+        public override IAccountConfiguration Configuration
         {
-            return new Account("TODO userName", "TODO displayName");
+            get { return AccountConfiguration.Instance; }
+        }
+
+        protected override IAccount CreateAccount(ISession session)
+        {
+            //HACK: This should obviously go to Google and fetch the details. -LC
+            return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session);
         }
 
         protected override void DemandValidTokenResponse(JObject json)
         {
            //no op
         }
-        public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
-
     }
 }

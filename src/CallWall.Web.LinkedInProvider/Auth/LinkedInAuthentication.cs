@@ -1,13 +1,21 @@
 ﻿using System.Security.Authentication;
+using CallWall.Web.Domain;
 using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
-using CallWall.Web.Account;
 
 namespace CallWall.Web.LinkedInProvider.Auth
 {
+    //https://developer.linkedin.com/documents/authentication
     public class LinkedInAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
-        public IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
+        private readonly IAccountFactory _accountFactory;
+
+        public LinkedInAuthentication(IAccountFactory accountFactory)
+        {
+            _accountFactory = accountFactory;
+        }
+
+        public override IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
 
         public override string RequestAuthorizationBaseUri { get { return "https://www.linkedin.com/uas/oauth2/authorization"; } }
 
@@ -16,26 +24,22 @@ namespace CallWall.Web.LinkedInProvider.Auth
             get { return "https://www.linkedin.com/uas/oauth2/accessToken"; }
         }
 
+        //LinkedIn API Key
         public override string ClientId
         {
-            get { return "751tu6va8d937l"; }
+            get { return "tawx8a0kimsi"; }
         }
 
         public override string ClientSecret
         {
-            get { return "MHOnHig0JXIwCd49"; }
+            get { return "37B0QPk8ptKbzKsE"; }
         }
 
         public override string ProviderName
         {
             get { return "LinkedIn"; }
         }
-
-        protected override IAccount CreateAccount()
-        {
-            return new Account("TODO userName", "TODO displayName");
-        }
-
+        
         protected override void DemandValidTokenResponse(JObject json)
         {
             if (json["error"] == null)
@@ -44,5 +48,13 @@ namespace CallWall.Web.LinkedInProvider.Auth
                 throw new AuthenticationException(string.Format("{0} : {1}", json["error"], json["error_description"]));
             throw new AuthenticationException((string)json["error"]);
         }
+
+
+        protected override IAccount CreateAccount(ISession session)
+        {
+            //HACK: This should obviously go to LinkedIn and fetch the details. -LC
+            return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session);
+        }
+
     }
 }
