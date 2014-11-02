@@ -1,21 +1,16 @@
 ﻿/// <reference path="../../knockout-3.0.0.debug.js" />
 
 (function (ko, callWall) {
-    var observableArrayExtensions = {
-        'concat': function (source, selector) {
-            var target = this();
-            if (source == undefined) return;
-            if (!selector) {
-                selector = function (i) { return i; };
-            }
-            ko.utils.arrayForEach(source, function (item) { target.push(selector(item)); });
+    var addRange = function (targetKoArrar, newItems, selector) {
+        if (newItems == null) return;
+        if (!selector) {
+            selector = function (x) { return x; };
         }
-    };
-    var customObservableArray = function () {
-        var obsArray = ko.observableArray();
-        ko.utils.extend(obsArray, observableArrayExtensions);
-        return obsArray;
-    };
+        for (var i = 0; i < newItems.length; i++) {
+            var item = selector(newItems[i]);
+            targetKoArrar.push(selector(item));
+        }
+    }
     
     //Provider
     var ProviderDescription = function (name, imageUrl) {
@@ -73,26 +68,25 @@
         self.title = ko.observable('');
         self.fullName = ko.observable('');
         self.dateOfBirth = ko.observable();
-        self.tags = customObservableArray();
-        self.organizations = customObservableArray();
-        self.relationships = customObservableArray();
-        self.phoneNumbers = customObservableArray();
-        self.emailAddresses = customObservableArray();
+        self.tags = ko.observableArray();
+        self.organizations = ko.observableArray();
+        self.relationships = ko.observableArray();
+        self.phoneNumbers = ko.observableArray();
+        self.emailAddresses = ko.observableArray();
         self.isProcessing = ko.observable(true);
 
         self.aggregate = function (data) {
-            if (data.Title) self.title(data.title);
-            if (data.FullName) self.fullName(data.fullName);
+            if (data.title) self.title(data.title);
+            if (data.fullName) self.fullName(data.fullName);
             if (data.dateOfBirth) {
                 var dob = new Date(data.dateOfBirth);
                 self.dateOfBirth(dob);
             }
-            self.tags.concat(data.tags);
-
-            self.organizations.concat(data.organizations, function (d) { return new ContactAssociation(d); });
-            self.relationships.concat(data.relationships, function (d) { return new ContactAssociation(d); });
-            self.phoneNumbers.concat(data.phoneNumbers, function (d) { return new ContactAssociation(d); });
-            self.emailAddresses.concat(data.emailAddresses, function (d) { return new ContactAssociation(d); });
+            addRange(self.tags, data.tags);
+            addRange(self.organizations, data.organizations, function(d) { return new ContactAssociation(d); });
+            addRange(self.relationships, data.relationships, function (d) { return new ContactAssociation(d); });
+            addRange(self.phoneNumbers, data.phoneNumbers, function (d) { return new ContactAssociation(d); });
+            addRange(self.emailAddresses, data.emailAddresses, function (d) { return new ContactAssociation(d); });
         };
     };
 

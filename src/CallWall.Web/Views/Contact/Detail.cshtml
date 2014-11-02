@@ -32,7 +32,7 @@
 
 <script type="text/html" id="ContactProfileTemplate">
     <h3>Details</h3>
-    <div id="contactProfileProgress" data-bind="template:{ name : 'ProgressBarTemplate', data: isProcessing}"></div>
+    <div id="contactProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
     <h4 data-bind="text: fullName"></h4>
     @*<h5 data-bind="text: formatDate(dateOfBirth())"></h5>*@
     <h5 data-bind="date: dateOfBirth"></h5>
@@ -131,7 +131,7 @@
             <h5 data-bind="text: title"></h5>
             <!--TODO: Implement the title attribute properly-->
             <span style="font-size: 12px; line-height: 20px; color: #a7a7a7;"
-                  data-bind="text: lastModifiedDate.untilToday(), attr: { title: formatAction('Created', createdDate) + ', ' + formatAction('Modified', lastModifiedDate) }"></span>
+                data-bind="text: lastModifiedDate.untilToday(), attr: { title: formatAction('Created', createdDate) + ', ' + formatAction('Modified', lastModifiedDate) }"></span>
         </div>
     </div>
     <!--TODO: Implement some sort of smart template selector-->
@@ -193,7 +193,7 @@
 </script>
 <script type="text/html" id="LocationTemplate">
     <h3 style="margin-bottom: 5px">Location</h3>
-    <div style="height: 350px; width:370px;">
+    <div style="height: 350px; width: 370px;">
         <div id="map_canvas" style="width: 100%; height: 100%"></div>
     </div>
 </script>
@@ -209,7 +209,7 @@
 
     <script>
         $(function () {
-            var  model = new callWall.DashboardViewModel();
+            var model = new callWall.DashboardViewModel();
             model.LoadContactProfile();
 
             callWall.createCustomProgressbarBindings();
