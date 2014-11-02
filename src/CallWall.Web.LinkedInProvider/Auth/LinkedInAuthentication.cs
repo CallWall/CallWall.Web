@@ -1,4 +1,6 @@
-﻿using System.Security.Authentication;
+﻿using System.Linq;
+using System.Security.Authentication;
+using System.Threading.Tasks;
 using CallWall.Web.Domain;
 using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
@@ -49,11 +51,12 @@ namespace CallWall.Web.LinkedInProvider.Auth
             throw new AuthenticationException((string)json["error"]);
         }
 
-
-        protected override IAccount CreateAccount(ISession session)
+        protected override async Task<IAccount> CreateAccount(ISession session)
         {
             //HACK: This should obviously go to LinkedIn and fetch the details. -LC
-            return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session);
+            await Task.Delay(10);
+
+            return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session, Enumerable.Empty<ContactHandle>());
         }
 
     }

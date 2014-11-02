@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.Domain
+﻿using System.Collections.Generic;
+
+namespace CallWall.Web.Domain
 {
     public interface IAccount
     {
@@ -16,6 +18,8 @@
         /// The name this account displays as the User's name. This may be the user's real name, a nickname or in many cases just the <see cref="AccountId"/>.
         /// </summary>
         string DisplayName { get; }
+
+        IEnumerable<ContactHandle> Handles { get; }
 
         ISession CurrentSession { get; }
     }

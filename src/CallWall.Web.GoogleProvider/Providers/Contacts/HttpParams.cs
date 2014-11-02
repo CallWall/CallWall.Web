@@ -22,6 +22,8 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             var param = new HttpRequestParameters(@"https://www.google.com/m8/feeds/contacts/default/full");
             //TODO:Validate that I should be passing this in the query string. Surly I want this encoded in the POST stream -LC
             param.QueryStringParameters.Add("access_token", accessToken);
+            param.QueryStringParameters.Add("max-results", "0");
+
             param.Headers.Add("GData-Version", "3.0");
             return param;
         }

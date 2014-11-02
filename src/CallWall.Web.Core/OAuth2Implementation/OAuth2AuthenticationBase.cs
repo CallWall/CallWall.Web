@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using CallWall.Web.Domain;
 using Newtonsoft.Json.Linq;
@@ -64,10 +65,10 @@ namespace CallWall.Web.OAuth2Implementation
             return false;
         }
 
-        public IAccount CreateAccountFromOAuthCallback(string code, string state)
+        public async Task<IAccount> CreateAccountFromOAuthCallback(string code, string state)
         {
             var session = CreateSession(code, state);
-            IAccount account = CreateAccount(session);
+            var account = await CreateAccount(session);
             return account;
         }
 
@@ -105,7 +106,7 @@ namespace CallWall.Web.OAuth2Implementation
             }
         }
 
-        protected abstract IAccount CreateAccount(ISession session);
+        protected abstract Task<IAccount> CreateAccount(ISession session);
 
         private HttpRequestMessage CreateTokenRequest(string code, string redirectUri)
         {

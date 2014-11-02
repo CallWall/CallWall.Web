@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CallWall.Web.Domain
 {
@@ -11,6 +12,6 @@ namespace CallWall.Web.Domain
 
         bool CanCreateAccountFromState(string code, string state);
 
-        IAccount CreateAccountFromOAuthCallback(string code, string state);
+        Task<IAccount> CreateAccountFromOAuthCallback(string code, string state);
     }
 }

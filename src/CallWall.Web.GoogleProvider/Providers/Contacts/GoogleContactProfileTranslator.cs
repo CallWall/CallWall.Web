@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Contacts;
 using CallWall.Web.Http;
 
@@ -11,6 +12,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {
     public sealed class GoogleContactProfileTranslator : IGoogleContactProfileTranslator
     {
+        private readonly IAccountFactory _accountFactory;
         private static readonly XmlNamespaceManager Ns;
 
         static GoogleContactProfileTranslator()
@@ -23,7 +25,12 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             Ns.AddNamespace("gd", "http://schemas.google.com/g/2005");
         }
 
-       public GoogleUser GetUser(string response)
+        public GoogleContactProfileTranslator(IAccountFactory accountFactory)
+        {
+            _accountFactory = accountFactory;
+        }
+
+        public GoogleUser GetUser(string response)
         {
             var xDoc = XDocument.Parse(response);
             if (xDoc.Root == null)
@@ -41,6 +48,34 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             var allemails = new HashSet<string>(emails.Select(c => c.Association)) { id };
 
             return new GoogleUser(id, allemails);
+        }
+
+        public IAccount TranslateToAccount(string response, ISession session)
+        {
+            var xDoc = XDocument.Parse(response);
+            if (xDoc.Root == null)
+                return null;
+            var root = xDoc.Root;
+            var idElement = root.Element(ToXName("x", "id"));
+            if (idElement == null)
+                return null;
+            var xAuthor = xDoc.Root.Element(ToXName("x", "author"));
+            if (xAuthor == null)
+                return null;
+
+            var xName = xAuthor.Element(ToXName("x", "name"));
+            if (xName == null)
+                return null;
+            var xEmail = xAuthor.Element(ToXName("x", "email"));
+            if (xEmail == null)
+                return null;
+
+            var id = idElement.Value;
+            var name = xName.Value;
+            var email = xEmail.Value;
+            var contactHandles = new ContactHandle[] { new ContactEmailAddress(email, "main") };
+
+            return _accountFactory.Create(id, "Google", name, session, contactHandles);
         }
 
         public IGoogleContactProfile Translate(string response, string accessToken)

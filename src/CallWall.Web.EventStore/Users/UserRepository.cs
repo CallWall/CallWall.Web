@@ -127,8 +127,11 @@ namespace CallWall.Web.EventStore.Users
 
         private IAccount CreateAccount(AccountRecord accountRecord)
         {
-            return _accountFactory.Create(accountRecord.AccountId, accountRecord.Provider, accountRecord.DisplayName,
-                accountRecord.CurrentSession);
+            return _accountFactory.Create(accountRecord.AccountId, 
+                accountRecord.Provider, 
+                accountRecord.DisplayName,
+                accountRecord.CurrentSession,
+                accountRecord.Handles);
         }
 
         private async Task<User> FindByAccount(IAccount account)
@@ -164,6 +167,7 @@ namespace CallWall.Web.EventStore.Users
                         Provider = account.Provider,
                         AccountId = account.AccountId,
                         DisplayName = account.DisplayName,
+                        Handles = account.Handles.ToArray(),
                         CurrentSession = new SessionRecord(account.CurrentSession)
                     }
             };

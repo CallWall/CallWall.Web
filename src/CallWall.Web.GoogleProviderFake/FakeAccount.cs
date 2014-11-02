@@ -1,4 +1,5 @@
-﻿using CallWall.Web.Domain;
+﻿using System.Collections.Generic;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProviderFake
 {
@@ -7,6 +8,7 @@ namespace CallWall.Web.GoogleProviderFake
         public string Provider { get { return "GoogleFake"; } }
         public string AccountId { get; set; }
         public string DisplayName { get; set; }
+        public IEnumerable<ContactHandle> Handles { get; set; }
         public ISession CurrentSession { get; set; }
     }
 }

@@ -79,7 +79,7 @@ namespace CallWall.Web.EventStore.Tests
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), Substitute.For<IAccountFactory>(), Substitute.For<IAccountContactRefresher>());
                 _userRepository.Run().Wait();
                 
-                _account = new StubAccount(Substitute.For<IAccountContactRefresher>());
+                _account = new StubAccount();
                 _account.CurrentSession.AuthorizedResources.Add("email");
                 _account.CurrentSession.AuthorizedResources.Add("calendar");
             }
@@ -140,12 +140,11 @@ namespace CallWall.Web.EventStore.Tests
 
             public UserWithSingleAccountLogsInScenario(IEventStoreClient eventStoreClient)
             {
-                var accountContactRefresherMock = Substitute.For<IAccountContactRefresher>();
                 var accountFactory = new AccountFactory();
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, Substitute.For<IAccountContactRefresher>());
                 
 
-                _account = new StubAccount(accountContactRefresherMock);
+                _account = new StubAccount();
                 _allAccounts.Add(_account);
             }
 

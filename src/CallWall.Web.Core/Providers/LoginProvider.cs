@@ -22,7 +22,7 @@ namespace CallWall.Web.Providers
         public async Task<User> Login(string oAuthCode, string oAuthState)
         {
             _logger.Debug("Logging in...");   
-            var account = CreateAccount(oAuthCode, oAuthState);
+            var account = await CreateAccount(oAuthCode, oAuthState);
             _logger.Debug("Account created '{0}'", account.AccountId);
             //var user = await _userRepository.RegisterNewUser(account, Guid.NewGuid());
             var user = await _userRepository.Login(account);
@@ -35,10 +35,10 @@ namespace CallWall.Web.Providers
             return _userRepository.GetUserBy(userId);
         }
 
-        private IAccount CreateAccount(string code, string state)
+        private async Task<IAccount> CreateAccount(string code, string state)
         {
             var authProvider = _authenticationProviders.Single(ap => ap.CanCreateAccountFromState(code, state));
-            var account = authProvider.CreateAccountFromOAuthCallback(code, state);
+            var account = await authProvider.CreateAccountFromOAuthCallback(code, state);
             return account;
         }
     }

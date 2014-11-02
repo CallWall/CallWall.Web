@@ -51,7 +51,7 @@
             return new ProviderDescription(provider.Name, provider.Image);
         }
         //provider is a string
-        console.error('We should not require this provider mapping funcitonality. It means this client js file is tightly coupled to providers. We should be suppling all we ned via the providers (incluing fakes)')
+        console.error('We should not require this provider mapping functionality. It means this client js file is tightly coupled to providers. We should be supplying all we need via the providers (including fakes)');
         var whitespaceGlobalRegex = / /g;
         for (var i = 0; i < providers.length; i++) {
             if (provider.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
