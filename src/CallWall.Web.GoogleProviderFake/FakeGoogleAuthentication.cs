@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using CallWall.Web.Domain;
 using Newtonsoft.Json;
@@ -31,23 +32,25 @@ namespace CallWall.Web.GoogleProviderFake
             return AuthState.IsValidOAuthState(state);
         }
 
-        public IAccount CreateAccountFromOAuthCallback(string code, string state)
+        public Task<IAccount> CreateAccountFromOAuthCallback(string code, string state)
         {
             var authState = AuthState.Deserialize(state);
             var acc = CreateFakeAccount();
             acc.CurrentSession = new FakeSession(authState.Scopes);
-            return acc;
+            return Task.FromResult((IAccount)acc);
         }
 
         private static FakeAccount CreateFakeAccount()
         {
-            return new FakeAccount { DisplayName = Environment.UserName, AccountId = Environment.UserDomainName };
+            return new FakeAccount
+            {
+                DisplayName = Environment.UserName,
+                AccountId = Environment.UserDomainName
+            };
         }
 
         private class AuthState
         {
-            private const string _account = "GoogleFake";
-
             public static bool IsValidOAuthState(string state)
             {
                 var json = JObject.Parse(state);
@@ -55,7 +58,7 @@ namespace CallWall.Web.GoogleProviderFake
                 JToken account;
                 if (json.TryGetValue("Account", out account))
                 {
-                    if (account.ToString() == _account)
+                    if (account.ToString() == Constants.ProviderName)
                     {
                         return true;
                     }
@@ -67,8 +70,7 @@ namespace CallWall.Web.GoogleProviderFake
                 return JsonConvert.DeserializeObject<AuthState>(state);
             }
 
-            public string Account { get { return _account; } }
-
+            public string Account { get { return Constants.ProviderName; } }
             public IEnumerable<string> Scopes { get; set; }
 
             public string ToUrlEncoded()
@@ -78,6 +80,4 @@ namespace CallWall.Web.GoogleProviderFake
             }
         }
     }
-
-
 }

@@ -47,8 +47,8 @@
 
     var getProvider = function (provider) {
         //Provider is IProviderDescription
-        if (provider.Name) {
-            return new ProviderDescription(provider.Name, provider.Image);
+        if (provider.name) {
+            return new ProviderDescription(provider.name, provider.image);
         }
         //provider is a string
         console.error('We should not require this provider mapping functionality. It means this client js file is tightly coupled to providers. We should be supplying all we need via the providers (including fakes)');
@@ -64,8 +64,8 @@
     //Contact Profile
     var ContactAssociation = function (data) {
         var self = this;
-        self.name = data.Name;
-        self.association = data.Association;
+        self.name = data.name;
+        self.association = data.association;
     };
     var ContactProfileViewModel = function () {
         var self = this;
@@ -81,55 +81,55 @@
         self.isProcessing = ko.observable(true);
 
         self.aggregate = function (data) {
-            if (data.Title) self.title(data.Title);
-            if (data.FullName) self.fullName(data.FullName);
-            if (data.DateOfBirth) {
-                var dob = new Date(data.DateOfBirth);
+            if (data.Title) self.title(data.title);
+            if (data.FullName) self.fullName(data.fullName);
+            if (data.dateOfBirth) {
+                var dob = new Date(data.dateOfBirth);
                 self.dateOfBirth(dob);
             }
-            self.tags.concat(data.Tags);
+            self.tags.concat(data.tags);
 
-            self.organizations.concat(data.Organizations, function (d) { return new ContactAssociation(d); });
-            self.relationships.concat(data.Relationships, function (d) { return new ContactAssociation(d); });
-            self.phoneNumbers.concat(data.PhoneNumbers, function (d) { return new ContactAssociation(d); });
-            self.emailAddresses.concat(data.EmailAddresses, function (d) { return new ContactAssociation(d); });
+            self.organizations.concat(data.organizations, function (d) { return new ContactAssociation(d); });
+            self.relationships.concat(data.relationships, function (d) { return new ContactAssociation(d); });
+            self.phoneNumbers.concat(data.phoneNumbers, function (d) { return new ContactAssociation(d); });
+            self.emailAddresses.concat(data.emailAddresses, function (d) { return new ContactAssociation(d); });
         };
     };
 
     var Message = function (data) {
         var self = this;
         //TODO - correct casing
-        self.timestamp = new Date(data.Timestamp);
-        self.isOutbound = data.IsOutbound;
-        self.subject = data.Subject;
-        self.content = data.Content;
+        self.timestamp = new Date(data.timestamp);
+        self.isOutbound = data.isOutbound;
+        self.subject = data.subject;
+        self.content = data.content;
 
-        self.provider = getProvider(data.Provider);
+        self.provider = getProvider(data.provider);
     };
 
     var CalendarEntry = function (data) {
         var self = this;
-        self.date = new Date(data.Date);
-        self.title = data.Title;
+        self.date = new Date(data.date);
+        self.title = data.title;
     };
 
     var GalleryAlbum = function (data) {
         var self = this;
-        self.createdDate = new Date(data.CreatedDate);
-        self.lastModifiedDate = new Date(data.LastModifiedDate);
-        self.title = data.Title;
-        self.provider = data.Provider;
-        self.imageUrls = data.ImageUrls;
+        self.createdDate = new Date(data.createdDate);
+        self.lastModifiedDate = new Date(data.lastModifiedDate);
+        self.title = data.title;
+        self.provider = data.provider;
+        self.imageUrls = data.imageUrls;
     };
 
     var CollaborationAction = function (data) {
         var self = this;
         //self.project = project;   //Maybe use project/projectName instead of name.
-        self.title = data.Title;
-        self.actionDate = new Date(data.ActionDate);
-        self.actionPerformed = data.ActionPerformed;
-        self.isCompleted = data.IsCompleted;
-        self.provider = getProvider(data.Provider);
+        self.title = data.title;
+        self.actionDate = new Date(data.actionDate);
+        self.actionPerformed = data.actionPerformed;
+        self.isCompleted = data.isCompleted;
+        self.provider = getProvider(data.provider);
     };
 
     var ListViewModel = function (ctor) {

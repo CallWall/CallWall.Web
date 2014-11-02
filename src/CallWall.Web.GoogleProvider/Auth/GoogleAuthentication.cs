@@ -6,14 +6,12 @@ using Newtonsoft.Json.Linq;
 
 namespace CallWall.Web.GoogleProvider.Auth
 {
-    public class GoogleAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
+    public sealed class GoogleAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
-        private readonly IAccountFactory _accountFactory;
         private readonly IGoogleAccountProvider _googleAccountProvider;
 
-        public GoogleAuthentication(IAccountFactory accountFactory, IGoogleAccountProvider googleAccountProvider)
+        public GoogleAuthentication(IGoogleAccountProvider googleAccountProvider)
         {
-            _accountFactory = accountFactory;
             _googleAccountProvider = googleAccountProvider;
         }
 

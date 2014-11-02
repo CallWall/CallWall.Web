@@ -24,7 +24,6 @@ namespace CallWall.Web.Providers
             _logger.Debug("Logging in...");   
             var account = await CreateAccount(oAuthCode, oAuthState);
             _logger.Debug("Account created '{0}'", account.AccountId);
-            //var user = await _userRepository.RegisterNewUser(account, Guid.NewGuid());
             var user = await _userRepository.Login(account);
             _logger.Debug("Logged in as userId '{0}' - {1}", user.Id, string.Join(",", user.Accounts.Select(a=>a.AccountId)));   
             return user;

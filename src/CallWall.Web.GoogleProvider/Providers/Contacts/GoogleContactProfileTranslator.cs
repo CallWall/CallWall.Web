@@ -5,7 +5,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using CallWall.Web.Domain;
-using CallWall.Web.GoogleProvider.Contacts;
 using CallWall.Web.Http;
 
 namespace CallWall.Web.GoogleProvider.Providers.Contacts

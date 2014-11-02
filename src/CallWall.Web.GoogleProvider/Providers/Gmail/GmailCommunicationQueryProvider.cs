@@ -7,7 +7,6 @@ using System.Security.Authentication;
 using CallWall.Web.Contracts.Communication;
 using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Auth;
-using CallWall.Web.GoogleProvider.Providers.Contacts;
 using CallWall.Web.GoogleProvider.Providers.Gmail.Imap;
 using CallWall.Web.Providers;
 
@@ -16,33 +15,29 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
     public sealed class GmailCommunicationQueryProvider : ICommunicationProvider
     {
         private readonly Func<IImapClient> _imapClientFactory;
-        private readonly ICurrentGoogleUserProvider _contactQueryProvider;
         private readonly ILogger _logger;
 
-        public GmailCommunicationQueryProvider(Func<IImapClient> imapClientFactory, ICurrentGoogleUserProvider contactQueryProvider, ILoggerFactory loggerFactory)
+        public GmailCommunicationQueryProvider(Func<IImapClient> imapClientFactory, ILoggerFactory loggerFactory)
         {
             _imapClientFactory = imapClientFactory;
-            _contactQueryProvider = contactQueryProvider;
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public IObservable<IMessage> GetMessages(User user, string[] contactKeys)
         {
-            return (from account in GetAuthorizedGMailAccounts(user)
-                    from message in SearchImap(contactKeys, account)
-                    select message)
-                  .Log(_logger, "LoadMessages");
+            return GetAuthorizedGMailAccounts(user)
+                .Select(acc => SearchImap(contactKeys, acc))
+                .Merge()
+                .Log(_logger, "LoadMessages");
         }
 
-        private static IObservable<IAccount> GetAuthorizedGMailAccounts(User user)
+        private static IEnumerable<IAccount> GetAuthorizedGMailAccounts(User user)
         {
             //TODO: Enable the getting of a new token, and persisting it to the ES -LC
             return user.Accounts
                 .Where(acc => !acc.CurrentSession.HasExpired())
                 .Where(acc => acc.Provider == "Google")
-                .Where(acc => acc.CurrentSession.AuthorizedResources.Contains(ResourceScope.Gmail.Resource))
-                //.Select(acc => acc.CurrentSession.AccessToken)
-                .ToObservable();
+                .Where(acc => acc.CurrentSession.AuthorizedResources.Contains(ResourceScope.Gmail.Resource));
         }
 
         private IObservable<IMessage> SearchImap(IEnumerable<string> contactKeys, IAccount account)
@@ -67,10 +62,10 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
                         from isSelected in imapClient.SelectFolder("[Gmail]/All Mail")
                         let queryText = ToSearchQuery(contactKeys)
                         from emailIds in imapClient.FindEmailIds(queryText)
-                        from email in imapClient.FetchEmailSummaries(emailIds.Reverse().Take(15), account.Handles.Where(ch=>ch.HandleType==ContactHandleTypes.Email).Select(ch=>ch.Handle))
+                        from email in imapClient.FetchEmailSummaries(emailIds.Reverse().Take(15), account.Handles.Where(ch => ch.HandleType == ContactHandleTypes.Email).Select(ch => ch.Handle))
                         select email;
 
-            return query.TakeUntil(_contactQueryProvider.CurrentUser().Where(user => user != null).Skip(1));
+            return query;
         }
 
         private static string ToSearchQuery(IEnumerable<string> contactKeys)
