@@ -16,14 +16,13 @@ namespace CallWall.Web.Hubs
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
         private readonly IEnumerable<IAccountContactProvider> _contactsProviders;
-        private readonly ILoginProvider _sessionProvider;
+        private readonly ILoginProvider _loginProvider;
         private readonly ILogger _logger;
 
-        public ContactProfileHub(IEnumerable<IAccountContactProvider> contactsProviders, ILoginProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactProfileHub(IEnumerable<IAccountContactProvider> contactsProviders, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
         {
-            Debug.Print("ContactProfileHub.ctor()");
             _contactsProviders = contactsProviders.ToArray();
-            _sessionProvider = sessionProvider;
+            _loginProvider = loginProvider;
             _logger = loggerFactory.CreateLogger(GetType());
             _logger.Trace("ContactProfileHub.ctor(contactsProviders:{0})", string.Join(",", _contactsProviders.Select(cp=>cp.GetType().Name)));
         }
@@ -31,7 +30,7 @@ namespace CallWall.Web.Hubs
         public async Task Subscribe(string[] contactKeys)
         {
             Debug.Print("ContactProfileHub.Subscribe(...)");
-            var user = await _sessionProvider.GetUser(Context.User.UserId());
+            var user = await _loginProvider.GetUser(Context.User.UserId());
             var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
             var subscription = _contactsProviders
                                 .ToObservable()

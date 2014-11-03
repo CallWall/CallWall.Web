@@ -1,21 +1,16 @@
-﻿/// <reference path="../../knockout-3.0.0.debug.js" />
+﻿/// <reference path="../../knockout-3.1.0.debug.js" />
 
 (function (ko, callWall) {
-    var observableArrayExtensions = {
-        'concat': function (source, selector) {
-            var target = this();
-            if (source == undefined) return;
-            if (!selector) {
-                selector = function (i) { return i; };
-            }
-            ko.utils.arrayForEach(source, function (item) { target.push(selector(item)); });
+    var addRange = function (targetKoArrar, newItems, selector) {
+        if (newItems == null) return;
+        if (!selector) {
+            selector = function (x) { return x; };
         }
-    };
-    var customObservableArray = function () {
-        var obsArray = ko.observableArray();
-        ko.utils.extend(obsArray, observableArrayExtensions);
-        return obsArray;
-    };
+        for (var i = 0; i < newItems.length; i++) {
+            var item = selector(newItems[i]);
+            targetKoArrar.push(selector(item));
+        }
+    }
     
     //Provider
     var ProviderDescription = function (name, imageUrl) {
@@ -47,11 +42,11 @@
 
     var getProvider = function (provider) {
         //Provider is IProviderDescription
-        if (provider.Name) {
-            return new ProviderDescription(provider.Name, provider.Image);
+        if (provider.name) {
+            return new ProviderDescription(provider.name, provider.image);
         }
         //provider is a string
-        console.error('We should not require this provider mapping funcitonality. It means this client js file is tightly coupled to providers. We should be suppling all we ned via the providers (incluing fakes)')
+        console.error('We should not require this provider mapping functionality. It means this client js file is tightly coupled to providers. We should be supplying all we need via the providers (including fakes)');
         var whitespaceGlobalRegex = / /g;
         for (var i = 0; i < providers.length; i++) {
             if (provider.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
@@ -64,8 +59,8 @@
     //Contact Profile
     var ContactAssociation = function (data) {
         var self = this;
-        self.name = data.Name;
-        self.association = data.Association;
+        self.name = data.name;
+        self.association = data.association;
     };
     var ContactProfileViewModel = function () {
         var self = this;
@@ -73,63 +68,69 @@
         self.title = ko.observable('');
         self.fullName = ko.observable('');
         self.dateOfBirth = ko.observable();
-        self.tags = customObservableArray();
-        self.organizations = customObservableArray();
-        self.relationships = customObservableArray();
-        self.phoneNumbers = customObservableArray();
-        self.emailAddresses = customObservableArray();
+        self.tags = ko.observableArray();
+        self.organizations = ko.observableArray();
+        self.relationships = ko.observableArray();
+        self.phoneNumbers = ko.observableArray();
+        self.emailAddresses = ko.observableArray();
         self.isProcessing = ko.observable(true);
 
+        //self.avatars = ko.observableArray();
+        //self.avatars.push('/Content/images/AnonContact.svg');
+        self.avatar = ko.observable('/Content/images/AnonContact.svg');
+        //self.avatar = ko.observable('/Content/images/pictures/Interlaken1.jpg');
+
         self.aggregate = function (data) {
-            if (data.Title) self.title(data.Title);
-            if (data.FullName) self.fullName(data.FullName);
-            if (data.DateOfBirth) {
-                var dob = new Date(data.DateOfBirth);
+            if (data.title) self.title(data.title);
+            if (data.fullName) self.fullName(data.fullName);
+            if (data.dateOfBirth) {
+                var dob = new Date(data.dateOfBirth);
                 self.dateOfBirth(dob);
             }
-            self.tags.concat(data.Tags);
-
-            self.organizations.concat(data.Organizations, function (d) { return new ContactAssociation(d); });
-            self.relationships.concat(data.Relationships, function (d) { return new ContactAssociation(d); });
-            self.phoneNumbers.concat(data.PhoneNumbers, function (d) { return new ContactAssociation(d); });
-            self.emailAddresses.concat(data.EmailAddresses, function (d) { return new ContactAssociation(d); });
+            if (data.avatarUris && data.avatarUris.length > 0) {
+                self.avatar(data.avatarUris[0]);
+            }
+            addRange(self.tags, data.tags);
+            addRange(self.organizations, data.organizations, function(d) { return new ContactAssociation(d); });
+            addRange(self.relationships, data.relationships, function (d) { return new ContactAssociation(d); });
+            addRange(self.phoneNumbers, data.phoneNumbers, function (d) { return new ContactAssociation(d); });
+            addRange(self.emailAddresses, data.emailAddresses, function (d) { return new ContactAssociation(d); });
         };
     };
 
     var Message = function (data) {
         var self = this;
-        //TODO - correct casing
-        self.timestamp = new Date(data.Timestamp);
-        self.isOutbound = data.IsOutbound;
-        self.subject = data.Subject;
-        self.content = data.Content;
+        self.timestamp = new Date(data.timestamp);
+        self.isOutbound = data.isOutbound;
+        self.subject = data.subject;
+        self.content = data.content;
 
-        self.provider = getProvider(data.Provider);
+        self.provider = getProvider(data.provider);
     };
 
     var CalendarEntry = function (data) {
         var self = this;
-        self.date = new Date(data.Date);
-        self.title = data.Title;
+        self.date = new Date(data.date);
+        self.title = data.title;
     };
 
     var GalleryAlbum = function (data) {
         var self = this;
-        self.createdDate = new Date(data.CreatedDate);
-        self.lastModifiedDate = new Date(data.LastModifiedDate);
-        self.title = data.Title;
-        self.provider = data.Provider;
-        self.imageUrls = data.ImageUrls;
+        self.createdDate = new Date(data.createdDate);
+        self.lastModifiedDate = new Date(data.lastModifiedDate);
+        self.title = data.title;
+        self.provider = data.provider;
+        self.imageUrls = data.imageUrls;
     };
 
     var CollaborationAction = function (data) {
         var self = this;
         //self.project = project;   //Maybe use project/projectName instead of name.
-        self.title = data.Title;
-        self.actionDate = new Date(data.ActionDate);
-        self.actionPerformed = data.ActionPerformed;
-        self.isCompleted = data.IsCompleted;
-        self.provider = getProvider(data.Provider);
+        self.title = data.title;
+        self.actionDate = new Date(data.actionDate);
+        self.actionPerformed = data.actionPerformed;
+        self.isCompleted = data.isCompleted;
+        self.provider = getProvider(data.provider);
     };
 
     var ListViewModel = function (ctor) {

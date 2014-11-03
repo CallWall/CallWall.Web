@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using CallWall.Web.Domain;
 using CallWall.Web.Providers;
-using CallWall.Web.Contracts;
-using CallWall.Web.Contracts.Contact;
 
 namespace CallWall.Web.GoogleProviderFake
 {
     public class FakeGoogleAccountContactProvider : IAccountContactProvider
     {
-        public string Provider { get { return "FakeGoogle"; } }
+        public string Provider { get { return Constants.ProviderName; } }
 
         public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
@@ -58,6 +57,7 @@ namespace CallWall.Web.GoogleProviderFake
                 //title = "Lee Campbell",
                 FullName = "Mr. Lee Ryan Campbell",
                 DateOfBirth = new DateTime(1979, 12, 27),
+                AvatarUris = new[] { "/Content/images/pictures/Interlaken1.jpg" },
                 Tags = new[] { "Adaptive", "Serpentine", "ReactConf", "Amazon", "Turtle" },
                 Organizations = new[] { new ContactAssociation("CEO", "CallWall") },
                 Relationships = new[] { new ContactAssociation("CFO", "John Bell"), },
@@ -108,7 +108,7 @@ namespace CallWall.Web.GoogleProviderFake
         private sealed class ContactSummary : IAccountContactSummary
         {
             public bool IsDeleted { get { return false; } }
-            public string Provider { get { return "FakeGoogle"; } }
+            public string Provider { get { return Constants.ProviderName; } }
 
             public string AccountId { get { return "lee.fake@gmail.com"; } }
 
@@ -116,13 +116,14 @@ namespace CallWall.Web.GoogleProviderFake
             public string Title { get; set; }
             public string PrimaryAvatar { get; set; }
             public IEnumerable<string> Tags { get; set; }
+            public IEnumerable<ContactHandle> Handles { get { return Enumerable.Empty<ContactHandle>(); } }
         }
 
         private sealed class ContactProfile : IContactProfile
         {
             public string Title { get; set; }
             public string FullName { get; set; }
-            public IEnumerable<Uri> Avatars { get; set; }//TODO: Not set or read from anywhere yet. -LC
+            public IEnumerable<string> AvatarUris { get; set; }
             public DateTime? DateOfBirth { get; set; }
             public IEnumerable<string> Tags { get; set; }
             public IEnumerable<IContactAssociation> Organizations { get; set; }

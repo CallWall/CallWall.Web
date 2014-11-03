@@ -1,4 +1,6 @@
-﻿using CallWall.Web.Domain;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Accounts
 {
@@ -7,8 +9,11 @@ namespace CallWall.Web.EventStore.Accounts
         public string Provider { get; set; }
         public string AccountId { get; set; }
         public string DisplayName { get; set; }
+        public ContactHandle[] Handles { get; set; }
         public ISession CurrentSession { get; set; }
-        
+
+
+        IEnumerable<ContactHandle> IAccount.Handles { get { return Handles; } }
         #region Equality operators
 
         private bool Equals(IAccount other)
@@ -54,7 +59,12 @@ namespace CallWall.Web.EventStore.Accounts
 
         public override string ToString()
         {
-            return string.Format("Provider: {0}, AccountId: {1}, DisplayName: {2}, CurrentSession: {3}", Provider, AccountId, DisplayName, CurrentSession);
+            return string.Format("Provider: {0}, AccountId: {1}, DisplayName: {2}, Handles: [{3}], CurrentSession: {4}", 
+                Provider, 
+                AccountId, 
+                DisplayName, 
+                string.Join(",", (Handles?? Enumerable.Empty<ContactHandle>()).Select(ch=>ch.Handle)),
+                CurrentSession);
         }
     }
 }

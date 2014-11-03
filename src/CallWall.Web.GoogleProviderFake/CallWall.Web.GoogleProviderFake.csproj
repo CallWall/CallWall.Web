@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="FakeAccount.cs" />
     <Compile Include="FakeGoogleAccountConfiguration.cs" />
     <Compile Include="FakeGoogleAuthentication.cs" />

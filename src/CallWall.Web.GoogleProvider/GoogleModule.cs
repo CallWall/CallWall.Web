@@ -24,6 +24,7 @@ namespace CallWall.Web.GoogleProvider
             registry.RegisterType<IContactQueryProvider, GoogleContactQueryProvider>(); 
             registry.RegisterType<ICurrentGoogleUserProvider, GoogleContactQueryProvider>();
             registry.RegisterType<IAuthorizationTokenProvider, GoogleAuthorizationTokenProvider>();
+            registry.RegisterType<IGoogleAccountProvider, GoogleAccountProvider>();
         }
     }
 }

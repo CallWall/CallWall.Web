@@ -22,7 +22,7 @@ namespace CallWall.Web.Domain
         /// <summary>
         /// Link to an image or avatar of the contact
         /// </summary>
-        IEnumerable<Uri> Avatars { get; }
+        IEnumerable<string> AvatarUris { get; }
 
         /// <summary>
         /// The Date of birth for the contact. If the Year is unknown then it should be set to a value of 1.

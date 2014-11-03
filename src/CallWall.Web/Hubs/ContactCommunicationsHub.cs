@@ -32,10 +32,9 @@ namespace CallWall.Web.Hubs
         {
             Debug.Print("ContactCommunicationsHub.Subscribe(...)");
             var user = await _sessionProvider.GetUser(Context.User.UserId());
-            var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
             var subscription = _communicationProviders
                                 .ToObservable()
-                                .SelectMany(c => c.GetMessages(sessions, contactKeys))
+                                .SelectMany(c => c.GetMessages(user, contactKeys))
                                 .Log(_logger, "GetMessages")
                                 .Subscribe(msg => Clients.Caller.OnNext(msg),
                                            ex => Clients.Caller.OnError("Error receiving communication messages"),

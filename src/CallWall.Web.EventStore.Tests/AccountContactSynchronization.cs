@@ -96,7 +96,7 @@ namespace CallWall.Web.EventStore.Tests
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
-                _account = CreateAccount(eventStoreClient);
+                _account = CreateAccount();
                 _expectedFeed = CreateStubFeed(_account);
                 _accountContactSynchronizationService = CreateAccountContactSynchronizationService(eventStoreClient, _account, _expectedFeed);
                 _userContactSynchronizationService = new UserContactSynchronizationService(eventStoreClient, new ConsoleLoggerFactory());
@@ -168,10 +168,9 @@ namespace CallWall.Web.EventStore.Tests
                 return accountContactSynchronizationService;
             }
 
-            private static IAccount CreateAccount(IEventStoreClient eventStoreClient)
+            private static IAccount CreateAccount()
             {
-                var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
-                var account = new StubAccount(accountContactRefresher);
+                var account = new StubAccount();
                 account.CurrentSession.AuthorizedResources.Add("email");
                 account.CurrentSession.AuthorizedResources.Add("calendar");
                 return account;

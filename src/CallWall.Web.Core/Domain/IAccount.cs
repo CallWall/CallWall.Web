@@ -1,4 +1,6 @@
-﻿namespace CallWall.Web.Domain
+﻿using System.Collections.Generic;
+
+namespace CallWall.Web.Domain
 {
     public interface IAccount
     {
@@ -17,6 +19,16 @@
         /// </summary>
         string DisplayName { get; }
 
+
+        /// <summary>
+        /// The contact handles that are associated to the account. 
+        /// </summary>
+        IEnumerable<ContactHandle> Handles { get; }
+
+
+        /// <summary>
+        /// The current session information for the account.
+        /// </summary>
         ISession CurrentSession { get; }
     }
 }
