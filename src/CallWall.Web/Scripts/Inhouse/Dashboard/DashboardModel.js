@@ -1,4 +1,4 @@
-﻿/// <reference path="../../knockout-3.0.0.debug.js" />
+﻿/// <reference path="../../knockout-3.1.0.debug.js" />
 
 (function (ko, callWall) {
     var addRange = function (targetKoArrar, newItems, selector) {
@@ -75,12 +75,20 @@
         self.emailAddresses = ko.observableArray();
         self.isProcessing = ko.observable(true);
 
+        //self.avatars = ko.observableArray();
+        //self.avatars.push('/Content/images/AnonContact.svg');
+        self.avatar = ko.observable('/Content/images/AnonContact.svg');
+        //self.avatar = ko.observable('/Content/images/pictures/Interlaken1.jpg');
+
         self.aggregate = function (data) {
             if (data.title) self.title(data.title);
             if (data.fullName) self.fullName(data.fullName);
             if (data.dateOfBirth) {
                 var dob = new Date(data.dateOfBirth);
                 self.dateOfBirth(dob);
+            }
+            if (data.avatarUris && data.avatarUris.length > 0) {
+                self.avatar(data.avatarUris[0]);
             }
             addRange(self.tags, data.tags);
             addRange(self.organizations, data.organizations, function(d) { return new ContactAssociation(d); });
@@ -92,7 +100,6 @@
 
     var Message = function (data) {
         var self = this;
-        //TODO - correct casing
         self.timestamp = new Date(data.timestamp);
         self.isOutbound = data.isOutbound;
         self.subject = data.subject;

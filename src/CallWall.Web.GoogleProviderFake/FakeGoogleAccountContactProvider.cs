@@ -57,6 +57,7 @@ namespace CallWall.Web.GoogleProviderFake
                 //title = "Lee Campbell",
                 FullName = "Mr. Lee Ryan Campbell",
                 DateOfBirth = new DateTime(1979, 12, 27),
+                AvatarUris = new[] { "/Content/images/pictures/Interlaken1.jpg" },
                 Tags = new[] { "Adaptive", "Serpentine", "ReactConf", "Amazon", "Turtle" },
                 Organizations = new[] { new ContactAssociation("CEO", "CallWall") },
                 Relationships = new[] { new ContactAssociation("CFO", "John Bell"), },
@@ -122,7 +123,7 @@ namespace CallWall.Web.GoogleProviderFake
         {
             public string Title { get; set; }
             public string FullName { get; set; }
-            public IEnumerable<Uri> Avatars { get; set; }//TODO: Not set or read from anywhere yet. -LC
+            public IEnumerable<string> AvatarUris { get; set; }
             public DateTime? DateOfBirth { get; set; }
             public IEnumerable<string> Tags { get; set; }
             public IEnumerable<IContactAssociation> Organizations { get; set; }

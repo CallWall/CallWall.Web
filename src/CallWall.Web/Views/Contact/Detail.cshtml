@@ -16,7 +16,9 @@
 -->
 
 <div class="title">
-    <img src="~/Content/images/AnonContact.svg" data-bind="attr: { alt: contactProfile.title }" height="80" style="float: left" />
+    <div class="mainPicture" style="float: left; padding: 5px;">
+        <img data-bind="attr: { src: contactProfile.avatar, alt: contactProfile.title }" onload="OnImageLoad(event);" />
+     </div>
     <div style="float: right" >
         <!-- ko foreach: contactProfile.tags -->
         <span class="tag" data-bind="text: $data"></span>        
@@ -47,7 +49,7 @@
         <div class="key" data-bind="text: name"></div>
         <div data-bind="text: association"></div>
     </div>
-    <!-- /ko -->
+    <!-- /ko -->    
     <h4>Relationships</h4>
     <!-- ko foreach: relationships -->
     <div class="kvp">
