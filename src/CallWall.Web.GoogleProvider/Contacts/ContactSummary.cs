@@ -22,7 +22,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             _accountId = accountId;
         }
 
-        public string Provider { get { return "Google"; } }
+        public string Provider { get { return Constants.ProviderName; } }
 
         public string ProviderId { get { return _providerId; } }
 

@@ -74,7 +74,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             var email = xEmail.Value;
             var contactHandles = new ContactHandle[] { new ContactEmailAddress(email, "main") };
 
-            return _accountFactory.Create(id, "Google", name, session, contactHandles);
+            return _accountFactory.Create(id, Constants.ProviderName, name, session, contactHandles);
         }
 
         public IGoogleContactProfile Translate(string response, string accessToken)
@@ -105,7 +105,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
                             {
                                 var hrp = new HttpRequestParameters(att.Value);
                                 hrp.QueryStringParameters.Add("access_token", accessToken);
-                                return hrp.ConstructUri();
+                                return hrp.ConstructUri().AbsoluteUri;
                             });
 
             var emails = GetEmailAddresses(xContactEntry);
@@ -132,54 +132,6 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             var result = new GoogleContactProfile(title, fullName, dateOfBirth, avatars, emails, phoneNumbers, organizations, relationships, groupUris);
             return result;
         }
-
-        //private static class Atom
-        //{
-        //    static Atom()
-        //    {
-        //        Entry = ToXName("x", "entry");
-        //        Title = ToXName("x", "title");
-        //    }
-
-        //    public static XName Entry { get; private set; }
-        //    public static XName Title { get; private set; }
-        //}
-        //public BatchOperationPage<IContactSummary> Translate(string response, string accessToken)
-        //{
-        //    //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
-        //    var xDoc = XDocument.Parse(response);
-        //    if (xDoc.Root == null)
-        //        return null;
-
-        //    var entries = xDoc.Root.Elements(Atom.Entry);
-        //    var contacts = new List<IContactSummary>();
-        //    foreach (var xContactEntry in entries)
-        //    {
-        //        if (xContactEntry == null)
-        //            return null;
-
-        //        var id = GetId(xContactEntry);
-        //        var title = GetTitle(xContactEntry);
-        //        var avatar = GetAvatar(xContactEntry, accessToken);
-        //        var tags = GetTags(xContactEntry);
-
-        //        var contact = new ContactSummary(id, title, avatar, tags);
-        //        contacts.Add(contact);
-        //    }
-
-
-        //    var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
-        //    var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
-        //    var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
-        //    if (startIndex == null || itemsPerPage == null || totalResults == null)
-        //        return new BatchOperationPage<IContactSummary>(contacts, 0, 1, -1);
-
-        //    return new BatchOperationPage<IContactSummary>(contacts,
-        //        int.Parse(startIndex.Value),
-        //        int.Parse(totalResults.Value),
-        //        int.Parse(itemsPerPage.Value));
-        //}
-
 
         private static IEnumerable<ContactAssociation> GetEmailAddresses(XElement xContactEntry)
         {

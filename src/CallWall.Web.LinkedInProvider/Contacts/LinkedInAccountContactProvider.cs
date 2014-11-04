@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -54,7 +53,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 
         }
 
-        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
+        public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
         {
             //TODO: Implement LinkedIn GetContactDetails
             return Observable.Empty<IContactProfile>();

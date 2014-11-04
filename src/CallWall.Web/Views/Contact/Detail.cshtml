@@ -17,8 +17,9 @@
 
 <div class="title">
     <div class="mainPicture" style="float: left; padding: 5px;">
+        <!--TODO: Make some sort of carousel that is bound to an observable array.-->
         <img data-bind="attr: { src: contactProfile.avatar, alt: contactProfile.title }" onload="OnImageLoad(event);" />
-     </div>
+    </div>
     <div style="float: right" >
         <!-- ko foreach: contactProfile.tags -->
         <span class="tag" data-bind="text: $data"></span>        

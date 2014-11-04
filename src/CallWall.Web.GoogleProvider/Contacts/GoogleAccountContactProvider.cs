@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Reactive.Linq;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public string Provider { get { return "Google"; } }
+        public string Provider { get { return Constants.ProviderName; } }
 
         public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
         {
@@ -33,11 +34,40 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 .Log(_logger, "GetContactsFeed(" + account.AccountId + ")");
         }
 
-        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
+
+
+
+
+
+
+
+        public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
+        {
+            //For each relevant account, for each contact, make a query to get contact deatils.
+            var query = from googleAccount in user.Accounts.Where(acc => acc.Provider == Provider)
+                        from contactKey in contactKeys
+                        select GetContactDetails(googleAccount, contactKey);
+            
+            //Flatten the results, and send back to be aggregated by layer above.
+            return query.Merge();
+        }
+
+        private IObservable<IContactProfile> GetContactDetails(IAccount account, string contactKey)
         {
             //TODO: Implement Google GetContactDetails
-            return Observable.Empty<IContactProfile>();
+            //Should just be a case of making the same call as below but with a filter, not an open query -LC
+
+            throw new NotImplementedException();
         }
+
+
+
+
+
+
+
+
+
 
         private IObservable<BatchOperationPage<IAccountContactSummary>> GetPages(IAccount account, DateTime lastUpdated)
         {

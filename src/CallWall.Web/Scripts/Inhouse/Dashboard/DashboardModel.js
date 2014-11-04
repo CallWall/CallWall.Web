@@ -75,6 +75,7 @@
         self.emailAddresses = ko.observableArray();
         self.isProcessing = ko.observable(true);
 
+        //TODO: Make some sort of carousel that is bound to an observable array.
         //self.avatars = ko.observableArray();
         //self.avatars.push('/Content/images/AnonContact.svg');
         self.avatar = ko.observable('/Content/images/AnonContact.svg');

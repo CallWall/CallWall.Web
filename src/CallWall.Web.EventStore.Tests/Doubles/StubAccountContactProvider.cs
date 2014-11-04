@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 
@@ -23,7 +22,7 @@ namespace CallWall.Web.EventStore.Tests.Doubles
             return _contactFeed;
         }
 
-        IObservable<IContactProfile> IAccountContactProvider.GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
+        IObservable<IContactProfile> IAccountContactProvider.GetContactDetails(User user, string[] contactKeys)
         {
             throw new NotSupportedException();
         }

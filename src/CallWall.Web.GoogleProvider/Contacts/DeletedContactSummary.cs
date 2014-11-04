@@ -17,7 +17,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         public bool IsDeleted { get { return true; } }
 
-        public string Provider { get { return "Google"; } }
+        public string Provider { get { return Constants.ProviderName; } }
 
         public string ProviderId { get { return _providerId; } }
 

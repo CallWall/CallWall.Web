@@ -16,7 +16,7 @@ namespace CallWall.Web.GoogleProvider.Auth
 
             //Completely untested stab in the dark code - rc
             //return _sessionProvider.GetSessions(Thread.CurrentPrincipal)
-            //    .Where(s => s.Provider == "Google")
+            //    .Where(s => s.Provider == Constants.ProviderName)
             //    .Where(s=>s.AuthorizedResources.Contains(scope.Resource))
             //    .Select(s=>s.AccessToken);
         }

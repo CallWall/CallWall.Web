@@ -8,7 +8,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {
     public sealed class GoogleContactProfile : IGoogleContactProfile
     {
-        private readonly IEnumerable<Uri> _avatars;
+        private readonly IEnumerable<string> _avatarUris;
         private readonly IEnumerable<IContactAssociation> _organizations;
         private readonly IEnumerable<IContactAssociation> _relationships;
         private readonly IEnumerable<IContactAssociation> _emailAddresses;
@@ -17,14 +17,14 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
         private readonly Collection<string> _tags = new Collection<string>();
 
         public GoogleContactProfile(string title, string fullName, DateTime? dateOfBirth, 
-            IEnumerable<Uri> avatars, 
+            IEnumerable<string> avatarUris, 
             IEnumerable<ContactAssociation> emailAddresses, 
             IEnumerable<ContactAssociation> phoneNumbers, 
             IEnumerable<ContactAssociation> organizations, 
             IEnumerable<ContactAssociation> relationships,
             IEnumerable<Uri> groupUris)
         {
-            _avatars = avatars;
+            _avatarUris = avatarUris;
             _emailAddresses = emailAddresses;
             _phoneNumbers = phoneNumbers;
             _organizations = organizations;
@@ -53,9 +53,9 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
         /// <summary>
         /// Link to an image or avatar of the contact
         /// </summary>
-        public IEnumerable<Uri> Avatars
+        public IEnumerable<string> AvatarUris
         {
-            get { return _avatars; }
+            get { return _avatarUris; }
         }
 
         public IEnumerable<IContactAssociation> Organizations

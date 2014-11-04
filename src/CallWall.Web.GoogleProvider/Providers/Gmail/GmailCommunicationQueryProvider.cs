@@ -36,7 +36,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
             //TODO: Enable the getting of a new token, and persisting it to the ES -LC
             return user.Accounts
                 .Where(acc => !acc.CurrentSession.HasExpired())
-                .Where(acc => acc.Provider == "Google")
+                .Where(acc => acc.Provider == Constants.ProviderName)
                 .Where(acc => acc.CurrentSession.AuthorizedResources.Contains(ResourceScope.Gmail.Resource));
         }
 

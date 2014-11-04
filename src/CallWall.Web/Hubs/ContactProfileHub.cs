@@ -30,11 +30,15 @@ namespace CallWall.Web.Hubs
         public async Task Subscribe(string[] contactKeys)
         {
             Debug.Print("ContactProfileHub.Subscribe(...)");
+
+
+            //TODO: The first thing we should do is get what we already have on the contact from the EventStore. I suppose we can just add an EventStore implementation of the GetContactDetails
+
+
             var user = await _loginProvider.GetUser(Context.User.UserId());
-            var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
             var subscription = _contactsProviders
                                 .ToObservable()
-                                .SelectMany(c => c.GetContactDetails(sessions, contactKeys))
+                                .SelectMany(c => c.GetContactDetails(user, contactKeys))
                                 .Log(_logger, "GetContactDetails")
                                 .Subscribe(contact => Clients.Caller.OnNext(contact),
                                            ex => Clients.Caller.OnError("Error receiving contacts"),

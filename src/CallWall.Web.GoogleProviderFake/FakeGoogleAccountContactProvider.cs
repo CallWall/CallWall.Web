@@ -17,7 +17,7 @@ namespace CallWall.Web.GoogleProviderFake
             return GetContactSummaries();
         }
 
-        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
+        public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
         {
             return Observable.Interval(TimeSpan.FromSeconds(1))
                              .Zip(Profiles(), (_, msg) => msg);
