@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -57,7 +56,10 @@ namespace CallWall.Web.GoogleProvider.Contacts
             //TODO: Implement Google GetContactDetails
             //Should just be a case of making the same call as below but with a filter, not an open query -LC
 
-            throw new NotImplementedException();
+            //Delegate this to the EventStore/Repository. -LC
+            //This could issue a Refresh request (specific to the providerContactId) which would update the EventStore -LC
+
+            return Observable.Empty<IContactProfile>();
         }
 
 

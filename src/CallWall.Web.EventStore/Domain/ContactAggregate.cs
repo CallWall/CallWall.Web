@@ -211,7 +211,7 @@ namespace CallWall.Web.EventStore.Domain
         {
             Version++;
             Providers = _contacts.Select(c => new ContactProviderSummary(c.Provider, c.AccountId, c.ProviderId)).ToArray();
-            Avatars = _contacts.Select(c => c.PrimaryAvatar).Where(a => a != null).Distinct().ToArray();
+            Avatars = _contacts.SelectMany(c => c.AvatarUris ?? Enumerable.Empty<string>()).Where(a => a != null).Distinct().ToArray();
             Tags = _contacts.SelectMany(c => c.Tags ?? Enumerable.Empty<string>()).Distinct().ToArray();
             //TODO: This may need a custom IComparer instance  -LC
             Handles = _contacts.SelectMany(c => c.Handles ?? Enumerable.Empty<ContactHandle>()).Distinct().ToArray();
@@ -220,7 +220,7 @@ namespace CallWall.Web.EventStore.Domain
 
         private string GetBestTitle()
         {
-            return GetBestTitle(_contacts.Select(c => !string.IsNullOrWhiteSpace(c.Title) 
+            return GetBestTitle(_contacts.Select(c => !string.IsNullOrWhiteSpace(c.Title)
                 ? c.Title
                 : GetBestTitle((c.Handles ?? Enumerable.Empty<ContactHandle>()).Select(ch => ch.Handle))));
         }
@@ -242,7 +242,7 @@ namespace CallWall.Web.EventStore.Domain
             if (IsEmail(value)) return 1;
             if (IsName(value))
             {
-                if( value.IndexOfAny(new []{':', ',', ';', '-'})==-1) 
+                if (value.IndexOfAny(new[] { ':', ',', ';', '-' }) == -1)
                     return 4;
                 return 3;
             }
@@ -274,7 +274,7 @@ namespace CallWall.Web.EventStore.Domain
         private static readonly char[] WordDelimiters = { ' ', ',', ':', ':' };
         private bool IsFuzzyTitleMatch(IAccountContactSummary contact)
         {
-            if (Title == null || contact.Title == null) 
+            if (Title == null || contact.Title == null)
                 return false;
             var titleWords = Title.ToLowerInvariant().Split(WordDelimiters, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x);
             var otherWords = contact.Title.ToLowerInvariant().Split(WordDelimiters, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x);

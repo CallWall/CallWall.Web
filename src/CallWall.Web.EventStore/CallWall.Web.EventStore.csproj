@@ -79,6 +79,8 @@
     <Compile Include="Contacts\AccountContacts.cs" />
     <Compile Include="Contacts\AccountContactsFactory.cs" />
     <Compile Include="Contacts\AccountContactSynchronizationService.cs" />
+    <Compile Include="Contacts\AnniversaryRecord.cs" />
+    <Compile Include="Contacts\ContactAssociationRecord.cs" />
     <Compile Include="Contacts\ContactComparer.cs" />
     <Compile Include="Contacts\ContactEventType.cs" />
     <Compile Include="Contacts\ContactStreamNames.cs" />

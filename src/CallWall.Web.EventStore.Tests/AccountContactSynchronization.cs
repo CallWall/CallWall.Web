@@ -145,7 +145,7 @@ namespace CallWall.Web.EventStore.Tests
 
             private static void IsSummaryEqualToUpdate(IAccountContactSummary summary, ContactAggregateUpdate update)
             {
-                CollectionAssert.AreEqual(new[] { summary.PrimaryAvatar }, update.AddedAvatars);
+                CollectionAssert.AreEqual(summary.AvatarUris, update.AddedAvatars);
                 Assert.AreEqual(summary.Provider, update.AddedProviders.Single().ProviderName);
                 Assert.AreEqual(summary.AccountId, update.AddedProviders.Single().AccountId);
                 Assert.AreEqual(summary.ProviderId, update.AddedProviders.Single().ContactId);
@@ -196,7 +196,10 @@ namespace CallWall.Web.EventStore.Tests
                             Provider = provider,
                             ProviderId = Guid.NewGuid().ToString(),
                             Title = "Alex Adams",
-                            PrimaryAvatar = "http://image.coms/AnonAvatar.png",
+                            AvatarUris =
+                            {
+                                "http://image.coms/AnonAvatar.png"
+                            },
                             Tags =
                             {
                                 "Work",
@@ -209,7 +212,10 @@ namespace CallWall.Web.EventStore.Tests
                             Provider = provider,
                             ProviderId = Guid.NewGuid().ToString(),
                             Title = "Billy Bonds",
-                            PrimaryAvatar = "http://image.coms/AnonAvatar.png",
+                            AvatarUris =
+                            {
+                                "http://image.coms/AnonAvatar.png"
+                            },
                             Tags =
                             {
                                 "Family"
@@ -221,7 +227,10 @@ namespace CallWall.Web.EventStore.Tests
                             Provider = provider,
                             ProviderId = Guid.NewGuid().ToString(),
                             Title = "Charlie Cheese",
-                            PrimaryAvatar = "http://image.coms/AnonAvatar.png",
+                            AvatarUris =
+                            {
+                                "http://image.coms/AnonAvatar.png"
+                            },
                             Tags =
                             {
                                 "Neighbour"

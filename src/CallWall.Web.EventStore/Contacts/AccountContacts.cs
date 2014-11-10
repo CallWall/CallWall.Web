@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
-using System.Threading;
 using System.Threading.Tasks;
 using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Accounts;
@@ -199,7 +195,7 @@ namespace CallWall.Web.EventStore.Contacts
             else
             {
                 result.Title = contact.Title;
-                result.PrimaryAvatar = contact.PrimaryAvatar;
+                result.AvatarUris = contact.AvatarUris.ToArray();
                 result.Tags = contact.Tags.ToArray();
             }
             return result;

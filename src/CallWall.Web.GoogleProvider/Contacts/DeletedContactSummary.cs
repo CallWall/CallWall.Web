@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProvider.Contacts
@@ -28,16 +27,39 @@ namespace CallWall.Web.GoogleProvider.Contacts
             get { throw new System.NotSupportedException(); }
         }
 
-        string IAccountContactSummary.PrimaryAvatar
-        {
-            get { throw new System.NotSupportedException(); }
-        }
-
         IEnumerable<string> IAccountContactSummary.Tags
         {
             get { throw new System.NotSupportedException(); }
         }
 
-        public IEnumerable<ContactHandle> Handles { get { return Enumerable.Empty<ContactHandle>(); } }
+        IAnniversary IAccountContactSummary.DateOfBirth
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        string IAccountContactSummary.FullName
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        IEnumerable<string> IAccountContactSummary.AvatarUris
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        IEnumerable<ContactHandle> IAccountContactSummary.Handles
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        IEnumerable<IContactAssociation> IAccountContactSummary.Organizations
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
+        IEnumerable<IContactAssociation> IAccountContactSummary.Relationships
+        {
+            get { throw new System.NotImplementedException(); }
+        }
     }
 }
