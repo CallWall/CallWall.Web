@@ -40,18 +40,6 @@ namespace CallWall.Web.Domain
 
         IEnumerable<IContactAssociation> Relationships { get; }
 
-        //EmailAddresses
-        /*
-         * Association e.g. Home/Work
-         * Value e.g. lee@home.com
-         * IsPrimary? Just put this one first?
-         */
-        IEnumerable<IContactAssociation> EmailAddresses { get; }
-
-        //PhoneNumbers
-        /*
-         * Association : e.g. Home/work/mobile
-         */
-        IEnumerable<IContactAssociation> PhoneNumbers { get; }
+        IEnumerable<ContactHandle> Handles { get; }
     }
 }

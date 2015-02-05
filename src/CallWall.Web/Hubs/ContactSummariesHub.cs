@@ -16,15 +16,15 @@ namespace CallWall.Web.Hubs
     [HubName("contactSummaries")]
     public class ContactSummariesHub : Hub
     {
-        private readonly IContactSummaryRepository _contactSummaryRepository;
+        private readonly IContactRepository _contactRepository;
         private readonly ILoginProvider _loginProvider;
         private readonly ILogger _logger; 
         private readonly SerialDisposable _contactsSummarySubsription = new SerialDisposable();
         private readonly SerialDisposable _headVersionSubsription = new SerialDisposable();
 
-        public ContactSummariesHub(IContactSummaryRepository contactSummaryRepository, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
+        public ContactSummariesHub(IContactRepository contactRepository, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
         {
-            _contactSummaryRepository = contactSummaryRepository;
+            _contactRepository = contactRepository;
             _loginProvider = loginProvider;
             _logger = loggerFactory.CreateLogger(GetType());
             _logger.Info("ContactSummariesHub.ctor()");
@@ -38,7 +38,7 @@ namespace CallWall.Web.Hubs
                 _logger.Debug("ContactSummariesHub.RequestContactSummaryStream({0})", fromEventId);            
                 var user = await _loginProvider.GetUser(Context.User.UserId());
                 _logger.Trace("Getting contacts for user : {0}", user.Id);
-                var subscription = _contactSummaryRepository.GetContactUpdates(user, fromEventId)
+                var subscription = _contactRepository.GetContactUpdates(user, fromEventId)
                     .Select(evt=>new ContactAggregateUpdateSummary(evt.EventId, evt.Value))
                     .Where(summary=>summary.IsRelevant)
                     .Log(_logger, "RequestContactSummaryStream")
@@ -58,7 +58,7 @@ namespace CallWall.Web.Hubs
         public async Task RequestHeadVersionStream()
         {
             var user = await _loginProvider.GetUser(Context.User.UserId());
-            var subscription = _contactSummaryRepository.ObserveContactUpdatesHeadVersion(user)
+            var subscription = _contactRepository.ObserveContactUpdatesHeadVersion(user)
                 .Buffer(TimeSpan.FromSeconds(0.5))
                 .Where(buffer=>buffer.Count > 0)
                 .Select(buffer=>buffer.Last())

@@ -65,7 +65,20 @@ namespace CallWall.Web.EventStore
 
                 var subscription = conn.SubscribeToStreamFrom(streamName, fromVersion, true, callback);
 
-                return new CompositeDisposable(Disposable.Create(() => subscription.Stop(TimeSpan.FromSeconds(2))), conn);
+                return new CompositeDisposable(Disposable.Create(() =>
+                                                                 {
+
+                                                                     try
+                                                                     {
+                                                                         subscription.Stop(TimeSpan.FromSeconds(2));
+                                                                     }
+                                                                     catch (Exception ex)
+                                                                     {
+                                                                         //HACK : Check this is fixed in newer vers of ES - LC
+                                                                         // https://groups.google.com/forum/#!topic/event-store/ZRQ9IRg1k5w
+                                                                         _logger.Warn(ex, "Failed to stop subscription.");
+                                                                     }
+                                                                 }), conn);
             });
         }
 

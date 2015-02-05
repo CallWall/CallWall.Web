@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Contacts;
@@ -15,7 +13,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As an end user",
         IWant = "I want to have changes to my contact data ",
         SoThat = "So that I can receive changes faster over poor network conditions")]
-    //[Timeout(1000)]
+    [Timeout(1000)]
     public class UserContactsUpdatedFixture
     {
         [Test]
@@ -141,7 +139,7 @@ namespace CallWall.Web.EventStore.Tests
 
         [TestCase(null)]
         [TestCase("")]
-        public void Adding_contact_with_no_title__and_no_handles_should_not_yeild_a_contact(string title)
+        public void Adding_contact_with_no_title_and_no_handles_should_not_yeild_a_contact(string title)
         {
             var contact = GenerateContact("PrimaryAccount", title, "Stub-John@doe.com");
             new UserContactUpdateSingleContactAggregateScenario()
@@ -345,32 +343,6 @@ namespace CallWall.Web.EventStore.Tests
 
                 CollectionAssert.AreEqual(expected.AddedHandles, actual.AddedHandles);
                 CollectionAssert.AreEqual(expected.RemovedHandles, actual.RemovedHandles);
-            }
-        }
-
-        public sealed class ContactProviderSummaryComparer : IComparer, IComparer<IContactProviderSummary>
-        {
-            public static readonly ContactProviderSummaryComparer Instance = new ContactProviderSummaryComparer();
-            public int Compare(object x, object y)
-            {
-                var lhs = x as IContactProviderSummary;
-                var rhs = y as IContactProviderSummary;
-                return Compare(lhs, rhs);
-            }
-
-            public int Compare(IContactProviderSummary x, IContactProviderSummary y)
-            {
-                if (x == null && y == null) return 0;
-                if (x == null) return -1;
-                if (y == null) return 1;
-
-                var providerSort = String.CompareOrdinal(x.ProviderName, y.ProviderName);
-                if (providerSort != 0) return providerSort;
-
-                var accountSort = String.CompareOrdinal(x.AccountId, y.AccountId);
-                if (accountSort != 0) return accountSort;
-
-                return String.CompareOrdinal(x.ContactId, y.ContactId);
             }
         }
     }

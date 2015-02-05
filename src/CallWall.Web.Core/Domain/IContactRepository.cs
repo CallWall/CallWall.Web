@@ -2,10 +2,12 @@
 
 namespace CallWall.Web.Domain
 {
-    public interface IContactSummaryRepository
+    public interface IContactRepository
     {
+        IObservable<int> ObserveContactUpdatesHeadVersion(User user);
+
         IObservable<Event<ContactAggregateUpdate>> GetContactUpdates(User user, int fromEventId);
 
-        IObservable<int> ObserveContactUpdatesHeadVersion(User user);
+        
     }
 }

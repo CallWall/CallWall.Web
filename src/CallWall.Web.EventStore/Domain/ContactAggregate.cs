@@ -176,10 +176,12 @@ namespace CallWall.Web.EventStore.Domain
             var oldAvatars = _snapshot.Avatars.ToSet();
             var oldTags = _snapshot.Tags.ToSet();
             var oldProviders = _snapshot.Providers.ToSet();
+            var oldHandles = _snapshot.Handles.ToSet();
 
             var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
             var tagDelta = new CollectionDelta<string>(oldTags, Tags);
             var providerDelta = new CollectionDelta<ContactProviderSummary>(oldProviders, Providers);
+            var handleDelta = new CollectionDelta<ContactHandle>(oldHandles, Handles);
 
             var delta = new ContactAggregateUpdate
             {
@@ -192,6 +194,8 @@ namespace CallWall.Web.EventStore.Domain
                 RemovedProviders = providerDelta.RemovedItems,
                 AddedTags = tagDelta.AddedItems,
                 RemovedTags = tagDelta.RemovedItems,
+                AddedHandles = handleDelta.AddedItems,
+                RemovedHandles = handleDelta.RemovedItems
             };
 
             return delta;

@@ -18,7 +18,7 @@ namespace CallWall.Web.EventStore.Contacts
         public string[] Tags { get; set; }
         public ContactHandle[] Handles { get; set; }
         public ContactAssociationRecord[] Organizations { get; set; }
-        public ContactAssociationRecord[] Relationshipts { get; set; }
+        public ContactAssociationRecord[] Relationships { get; set; }
 
 
         IAnniversary IAccountContactSummary.DateOfBirth { get { return DateOfBirth; }}
@@ -26,6 +26,6 @@ namespace CallWall.Web.EventStore.Contacts
         IEnumerable<string> IAccountContactSummary.Tags { get { return Tags; } }
         IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles; } }
         IEnumerable<IContactAssociation> IAccountContactSummary.Organizations { get { return Organizations; }}
-        IEnumerable<IContactAssociation> IAccountContactSummary.Relationships { get { return Relationshipts; } }
+        IEnumerable<IContactAssociation> IAccountContactSummary.Relationships { get { return Relationships; } }
     }
 }

@@ -3,11 +3,11 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Contacts
 {
-    sealed class ContactSummaryRepository : IContactSummaryRepository
+    sealed class ContactRepository : IContactRepository
     {
         private readonly IUserContactRepository _userContactRepository;
 
-        public ContactSummaryRepository(IUserContactRepository userContactRepository)
+        public ContactRepository(IUserContactRepository userContactRepository)
         {
             _userContactRepository = userContactRepository;
         }

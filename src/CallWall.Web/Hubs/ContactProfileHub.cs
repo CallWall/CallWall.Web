@@ -32,10 +32,16 @@ namespace CallWall.Web.Hubs
             Debug.Print("ContactProfileHub.Subscribe(...)");
 
 
-            //TODO: The first thing we should do is get what we already have on the contact from the EventStore. I suppose we can just add an EventStore implementation of the GetContactDetails
+            //TODO: The first thing we should do is get what we already have on the contact from the EventStore.
+            //  I suppose we can just add an EventStore implementation of the GetContactDetails
+            // NO! 
+            // 1) Use the UserRepo (in memory) to match the contactKeys with a contact
+            // 2) Return that ContactProfile
+            // 3) Use that ContactProfile to then pass to IAccountContactProvider implementations.
 
 
-            var user = await _loginProvider.GetUser(Context.User.UserId());
+            Guid userId = Context.User.UserId();
+            var user = await _loginProvider.GetUser(userId);
             var subscription = _contactsProviders
                                 .ToObservable()
                                 .SelectMany(c => c.GetContactDetails(user, contactKeys))

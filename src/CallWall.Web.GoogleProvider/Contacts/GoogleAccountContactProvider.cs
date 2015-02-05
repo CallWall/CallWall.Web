@@ -42,7 +42,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
         {
-            //For each relevant account, for each contact, make a query to get contact deatils.
+            //For each relevant account, for each contact, make a query to get contact details.
             var query = from googleAccount in user.Accounts.Where(acc => acc.Provider == Provider)
                         from contactKey in contactKeys
                         select GetContactDetails(googleAccount, contactKey);

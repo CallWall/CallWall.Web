@@ -20,7 +20,7 @@ namespace CallWall.Web.EventStore.Tests
         IWant = "I want to keep a synchronized cache of user's contacts per account",
         SoThat = "So that I can present this data to the user quickly")]
     [Timeout(20000)]
-    public class AccountContactSynchronization
+    public class AccountContactSynchronizationFixture
     {
         #region Setup/TearDown
 

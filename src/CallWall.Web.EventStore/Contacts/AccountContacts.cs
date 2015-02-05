@@ -197,6 +197,7 @@ namespace CallWall.Web.EventStore.Contacts
                 result.Title = contact.Title;
                 result.AvatarUris = contact.AvatarUris.ToArray();
                 result.Tags = contact.Tags.ToArray();
+                result.Handles = contact.Handles.ToArray();
             }
             return result;
         }

@@ -20,7 +20,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         public AccountContacts Create(IAccount account)
         {
-            var accountContactProvider = _accountContactProviders.SingleOrDefault(acp => acp.Provider == account.Provider);
+            var accountContactProvider = _accountContactProviders.Single(acp => acp.Provider == account.Provider);
             return new AccountContacts(_eventStoreClient, _loggerFactory, accountContactProvider, account);
         }
     }

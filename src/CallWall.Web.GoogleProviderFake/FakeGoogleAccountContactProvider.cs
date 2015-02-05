@@ -19,6 +19,7 @@ namespace CallWall.Web.GoogleProviderFake
 
         public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
         {
+            //return Observable.Empty<IContactProfile>();
             return Observable.Interval(TimeSpan.FromSeconds(1))
                              .Zip(Profiles(), (_, msg) => msg);
         }
@@ -31,25 +32,23 @@ namespace CallWall.Web.GoogleProviderFake
                 //fullName = "",
                 DateOfBirth = new DateTime(1979, 12, 25),
                 Tags = new[] { "Family", "Dolphins", "London" },
-                Organizations =
-                    new[]
+                Organizations = new[]
                             {
                                 new ContactAssociation("Consultant", "Adaptive"),
                                 new ContactAssociation("Triathlon", "Serpentine")
                             },
-                Relationships =
-                    new[] { new ContactAssociation("Wife", "Erynne"), new ContactAssociation("Brother", "Rhys") },
-                PhoneNumbers =
-                    new[]
+                Relationships = new[] 
+                    { 
+                        new ContactAssociation("Wife", "Erynne"), 
+                        new ContactAssociation("Brother", "Rhys") 
+                    },
+                Handles = new ContactHandle[]
                             {
-                                new ContactAssociation("Mobile - UK", "07827743025"),
-                                new ContactAssociation("Mobile - NZ", "021 254 3824")
-                            },
-                EmailAddresses =
-                    new[]
-                            {
-                                new ContactAssociation("Home", "lee.ryan.campbell@gmail.com"),
-                                new ContactAssociation("Work", "lee.campbell@callwall.com")
+                                new ContactPhoneNumber("07827743025","Mobile - UK"), 
+                                new ContactPhoneNumber("021 254 3824", "Mobile - NZ"),
+                            
+                                new ContactEmailAddress("lee.ryan.campbell@gmail.com", "Home"),
+                                new ContactEmailAddress("lee.campbell@callwall.com", "Work")
                             },
             };
             yield return new ContactProfile
@@ -74,7 +73,7 @@ namespace CallWall.Web.GoogleProviderFake
                 .Zip(
                     new[]
                     {
-                        new ContactSummary {ProviderId = "1", Title = "Lee Campbell"},
+                        new ContactSummary {ProviderId = "1", Title = "Lee Campbell", Handles = new[]{new ContactEmailAddress("lee@mail.com", "Home"), }},
                         new ContactSummary {ProviderId = "2", Title = "Rhys Campbell", Tags = new[] {Family,Colleague,Dolphins}},
                         new ContactSummary {ProviderId = "3", Title = "Erynne Campbell", Tags = new[] {Family,Dolphins}},
                         new ContactSummary {ProviderId = "4", Title = "Tori Campbell", Tags = new[] {Family}},
@@ -107,6 +106,11 @@ namespace CallWall.Web.GoogleProviderFake
 
         private sealed class ContactSummary : IAccountContactSummary
         {
+            public ContactSummary()
+            {
+                Tags = Enumerable.Empty<string>();
+                Handles = Enumerable.Empty<ContactHandle>();
+            }
             public bool IsDeleted { get { return false; } }
             public string Provider { get { return Constants.ProviderName; } }
 
@@ -114,9 +118,13 @@ namespace CallWall.Web.GoogleProviderFake
 
             public string ProviderId { get; set; }
             public string Title { get; set; }
-            public string PrimaryAvatar { get; set; }
+            public IAnniversary DateOfBirth { get; private set; }
+            public string FullName { get; private set; }
+            public IEnumerable<string> AvatarUris { get { return Enumerable.Empty<string>(); } }
             public IEnumerable<string> Tags { get; set; }
-            public IEnumerable<ContactHandle> Handles { get { return Enumerable.Empty<ContactHandle>(); } }
+            public IEnumerable<ContactHandle> Handles { get; set; }
+            public IEnumerable<IContactAssociation> Organizations { get { return Enumerable.Empty<IContactAssociation>(); } }
+            public IEnumerable<IContactAssociation> Relationships { get { return Enumerable.Empty<IContactAssociation>(); } }
         }
 
         private sealed class ContactProfile : IContactProfile
@@ -128,8 +136,7 @@ namespace CallWall.Web.GoogleProviderFake
             public IEnumerable<string> Tags { get; set; }
             public IEnumerable<IContactAssociation> Organizations { get; set; }
             public IEnumerable<IContactAssociation> Relationships { get; set; }
-            public IEnumerable<IContactAssociation> EmailAddresses { get; set; }
-            public IEnumerable<IContactAssociation> PhoneNumbers { get; set; }
+            public IEnumerable<ContactHandle> Handles { get; set; }
         }
 
         private sealed class ContactAssociation : IContactAssociation

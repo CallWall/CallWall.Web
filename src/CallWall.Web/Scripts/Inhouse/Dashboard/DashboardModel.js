@@ -18,6 +18,8 @@
         self.name = name;
         self.imageUrl = imageUrl;
     };
+
+    //TODO: These hard coded values dont belong here -LC
     var googleProvider = new ProviderDescription('Google', '/Content/Google/images/GoogleIcon.svg');
     var gmailProvider = new ProviderDescription('Gmail', '/Content/Google/images/Email_48x48.png');
     var hangoutsProvider = new ProviderDescription('Hangouts', '/Content/Google/images/Hangouts_42x42.png');
@@ -27,7 +29,6 @@
     var facebookProvider = new ProviderDescription('Facebook', '/Content/Facebook/images/Facebook_64x64.png');
     var microsoftProvider = new ProviderDescription('Microsoft', '/Content/Microsoft/images/Microsoft_64x64.png');
     var githubProvider = new ProviderDescription('GitHub', '/Content/Github/images/Github_64x64.png');
-
     var providers = [
        googleProvider,
        gmailProvider,
@@ -40,6 +41,7 @@
        githubProvider
     ];
 
+    //TODO: refactor to just new ProviderDescription(provider.name, provider.image); -LC
     var getProvider = function (provider) {
         //Provider is IProviderDescription
         if (provider.name) {
@@ -71,8 +73,7 @@
         self.tags = ko.observableArray();
         self.organizations = ko.observableArray();
         self.relationships = ko.observableArray();
-        self.phoneNumbers = ko.observableArray();
-        self.emailAddresses = ko.observableArray();
+        self.handles = ko.observableArray();
         self.isProcessing = ko.observable(true);
 
         //TODO: Make some sort of carousel that is bound to an observable array.
@@ -94,8 +95,7 @@
             addRange(self.tags, data.tags);
             addRange(self.organizations, data.organizations, function(d) { return new ContactAssociation(d); });
             addRange(self.relationships, data.relationships, function (d) { return new ContactAssociation(d); });
-            addRange(self.phoneNumbers, data.phoneNumbers, function (d) { return new ContactAssociation(d); });
-            addRange(self.emailAddresses, data.emailAddresses, function (d) { return new ContactAssociation(d); });
+            addRange(self.handles, data.handles);
         };
     };
 
@@ -126,12 +126,12 @@
 
     var CollaborationAction = function (data) {
         var self = this;
-        //self.project = project;   //Maybe use project/projectName instead of name.
         self.title = data.title;
         self.actionDate = new Date(data.actionDate);
         self.actionPerformed = data.actionPerformed;
         self.isCompleted = data.isCompleted;
-        self.provider = getProvider(data.provider);
+        //self.provider = getProvider(data.provider);
+        self.provider = new ProviderDescription(data.provider.name, data.provider.image);
     };
 
     var ListViewModel = function (ctor) {

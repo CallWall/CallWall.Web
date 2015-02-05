@@ -59,24 +59,21 @@
     </div>
     <!-- /ko -->
     <h4>Contacts</h4>
-    <!-- ko foreach: phoneNumbers -->
+    <!-- ko foreach: handles -->
     <div class="kvp">
         <div class="key" data-bind="text: name"></div>
-        <div>
-            <a data-bind="text: association,
-                          attr: { href: 'tel:' + association }" />
-        </div>
+        <div data-bind="template: { name: handleType }"></div>
     </div>
     <!-- /ko -->
-    <!-- ko foreach: emailAddresses -->
-    <div class="kvp">
-        <div class="key" data-bind="text: name"></div>
-        <div>
-            <a data-bind="text: association,
-                          attr: { href: 'mailto:' + association }" />
-        </div>
-    </div>
-    <!-- /ko -->
+</script>
+
+<script type="text/html" id="Email">
+    <a data-bind="text: handle,
+                  attr: { href: 'mailto:' + handle }" />
+</script>
+<script type="text/html" id="Phone">
+    <a data-bind="text: handle,
+                  attr: { href: 'tel:' + handle }" />
 </script>
 <script type="text/html" id="CommunicationTemplate">
     <h3>Communication</h3>

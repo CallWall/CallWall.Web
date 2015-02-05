@@ -11,22 +11,19 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
         private readonly IEnumerable<string> _avatarUris;
         private readonly IEnumerable<IContactAssociation> _organizations;
         private readonly IEnumerable<IContactAssociation> _relationships;
-        private readonly IEnumerable<IContactAssociation> _emailAddresses;
-        private readonly IEnumerable<IContactAssociation> _phoneNumbers;
+        private readonly IEnumerable<ContactHandle> _handles;
         private readonly IEnumerable<Uri> _groupUris;
         private readonly Collection<string> _tags = new Collection<string>();
 
         public GoogleContactProfile(string title, string fullName, DateTime? dateOfBirth, 
             IEnumerable<string> avatarUris, 
-            IEnumerable<ContactAssociation> emailAddresses, 
-            IEnumerable<ContactAssociation> phoneNumbers, 
+            IEnumerable<ContactHandle> handles, 
             IEnumerable<ContactAssociation> organizations, 
             IEnumerable<ContactAssociation> relationships,
             IEnumerable<Uri> groupUris)
         {
             _avatarUris = avatarUris;
-            _emailAddresses = emailAddresses;
-            _phoneNumbers = phoneNumbers;
+            _handles = handles;
             _organizations = organizations;
             _relationships = relationships;
             _groupUris = groupUris;
@@ -68,14 +65,9 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             get { return _relationships; }
         }
 
-        public IEnumerable<IContactAssociation> EmailAddresses
+        public IEnumerable<ContactHandle> Handles
         {
-            get { return _emailAddresses; }
-        }
-
-        public IEnumerable<IContactAssociation> PhoneNumbers
-        {
-            get { return _phoneNumbers; }
+            get { return _handles; }
         }
 
         public IEnumerable<string> Tags
