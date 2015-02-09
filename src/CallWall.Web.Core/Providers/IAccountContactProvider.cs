@@ -9,6 +9,6 @@ namespace CallWall.Web.Providers
 
         IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated);
 
-        IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys);
+        //IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys);
     }
 }

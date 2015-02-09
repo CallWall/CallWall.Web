@@ -118,6 +118,7 @@
     <Compile Include="NotificationBase.cs" />
     <Compile Include="NotificationExtensions.cs" />
     <Compile Include="NotifyEventComparer.cs" />
+    <Compile Include="ObservableEx.cs" />
     <Compile Include="PropertyExtensions.cs" />
     <Compile Include="ResharperAnnotations.cs" />
     <Compile Include="ILogger.cs" />

@@ -212,6 +212,10 @@
     @Scripts.Render("~/bundles/dashboard")
 
     <script>
+        function getParameterByName(name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        }
         $(function () {
             var model = new callWall.DashboardViewModel();
             model.LoadContactProfile();
@@ -229,11 +233,13 @@
             var contactCollaborationAdapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollaborations, model.collaboration);
 
             //start the subscriptions
-            contactProfileAdapter.StartHub(["lee@mail.com"]);
-            contactCommunicationAdapter.StartHub(["lee@mail.com"]);
-            contactCalendarAdapter.StartHub(["lee@mail.com"]);
-            contactGalleryAlbumAdapter.StartHub(["lee@mail.com"]);
-            contactCollaborationAdapter.StartHub(["lee@mail.com"]);
+            var contactId = getParameterByName('id');
+            console.log('contactId = %s', contactId);
+            contactProfileAdapter.StartHub(contactId);
+            contactCommunicationAdapter.StartHub(contactId);
+            contactCalendarAdapter.StartHub(contactId);
+            contactGalleryAlbumAdapter.StartHub(contactId);
+            contactCollaborationAdapter.StartHub(contactId);
             //Location View model?
             (function () {
 

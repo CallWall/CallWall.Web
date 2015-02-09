@@ -33,6 +33,12 @@ namespace CallWall.Web.EventStore.Contacts
             return this;
         }
 
+
+        public IContactProfile GetById(int id)
+        {
+            return _contactsById[id];
+        }
+
         public IContactProfile GetByContactKeys(string[] contactKeys)
         {
             var query = from key in contactKeys

@@ -8,6 +8,6 @@ namespace CallWall.Web.Domain
 
         IObservable<Event<ContactAggregateUpdate>> GetContactUpdates(User user, int fromEventId);
 
-        
+        IObservable<IContactProfile> GetContactDetails(User user, string contactId);
     }
 }

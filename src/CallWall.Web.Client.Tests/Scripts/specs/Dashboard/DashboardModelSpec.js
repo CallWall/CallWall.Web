@@ -35,8 +35,7 @@ describe("Dashboard Models", function () {
                 expect(contactProfile.tags().length).toBe(0);//Empty array
                 expect(contactProfile.organizations().length).toBe(0);//Empty array
                 expect(contactProfile.relationships().length).toBe(0);//Empty array
-                expect(contactProfile.phoneNumbers().length).toBe(0);//Empty array
-                expect(contactProfile.emailAddresses().length).toBe(0);//Empty array
+                expect(contactProfile.handles().length).toBe(0);//Empty array
             });
 
             it("Aggregate populates the model on first call", function () {
@@ -93,23 +92,20 @@ describe("Dashboard Models", function () {
                 expect(contactProfile.relationships()[1].name).toBe('rel2');
                 expect(contactProfile.relationships()[1].association).toBe('assoc2');
             });
-            it("Aggregate concats phone numbers", function () {
-                contactProfile.aggregate({ phoneNumbers: [{ name: 'phone1', association: 'phAssoc1' }] });
-                contactProfile.aggregate({ phoneNumbers: [{ name: 'phone2', association: 'phAssoc2' }] });
-                expect(contactProfile.phoneNumbers().length).toBe(2);
-                expect(contactProfile.phoneNumbers()[0].name).toBe('phone1');
-                expect(contactProfile.phoneNumbers()[0].association).toBe('phAssoc1');
-                expect(contactProfile.phoneNumbers()[1].name).toBe('phone2');
-                expect(contactProfile.phoneNumbers()[1].association).toBe('phAssoc2');
-            });
-            it("Aggregate concats email addresses", function () {
-                contactProfile.aggregate({ emailAddresses: [{ name: 'test1@test.com', association: 'emailAssoc1' }] });
-                contactProfile.aggregate({ emailAddresses: [{ name: 'beta@live.com', association: 'emailAssoc2' }] });
-                expect(contactProfile.emailAddresses().length).toBe(2);
-                expect(contactProfile.emailAddresses()[0].name).toBe('test1@test.com');
-                expect(contactProfile.emailAddresses()[0].association).toBe('emailAssoc1');
-                expect(contactProfile.emailAddresses()[1].name).toBe('beta@live.com');
-                expect(contactProfile.emailAddresses()[1].association).toBe('emailAssoc2');
+            it("Aggregate concats handles (phone numbers, email addresses etc)", function () {
+                contactProfile.aggregate({ handles: [{ name: 'phone1', association: 'phAssoc1' }] });
+                contactProfile.aggregate({ handles: [{ name: 'phone2', association: 'phAssoc2' }] });
+                contactProfile.aggregate({ handles: [{ name: 'test1@test.com', association: 'emailAssoc1' }] });
+                contactProfile.aggregate({ handles: [{ name: 'beta@live.com', association: 'emailAssoc2' }] });
+                expect(contactProfile.handles().length).toBe(4);
+                expect(contactProfile.handles()[0].name).toBe('phone1');
+                expect(contactProfile.handles()[0].association).toBe('phAssoc1');
+                expect(contactProfile.handles()[1].name).toBe('phone2');
+                expect(contactProfile.handles()[1].association).toBe('phAssoc2');
+                expect(contactProfile.handles()[2].name).toBe('test1@test.com');
+                expect(contactProfile.handles()[2].association).toBe('emailAssoc1');
+                expect(contactProfile.handles()[3].name).toBe('beta@live.com');
+                expect(contactProfile.handles()[3].association).toBe('emailAssoc2');
             });
         });
 

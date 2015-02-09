@@ -76,6 +76,7 @@ namespace CallWall.Web.Hubs
             return base.OnDisconnected();
         }
     }
+
     public class ContactAggregateUpdateSummary
     {
         public ContactAggregateUpdateSummary(int eventId, ContactAggregateUpdate source)

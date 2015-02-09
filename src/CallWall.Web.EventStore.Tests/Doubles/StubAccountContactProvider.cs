@@ -21,10 +21,5 @@ namespace CallWall.Web.EventStore.Tests.Doubles
         {
             return _contactFeed;
         }
-
-        IObservable<IContactProfile> IAccountContactProvider.GetContactDetails(User user, string[] contactKeys)
-        {
-            throw new NotSupportedException();
-        }
     }
 }

@@ -92,7 +92,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public UserRegistrationAccountContactSynchronizationScenario(IEventStoreClient eventStoreClient)
             {
-                _userContactRepository = new UserContactRepository(eventStoreClient);
+                _userContactRepository = new UserContactRepository(eventStoreClient, new ConsoleLoggerFactory());
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);

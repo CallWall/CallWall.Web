@@ -1,8 +1,5 @@
-
 using System.Threading.Tasks;
 using CallWall.Web.Domain;
-using CallWall.Web.EventStore.Contacts;
-using CallWall.Web.Providers;
 
 namespace CallWall.Web.EventStore
 {
@@ -15,12 +12,12 @@ namespace CallWall.Web.EventStore
             registry.RegisterSingleton<Accounts.IAccountContactRefresher, Accounts.AccountContactRefresher>();
             registry.RegisterSingleton<Contacts.IAccountContactsFactory, Contacts.AccountContactsFactory>();
             registry.RegisterSingleton<Contacts.IUserContactRepository, Contacts.UserContactRepository>();
-            registry.RegisterType<IAccountContactProvider, Contacts.EventStoreAccountContactProvider>("EventStoreAccountContactProvider");
+            //registry.RegisterType<IAccountContactProvider, Contacts.EventStoreAccountContactProvider>("EventStoreAccountContactProvider");
 
 
             registry.RegisterSingleton<IUserRepository, Users.UserRepository>();
             registry.RegisterSingleton<IAccountFactory, Accounts.AccountFactory>();
-            registry.RegisterSingleton<IContactRepository, ContactRepository>();
+            registry.RegisterSingleton<IContactRepository, Contacts.ContactRepository>();
    
             registry.RegisterType<IProcess, EventStoreProcess>("EventStoreProcess");
         }

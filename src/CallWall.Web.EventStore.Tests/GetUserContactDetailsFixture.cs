@@ -67,12 +67,10 @@ namespace CallWall.Web.EventStore.Tests
             private readonly IAccount _account;
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
             private readonly IObservable<IAccountContactSummary> _expectedFeed;
-            private readonly EventStoreAccountContactProvider _esContactProvider;
 
             public FetchUserContactProfileScenario(IEventStoreClient eventStoreClient)
             {
-                _userContactRepository = new UserContactRepository(eventStoreClient);
-                _esContactProvider = new EventStoreAccountContactProvider(eventStoreClient, new ConsoleLoggerFactory());
+                _userContactRepository = new UserContactRepository(eventStoreClient, new ConsoleLoggerFactory());
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
@@ -101,7 +99,7 @@ namespace CallWall.Web.EventStore.Tests
             {
                 await WaitForContactsToBeLoaded();
 
-                var actual = await _esContactProvider.GetContactDetails(user, new[] { "alex.adams@mail.com" })
+                var actual = await _userContactRepository.GetContactDetails(user, new[] { "alex.adams@mail.com" })
                     .Take(1)
                     .Timeout(TimeSpan.FromSeconds(5))
                     .ToTask();

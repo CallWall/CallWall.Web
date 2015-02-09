@@ -8,7 +8,7 @@ namespace CallWall.Web.GoogleProviderFake
 {
     public sealed class FakeGoogleContactCollaborationProvider : IContactCollaborationProvider
     {
-        public IObservable<IContactCollaboration> GetCollaborations(IEnumerable<ISession> session, string[] contactKeys)
+        public IObservable<IContactCollaboration> GetCollaborations(User user, string[] contactKeys)
         {
             return Observable.Interval(TimeSpan.FromSeconds(1))
                 .Zip(GetContactCollaborations(), (_, msg) => msg);

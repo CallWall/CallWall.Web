@@ -73,8 +73,7 @@
         self.tags = ko.observableArray();
         self.organizations = ko.observableArray();
         self.relationships = ko.observableArray();
-        self.phoneNumbers = ko.observableArray();
-        self.emailAddresses = ko.observableArray();
+        self.handles = ko.observableArray();
         self.isProcessing = ko.observable(true);
 
         //TODO: Make some sort of carousel that is bound to an observable array.
@@ -96,8 +95,7 @@
             addRange(self.tags, data.tags);
             addRange(self.organizations, data.organizations, function(d) { return new ContactAssociation(d); });
             addRange(self.relationships, data.relationships, function (d) { return new ContactAssociation(d); });
-            addRange(self.phoneNumbers, data.phoneNumbers, function (d) { return new ContactAssociation(d); });
-            addRange(self.emailAddresses, data.emailAddresses, function (d) { return new ContactAssociation(d); });
+            addRange(self.handles, data.handles);
         };
     };
 
@@ -133,7 +131,6 @@
         self.actionPerformed = data.actionPerformed;
         self.isCompleted = data.isCompleted;
         //self.provider = getProvider(data.provider);
-        console.log('Test?');
         self.provider = new ProviderDescription(data.provider.name, data.provider.image);
     };
 

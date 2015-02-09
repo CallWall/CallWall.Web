@@ -45,7 +45,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
             return Observable.Using(_imapClientFactory, imapClient => SearchImap(imapClient, contactKeys, account));
         }
 
-        private IObservable<IMessage> SearchImap(IImapClient imapClient, IEnumerable<string> contactKeys, IAccount account)
+        private static IObservable<IMessage> SearchImap(IImapClient imapClient, IEnumerable<string> contactKeys, IAccount account)
         {
             var query = from isConnected in imapClient.Connect("imap.gmail.com", 993)
                                          .Select(isConnected =>

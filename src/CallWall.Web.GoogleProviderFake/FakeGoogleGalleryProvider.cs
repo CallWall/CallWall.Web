@@ -6,10 +6,10 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.GoogleProviderFake
 {
-    //TODO: MOve all referenced images to Fake's content path. Have it copied on build to correct path as per other modules. -LC
+    //TODO: Move all referenced images to Fake's content path. Have it copied on build to correct path as per other modules. -LC
     public class FakeGoogleGalleryProvider : IGalleryProvider
     {
-        public IObservable<IGalleryAlbum> GetGalleryAlbums(IEnumerable<ISession> session, string[] contactKeys)
+        public IObservable<IGalleryAlbum> GetGalleryAlbums(User user, string[] contactKeys)
         {
             return Observable.Interval(TimeSpan.FromSeconds(1))
                 .Zip(GetAlbums(), (_, msg) => msg);

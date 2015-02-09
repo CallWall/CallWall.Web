@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using CallWall.Web.Domain;
-using CallWall.Web.Providers;
-using EventStore.ClientAPI;
 
 namespace CallWall.Web.EventStore.Contacts
 {
     public class UserContactRepository : IUserContactRepository
     {
         private readonly IEventStoreClient _eventStoreClient;
+        private readonly ILogger _logger;
 
-        public UserContactRepository(IEventStoreClient eventStoreClient)
+        public UserContactRepository(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
         {
             _eventStoreClient = eventStoreClient;
-
+            _logger = loggerFactory.CreateLogger(GetType());
         }
 
         public IObservable<Event<ContactAggregateUpdate>> GetContactSummariesFrom(User user, int? versionId)
@@ -35,27 +32,18 @@ namespace CallWall.Web.EventStore.Contacts
                 _eventStoreClient.GetHeadVersion(streamName).ToObservable(),
                 _eventStoreClient.GetNewEvents(streamName).Select(resolvedEvent => resolvedEvent.OriginalEventNumber));
         }
-    }
 
-    public class EventStoreAccountContactProvider : IAccountContactProvider
-    {
-        private readonly IEventStoreClient _eventStoreClient;
-        private ILogger _logger;
-
-        public EventStoreAccountContactProvider(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
+        public IObservable<IContactProfile> GetContactDetails(User user, string contactId)
         {
-            _eventStoreClient = eventStoreClient;
-            _logger = loggerFactory.CreateLogger(GetType());
-        }
-
-        public string Provider { get { return ""; } }
-
-        public IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated)
-        {
-            return Observable.Empty<IAccountContactSummary>();
+            return GetContactLookupFor(user).Select(cl => cl.GetById(int.Parse(contactId)));
         }
 
         public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
+        {
+            return GetContactLookupFor(user).Select(cl => cl.GetByContactKeys(contactKeys));
+        }
+
+        private IObservable<ContactLookup> GetContactLookupFor(User user)
         {
             var streamName = ContactStreamNames.UserContacts(user.Id);
             var query =
@@ -68,26 +56,8 @@ namespace CallWall.Web.EventStore.Contacts
                     .Where(x => x != null)
                     .Log(_logger, "UserContact-Profile")
                 select contactUpdate;
-
             return query.Aggregate(new ContactLookup(), (acc, cur) => acc.Add(cur))
-                .Log(_logger, "UserContact-Aggregate")
-                .Select(cl => cl.GetByContactKeys(contactKeys));
-        }
-    }
-
-    public static class ObservableEx
-    {
-        public static IObservable<T> TakeUntil<T>(this IObservable<T> source, Func<T, bool> terminator)
-        {
-            return Observable.Create<T>(o =>
-                source.Subscribe(x =>
-                {
-                    o.OnNext(x);
-                    if (terminator(x))
-                        o.OnCompleted();
-                },
-                o.OnError,
-                o.OnCompleted));
+                        .Log(_logger, "UserContact-Aggregate");
         }
     }
 }
