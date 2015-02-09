@@ -118,6 +118,7 @@
     <Compile Include="NotificationBase.cs" />
     <Compile Include="NotificationExtensions.cs" />
     <Compile Include="NotifyEventComparer.cs" />
+    <Compile Include="ObservableEx.cs" />
     <Compile Include="PropertyExtensions.cs" />
     <Compile Include="ResharperAnnotations.cs" />
     <Compile Include="ILogger.cs" />
@@ -149,7 +150,7 @@
     <Compile Include="Domain\IContactCollaboration.cs" />
     <Compile Include="Domain\IContactProfile.cs" />
     <Compile Include="Domain\IContactProviderSummary.cs" />
-    <Compile Include="Domain\IContactSummaryRepository.cs" />
+    <Compile Include="Domain\IContactRepository.cs" />
     <Compile Include="Domain\IGalleryAlbum.cs" />
     <Compile Include="Domain\IResourceScope.cs" />
     <Compile Include="Domain\ISession.cs" />

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.Providers
@@ -10,6 +9,6 @@ namespace CallWall.Web.Providers
 
         IObservable<IAccountContactSummary> GetContactsFeed(IAccount account, DateTime lastUpdated);
 
-        IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys);
+        //IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys);
     }
 }

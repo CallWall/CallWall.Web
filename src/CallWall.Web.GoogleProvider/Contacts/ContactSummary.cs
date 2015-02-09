@@ -1,43 +1,52 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
     internal class ContactSummary : IAccountContactSummary
     {
-        private readonly string _title;
-        private readonly IEnumerable<string> _tags;
-        private readonly string _primaryAvatar;
-        private readonly string _providerId;
-        private readonly string _accountId;
-        private readonly IEnumerable<ContactHandle> _handles;
-
-        public ContactSummary(string providerId, string accountId, string title, string primaryAvatar, IEnumerable<string> tags, IEnumerable<ContactHandle> handles)
+        public ContactSummary(string providerId, string accountId, string title, string fullName, IAnniversary dateOfBirth, string primaryAvatar, 
+            IEnumerable<string> tags, 
+            IEnumerable<ContactHandle> handles,
+            IEnumerable<IContactAssociation> organizations,
+            IEnumerable<IContactAssociation> relationships
+            )
         {
-            _providerId = providerId;
-            _title = title;
-            _primaryAvatar = primaryAvatar;
-            _tags = tags;
-            _handles = handles;
-            _accountId = accountId;
+            ProviderId = providerId;
+            AccountId = accountId;
+            Title = title;
+            FullName = fullName;
+            DateOfBirth = dateOfBirth;
+            
+            AvatarUris = new[] { primaryAvatar };
+            Tags = tags;
+            Handles = handles;
+            Organizations = organizations;
+            Relationships = relationships;
+            
         }
 
-        public string Provider { get { return "Google"; } }
+        public string Provider { get { return Constants.ProviderName; } }
 
-        public string ProviderId { get { return _providerId; } }
+        public string ProviderId { get; private set; }
 
-        public string AccountId { get { return _accountId; } }
+        public string AccountId { get; private set; }
 
         /// <summary>
         /// The title description for the contact. Usually their First and Last name.
         /// </summary>
-        public string Title { get { return _title; } }
+        public string Title { get; private set; }
 
-        public IEnumerable<string> Tags { get { return _tags; } }
+        public string FullName { get; private set; }
+        public IAnniversary DateOfBirth { get; private set; }
+        
+        public IEnumerable<string> AvatarUris { get; private set; }
+        public IEnumerable<string> Tags { get; private set; }
+        public IEnumerable<ContactHandle> Handles { get; private set; }
+        public IEnumerable<IContactAssociation> Organizations { get; private set; }
+        public IEnumerable<IContactAssociation> Relationships { get; private set; }
 
-        public IEnumerable<ContactHandle> Handles { get { return _handles; } }
-
-        public string PrimaryAvatar { get { return _primaryAvatar; } }
 
         public bool IsDeleted { get { return false; } }
     }

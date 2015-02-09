@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.Hosting;
 using CallWall.Web.Contracts;
 using CallWall.Web.Contracts.Contact;
 using CallWall.Web.Domain;
@@ -48,7 +47,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
         {
             //Replace with something like ...
             //var user = new User(Guid.Empty, null, null);
-            //var accessTokens = user.Accounts.Where(acc => acc.Provider == "Google")
+            //var accessTokens = user.Accounts.Where(acc => acc.Provider == Constants.ProviderName)
             //    .Where(acc => acc.CurrentSession != null && !acc.CurrentSession.HasExpired())
             //    .Where(acc => acc.CurrentSession.AuthorizedResources.Contains(ResourceScope.Contacts.Resource))
             //    .Select(acc => acc.CurrentSession.AccessToken);

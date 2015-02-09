@@ -36,7 +36,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
             //TODO: Enable the getting of a new token, and persisting it to the ES -LC
             return user.Accounts
                 .Where(acc => !acc.CurrentSession.HasExpired())
-                .Where(acc => acc.Provider == "Google")
+                .Where(acc => acc.Provider == Constants.ProviderName)
                 .Where(acc => acc.CurrentSession.AuthorizedResources.Contains(ResourceScope.Gmail.Resource));
         }
 
@@ -45,7 +45,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
             return Observable.Using(_imapClientFactory, imapClient => SearchImap(imapClient, contactKeys, account));
         }
 
-        private IObservable<IMessage> SearchImap(IImapClient imapClient, IEnumerable<string> contactKeys, IAccount account)
+        private static IObservable<IMessage> SearchImap(IImapClient imapClient, IEnumerable<string> contactKeys, IAccount account)
         {
             var query = from isConnected in imapClient.Connect("imap.gmail.com", 993)
                                          .Select(isConnected =>

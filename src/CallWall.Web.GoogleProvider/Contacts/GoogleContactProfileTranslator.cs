@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -72,27 +75,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         #endregion
 
-        //TODO: Delete this unused method? -LC
-        public int CalculateNextPageStartIndex(string response)
-        {
-            var xDoc = XDocument.Parse(response);
-            if (xDoc.Root == null)
-                return 0;
-            var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
-            var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
-            var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
-            //var totalResults = xDoc.Root.Element(ToXName("openSearch", "totalResults"));
-            //var startIndex = xDoc.Root.Element(ToXName("openSearch", "startIndex"));
-            //var itemsPerPage = xDoc.Root.Element(ToXName("openSearch", "itemsPerPage"));
-            if (startIndex == null || itemsPerPage == null || totalResults == null)
-                return -1;
-
-            var nextIndex = int.Parse(startIndex.Value) + int.Parse(itemsPerPage.Value);
-            if (nextIndex > int.Parse(totalResults.Value))
-                return -1;
-            return nextIndex;
-        }
-
         public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccount account)
         {
             //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
@@ -115,12 +97,19 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 else
                 {
                     var title = GetTitle(xContactEntry);
+                    var fullName = GetFullName(xContactEntry);
+                    var dateOfBirth = GetDateOfBirth(xContactEntry);
                     var avatar = GetAvatar(xContactEntry, accessToken);
                     var tags = GetTags(xContactEntry);
                     var handles = GetHandles(xContactEntry);
+                    var organizations = Enumerable.Empty<IContactAssociation>(); 
+                    var relationships = Enumerable.Empty<IContactAssociation>(); 
 
                     //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
-                    var contact = new ContactSummary(providerId, account.AccountId, title, avatar, tags, handles);
+                    var contact = new ContactSummary(providerId, account.AccountId, 
+                        title,fullName, dateOfBirth, 
+                        avatar, 
+                        tags, handles, organizations, relationships);
                     contacts.Add(contact);
                 }
             }
@@ -137,7 +126,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 int.Parse(totalResults.Value),
                 int.Parse(itemsPerPage.Value));
         }
-
+        
         private static bool IsDeleted(XElement xContactEntry)
         {
             //Check from presence of a <gd:deleted/> element. Not sure what its contents will be.
@@ -165,6 +154,63 @@ namespace CallWall.Web.GoogleProvider.Contacts
             return title;
         }
 
+        private static string GetFullName(XElement xContactEntry)
+        {
+            /*
+             * <gd:name>
+                   <gd:fullName>Dr John Marks</gd:fullName>
+                   <gd:namePrefix>Dr</gd:namePrefix>
+                   <gd:givenName>John</gd:givenName>
+                   <gd:additionalName>Western Ensenada Motor</gd:additionalName>
+                   <gd:familyName>Marks</gd:familyName>
+                   <gd:nameSuffix>(sladehastings@me.com)</gd:nameSuffix>
+             */
+
+            var nameParts = new[]
+                {
+                    "gd:name/gd:namePrefix",
+                    "gd:name/gd:givenName",
+                    "gd:name/gd:additionalName",
+                    "gd:name/gd:familyName",
+                    "gd:name/gd:nameSuffix"
+                }
+                .Select(namePart => XPathString(xContactEntry, namePart, Ns))
+                .Where(val => !string.IsNullOrWhiteSpace(val));
+        
+            return string.Join(" ", nameParts).Trim();
+        }
+
+        private static readonly Regex FullDobRegex = new Regex(@"(?<year>\d{4})-(?<month>\d\d)-(?<day>\d\d)");
+        private static readonly Regex YearlessDobRegex = new Regex(@"--(?<month>\d\d)-(?<day>\d\d)");
+        private static IAnniversary GetDateOfBirth(XElement xContactEntry)
+        {
+            //<gContact:birthday when="1979-06-01"/>
+            var xBirthday = xContactEntry.Elements(ToXName("gContact", "birthday"))
+                .Select(x => x.Attribute("when"))
+                .FirstOrDefault(att => att != null);
+
+            if (xBirthday == null)
+                return null;
+
+            var dobMatch = FullDobRegex.Match(xBirthday.Value);
+            if (dobMatch.Success)
+            {
+                var year = int.Parse(dobMatch.Groups["year"].Value);
+                var month = int.Parse(dobMatch.Groups["month"].Value);
+                var day = int.Parse(dobMatch.Groups["day"].Value);
+                return new Anniversary(year, month, day);
+            }
+
+            dobMatch = YearlessDobRegex.Match(xBirthday.Value);
+            if (dobMatch.Success)
+            {
+                var month = int.Parse(dobMatch.Groups["month"].Value);
+                var day = int.Parse(dobMatch.Groups["day"].Value);
+                return new Anniversary(month, day);
+            }
+            return null;
+        }
+
         private static IEnumerable<ContactHandle> GetEmailAddresses(XElement xContactEntry)
         {
             //<gd:email rel='http://schemas.google.com/g/2005#home' address='bob@gmail.com' primary='true'/>
@@ -177,7 +223,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
                          select new ContactEmailAddress(xElement.Attribute("address").Value, StripAnchor(xElement.Attribute("rel")));
             return emails;
         }
-
 
         private static IEnumerable<ContactHandle> GetPhoneNumbers(XElement xContactEntry)
         {

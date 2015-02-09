@@ -37,7 +37,7 @@ namespace CallWall.Web.GoogleProvider.Auth
 
         public override string ProviderName
         {
-            get { return "Google"; }
+            get { return Constants.ProviderName; }
         }
 
         public override IAccountConfiguration Configuration

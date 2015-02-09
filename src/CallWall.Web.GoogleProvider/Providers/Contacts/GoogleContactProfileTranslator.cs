@@ -44,7 +44,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
 
             var id = idElement.Value;
             var emails = GetEmailAddresses(xContactEntry);
-            var allemails = new HashSet<string>(emails.Select(c => c.Association)) { id };
+            var allemails = new HashSet<string>(emails.Select(c => c.Handle)) { id };
 
             return new GoogleUser(id, allemails);
         }
@@ -74,7 +74,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             var email = xEmail.Value;
             var contactHandles = new ContactHandle[] { new ContactEmailAddress(email, "main") };
 
-            return _accountFactory.Create(id, "Google", name, session, contactHandles);
+            return _accountFactory.Create(id, Constants.ProviderName, name, session, contactHandles);
         }
 
         public IGoogleContactProfile Translate(string response, string accessToken)
@@ -105,7 +105,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
                             {
                                 var hrp = new HttpRequestParameters(att.Value);
                                 hrp.QueryStringParameters.Add("access_token", accessToken);
-                                return hrp.ConstructUri();
+                                return hrp.ConstructUri().AbsoluteUri;
                             });
 
             var emails = GetEmailAddresses(xContactEntry);
@@ -113,7 +113,9 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
 
             //<gd:phoneNumber rel='http://schemas.google.com/g/2005#mobile' uri='tel:+33-6-43-06-76-58' primary='true'>+33  6 4306 7658</gd:phoneNumber>
             var phoneNumbers = from xElement in xContactEntry.XPathSelectElements("gd:phoneNumber", Ns)
-                               select new ContactAssociation(ToContactAssociation(xElement.Attribute("rel")), xElement.Value);
+                               select new ContactPhoneNumber(xElement.Value, ToContactAssociation(xElement.Attribute("rel")));
+
+            var handles = emails.Concat(phoneNumbers);
 
             /*<gd:organization rel='http://schemas.google.com/g/2005#work'><gd:orgName>Technip</gd:orgName></gd:organization>*/
             var organizations = from xElement in xContactEntry.XPathSelectElements("gd:organization", Ns)
@@ -129,65 +131,17 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
                             where hrefAttribute != null
                             select new Uri(hrefAttribute.Value);
 
-            var result = new GoogleContactProfile(title, fullName, dateOfBirth, avatars, emails, phoneNumbers, organizations, relationships, groupUris);
+            var result = new GoogleContactProfile(title, fullName, dateOfBirth, avatars, handles, organizations, relationships, groupUris);
             return result;
         }
 
-        //private static class Atom
-        //{
-        //    static Atom()
-        //    {
-        //        Entry = ToXName("x", "entry");
-        //        Title = ToXName("x", "title");
-        //    }
-
-        //    public static XName Entry { get; private set; }
-        //    public static XName Title { get; private set; }
-        //}
-        //public BatchOperationPage<IContactSummary> Translate(string response, string accessToken)
-        //{
-        //    //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
-        //    var xDoc = XDocument.Parse(response);
-        //    if (xDoc.Root == null)
-        //        return null;
-
-        //    var entries = xDoc.Root.Elements(Atom.Entry);
-        //    var contacts = new List<IContactSummary>();
-        //    foreach (var xContactEntry in entries)
-        //    {
-        //        if (xContactEntry == null)
-        //            return null;
-
-        //        var id = GetId(xContactEntry);
-        //        var title = GetTitle(xContactEntry);
-        //        var avatar = GetAvatar(xContactEntry, accessToken);
-        //        var tags = GetTags(xContactEntry);
-
-        //        var contact = new ContactSummary(id, title, avatar, tags);
-        //        contacts.Add(contact);
-        //    }
-
-
-        //    var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
-        //    var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
-        //    var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
-        //    if (startIndex == null || itemsPerPage == null || totalResults == null)
-        //        return new BatchOperationPage<IContactSummary>(contacts, 0, 1, -1);
-
-        //    return new BatchOperationPage<IContactSummary>(contacts,
-        //        int.Parse(startIndex.Value),
-        //        int.Parse(totalResults.Value),
-        //        int.Parse(itemsPerPage.Value));
-        //}
-
-
-        private static IEnumerable<ContactAssociation> GetEmailAddresses(XElement xContactEntry)
+        private static IEnumerable<ContactHandle> GetEmailAddresses(XElement xContactEntry)
         {
             //<gd:email rel='http://schemas.google.com/g/2005#home' address='danrowe1978@gmail.com' primary='true'/>
             var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", Ns)
                          select
-                             new ContactAssociation(ToContactAssociation(xElement.Attribute("rel")),
-                                                    xElement.Attribute("address").Value);
+                             new ContactEmailAddress(xElement.Attribute("address").Value,
+                                 ToContactAssociation(xElement.Attribute("rel")));
             return emails;
         }
 

@@ -54,7 +54,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 
         }
 
-        public IObservable<IContactProfile> GetContactDetails(IEnumerable<ISession> session, string[] contactKeys)
+        public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
         {
             //TODO: Implement LinkedIn GetContactDetails
             return Observable.Empty<IContactProfile>();
@@ -82,7 +82,25 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 
         private static IAccountContactSummary TranslateToContactSummary(string accountId, Contact c)
         {
-            return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new[] { c.Industry, c.Headline });
+            var organizations = GetOrganizations(c);
+
+            return new ContactSummary(accountId, c.Id, c.FirstName, c.LastName, c.PictureUrl, new[] { c.Industry }, organizations);
+        }
+
+        private static IEnumerable<IContactAssociation> GetOrganizations(Contact contact)
+        {
+            if (!string.IsNullOrWhiteSpace(contact.Headline))
+            {
+                var idx = contact.Headline.IndexOf(" at ", StringComparison.Ordinal);
+                if (idx > 1)
+                {
+                    var role = contact.Headline.Substring(0, idx);
+                    var org = contact.Headline.Substring(idx + 4);
+                    var ass = new ContactAssociation(role, org);
+                    return new[] { ass };
+                }
+            }
+            return Enumerable.Empty<IContactAssociation>();
         }
     }
 

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CallWall.Web.Domain
 {
+    //TODO: Rationalise, I am now going to try and get all of this information at sync time and store locally (at the AccountContact layer). 
+    //  Will then need to consider what this means at the UserContact layer.
     public interface IContactProfile
     {
         /// <summary>
@@ -38,18 +41,14 @@ namespace CallWall.Web.Domain
 
         IEnumerable<IContactAssociation> Relationships { get; }
 
-        //EmailAddresses
-        /*
-         * Association e.g. Home/Work
-         * Value e.g. lee@home.com
-         * IsPrimary? Just put this one first?
-         */
-        IEnumerable<IContactAssociation> EmailAddresses { get; }
+        IEnumerable<ContactHandle> Handles { get; }
+    }
 
-        //PhoneNumbers
-        /*
-         * Association : e.g. Home/work/mobile
-         */
-        IEnumerable<IContactAssociation> PhoneNumbers { get; }
+    public static class ContactProfileExtensions
+    {
+        public static string[] ContactKeys(this IContactProfile contactProfile)
+        {
+            return contactProfile.Handles.Select(h => h.Handle).ToArray();
+        }
     }
 }

@@ -79,10 +79,14 @@
     <Compile Include="Contacts\AccountContacts.cs" />
     <Compile Include="Contacts\AccountContactsFactory.cs" />
     <Compile Include="Contacts\AccountContactSynchronizationService.cs" />
+    <Compile Include="Contacts\AnniversaryRecord.cs" />
+    <Compile Include="Contacts\ContactAssociationRecord.cs" />
     <Compile Include="Contacts\ContactComparer.cs" />
     <Compile Include="Contacts\ContactEventType.cs" />
+    <Compile Include="Contacts\ContactLookup.cs" />
+    <Compile Include="Contacts\ContactProfile.cs" />
     <Compile Include="Contacts\ContactStreamNames.cs" />
-    <Compile Include="Contacts\ContactSummaryRepository.cs" />
+    <Compile Include="Contacts\ContactRepository.cs" />
     <Compile Include="Contacts\IAccountContactsFactory.cs" />
     <Compile Include="Contacts\UserContacts.cs" />
     <Compile Include="Contacts\UserContactSynchronizationService.cs" />

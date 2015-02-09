@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -16,32 +17,44 @@ namespace CallWall.Web.Hubs
     {
         private readonly SerialDisposable _subscription = new SerialDisposable();
         private readonly IEnumerable<IContactCollaborationProvider> _collaborationProviders;
+        private readonly IContactRepository _contactRepository;
         private readonly ILoginProvider _sessionProvider;
         private readonly ILogger _logger;
 
-        public ContactCollaborationHub(IEnumerable<IContactCollaborationProvider> collaborationProviders, ILoginProvider sessionProvider, ILoggerFactory loggerFactory)
+        public ContactCollaborationHub(IContactRepository contactRepository, IEnumerable<IContactCollaborationProvider> collaborationProviders, ILoginProvider sessionProvider, ILoggerFactory loggerFactory)
         {
             Debug.Print("ContactCollaborationHub.ctor()");
+            _contactRepository = contactRepository; 
             _collaborationProviders = collaborationProviders.ToArray();
             _sessionProvider = sessionProvider;
             _logger = loggerFactory.CreateLogger(GetType());
             _logger.Trace("ContactCollaborationHub.ctor(collaborationProviders:{0})", string.Join(",", _collaborationProviders.Select(cp=>cp.GetType().Name)));
         }
 
-        public async Task Subscribe(string[] contactKeys)
+        public async Task Subscribe(string contactId)
         {
-            Debug.Print("ContactProfileHub.Subscribe(...)");
-            var user = await _sessionProvider.GetUser(Context.User.UserId());
-            var sessions = user.Accounts.Select(a => a.CurrentSession).ToArray();
-            var subscription = _collaborationProviders
-                                .ToObservable()
-                                .SelectMany(c => c.GetCollaborations(sessions, contactKeys))
-                                .Log(_logger, "GetCollaborations")
-                                .Subscribe(contact => Clients.Caller.OnNext(contact),
-                                           ex => Clients.Caller.OnError("Error receiving Collaboration data"),
-                                           () => Clients.Caller.OnCompleted());
+            try
+            {
+                Debug.Print("ContactProfileHub.Subscribe(...)");
+                var user = await _sessionProvider.GetUser(Context.User.UserId());
 
-            _subscription.Disposable = subscription;
+                var query = from contactProfile in _contactRepository.GetContactDetails(user, contactId)
+                            from collaborationProvider in _collaborationProviders
+                            from collaboration in collaborationProvider.GetCollaborations(user, contactProfile.ContactKeys())
+                            select collaboration;
+
+                var subscription = query.Log(_logger, "GetCollaborations")
+                    .Subscribe(collaboration => Clients.Caller.OnNext(collaboration),
+                        ex => Clients.Caller.OnError("Error receiving Collaboration data"),
+                        () => Clients.Caller.OnCompleted());
+
+                _subscription.Disposable = subscription;
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Error Requesting ContactCollaborationStream in Hub.");
+                Clients.Caller.OnError("Error receiving Collaboration data");
+            }
         }
 
         public override Task OnDisconnected()

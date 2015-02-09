@@ -31,7 +31,9 @@
                     <img data-bind="attr: { src: primaryAvatar, alt: title }" class="avatar-img" onload="OnImageLoad(event);" />
                 </td>
                 <td class="title">
-                    <h3 data-bind="text: title"></h3>
+                    <a href="#" data-bind="attr: { href: '/Contact/Detail/?id=' + $data.id }" >
+                        <h3 data-bind="text: title"></h3>
+                    </a>
                 </td>
             </tr>
             <tr>

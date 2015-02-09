@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using CallWall.Web.Domain;
 using CallWall.Web.Providers;
-using CallWall.Web.Contracts;
 
 namespace CallWall.Web.GoogleProviderFake
 {
     public class FakeGoogleCalendarProvider : ICalendarProvider
     {
-        public IObservable<ICalendarEntry> GetCalendarEntries(IEnumerable<ISession> session, string[] contactKeys)
+        public IObservable<ICalendarEntry> GetCalendarEntries(User user, string[] contactKeys)
         {
             return Observable.Interval(TimeSpan.FromSeconds(1))
                 .Zip(GetCalendarEvents(), (_, msg) => msg);

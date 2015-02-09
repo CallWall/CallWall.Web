@@ -17,8 +17,9 @@
 
 <div class="title">
     <div class="mainPicture" style="float: left; padding: 5px;">
+        <!--TODO: Make some sort of carousel that is bound to an observable array.-->
         <img data-bind="attr: { src: contactProfile.avatar, alt: contactProfile.title }" onload="OnImageLoad(event);" />
-     </div>
+    </div>
     <div style="float: right" >
         <!-- ko foreach: contactProfile.tags -->
         <span class="tag" data-bind="text: $data"></span>        
@@ -58,24 +59,21 @@
     </div>
     <!-- /ko -->
     <h4>Contacts</h4>
-    <!-- ko foreach: phoneNumbers -->
+    <!-- ko foreach: handles -->
     <div class="kvp">
         <div class="key" data-bind="text: name"></div>
-        <div>
-            <a data-bind="text: association,
-                          attr: { href: 'tel:' + association }" />
-        </div>
+        <div data-bind="template: { name: handleType }"></div>
     </div>
     <!-- /ko -->
-    <!-- ko foreach: emailAddresses -->
-    <div class="kvp">
-        <div class="key" data-bind="text: name"></div>
-        <div>
-            <a data-bind="text: association,
-                          attr: { href: 'mailto:' + association }" />
-        </div>
-    </div>
-    <!-- /ko -->
+</script>
+
+<script type="text/html" id="Email">
+    <a data-bind="text: handle,
+                  attr: { href: 'mailto:' + handle }" />
+</script>
+<script type="text/html" id="Phone">
+    <a data-bind="text: handle,
+                  attr: { href: 'tel:' + handle }" />
 </script>
 <script type="text/html" id="CommunicationTemplate">
     <h3>Communication</h3>
@@ -214,6 +212,10 @@
     @Scripts.Render("~/bundles/dashboard")
 
     <script>
+        function getParameterByName(name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        }
         $(function () {
             var model = new callWall.DashboardViewModel();
             model.LoadContactProfile();
@@ -231,11 +233,13 @@
             var contactCollaborationAdapter = new callWall.SignalR.ContactCollaborationAdapter($.connection.contactCollaborations, model.collaboration);
 
             //start the subscriptions
-            contactProfileAdapter.StartHub(["lee@mail.com"]);
-            contactCommunicationAdapter.StartHub(["lee@mail.com"]);
-            contactCalendarAdapter.StartHub(["lee@mail.com"]);
-            contactGalleryAlbumAdapter.StartHub(["lee@mail.com"]);
-            contactCollaborationAdapter.StartHub(["lee@mail.com"]);
+            var contactId = getParameterByName('id');
+            console.log('contactId = %s', contactId);
+            contactProfileAdapter.StartHub(contactId);
+            contactCommunicationAdapter.StartHub(contactId);
+            contactCalendarAdapter.StartHub(contactId);
+            contactGalleryAlbumAdapter.StartHub(contactId);
+            contactCollaborationAdapter.StartHub(contactId);
             //Location View model?
             (function () {
 

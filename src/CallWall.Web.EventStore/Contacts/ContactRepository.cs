@@ -3,11 +3,12 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Contacts
 {
-    sealed class ContactSummaryRepository : IContactSummaryRepository
+    //TODO: Seems a bit envious of IUserContactRepository eh -LC
+    sealed class ContactRepository : IContactRepository
     {
         private readonly IUserContactRepository _userContactRepository;
 
-        public ContactSummaryRepository(IUserContactRepository userContactRepository)
+        public ContactRepository(IUserContactRepository userContactRepository)
         {
             _userContactRepository = userContactRepository;
         }
@@ -20,6 +21,11 @@ namespace CallWall.Web.EventStore.Contacts
         public IObservable<int> ObserveContactUpdatesHeadVersion(User user)
         {
             return _userContactRepository.ObserveContactUpdatesHeadVersion(user);
+        }
+
+        public IObservable<IContactProfile> GetContactDetails(User user, string contactId)
+        {
+            return _userContactRepository.GetContactDetails(user, contactId);
         }
     }
 }
