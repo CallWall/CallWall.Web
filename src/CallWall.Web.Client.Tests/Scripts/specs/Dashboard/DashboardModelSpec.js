@@ -202,14 +202,14 @@ describe("Dashboard Models", function () {
                     createdDate: '2014-01-23T10:39:31.095Z',
                     lastModifiedDate: '2014-02-23T10:39:31.095Z',
                     title : 'Gallery One',
-                    provider : 'Windows Live',
+                    provider : { name: 'Windows Live', image: '/content/ms/live.ico' },
                     imageUrls : ['live.com/image1.png','live.com/image2.gif']
                 }
                 var item2 = {
                     createdDate: '2012-01-23T10:39:31.095Z',
                     lastModifiedDate: '2012-02-23T10:39:31.095Z',
                     title: 'Fun in the sun',
-                    provider: 'Picassa',
+                    provider: { name: 'Picassa', image: '/content/google/picassa.svg' },
                     imageUrls: ['http://imageland.com/myuniqueid.png', 'google.com/images/1']
                 }
                 gallery.add(item1);
@@ -219,7 +219,8 @@ describe("Dashboard Models", function () {
                 expect(x1.createdDate.getTime()).toBe(new Date(item1.createdDate).getTime());
                 expect(x1.lastModifiedDate.getTime()).toBe(new Date(item1.lastModifiedDate).getTime());
                 expect(x1.title).toBe(item1.title);
-                expect(x1.provider).toBe(item1.provider);
+                expect(x1.provider.name).toBe(item1.provider.name);
+                expect(x1.provider.imageUrl).toBe(item1.provider.image);
                 expect(x1.imageUrls[0]).toBe(item1.imageUrls[0]);
                 expect(x1.imageUrls[1]).toBe(item1.imageUrls[1]);
 
@@ -227,7 +228,8 @@ describe("Dashboard Models", function () {
                 expect(x2.createdDate.getTime()).toBe(new Date(item2.createdDate).getTime());
                 expect(x2.lastModifiedDate.getTime()).toBe(new Date(item2.lastModifiedDate).getTime());
                 expect(x2.title).toBe(item2.title);
-                expect(x2.provider).toBe(item2.provider);
+                expect(x2.provider.name).toBe(item2.provider.name);
+                expect(x2.provider.imageUrl).toBe(item2.provider.image);
                 expect(x2.imageUrls[0]).toBe(item2.imageUrls[0]);
                 expect(x2.imageUrls[1]).toBe(item2.imageUrls[1]);
             });

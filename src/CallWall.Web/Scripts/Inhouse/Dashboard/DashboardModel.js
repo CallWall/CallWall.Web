@@ -19,43 +19,9 @@
         self.imageUrl = imageUrl;
     };
 
-    //TODO: These hard coded values dont belong here -LC
-    var googleProvider = new ProviderDescription('Google', '/Content/Google/images/GoogleIcon.svg');
-    var gmailProvider = new ProviderDescription('Gmail', '/Content/Google/images/Email_48x48.png');
-    var hangoutsProvider = new ProviderDescription('Hangouts', '/Content/Google/images/Hangouts_42x42.png');
-    var googleDriveProvider = new ProviderDescription('Google Drive', '/Content/Google/images/Drive_128x128.png');
-    var linkedinProvider = new ProviderDescription('LinkedIn', '/Content/LinkedIn/images/LinkedIn_64x64.png');
-    var twitterProvider = new ProviderDescription('Twitter', '/Content/Twitter/images/Twitter_64x64.png');
-    var facebookProvider = new ProviderDescription('Facebook', '/Content/Facebook/images/Facebook_64x64.png');
-    var microsoftProvider = new ProviderDescription('Microsoft', '/Content/Microsoft/images/Microsoft_64x64.png');
-    var githubProvider = new ProviderDescription('GitHub', '/Content/Github/images/Github_64x64.png');
-    var providers = [
-       googleProvider,
-       gmailProvider,
-       hangoutsProvider,
-       googleDriveProvider,
-       linkedinProvider,
-       twitterProvider,
-       facebookProvider,
-       microsoftProvider,
-       githubProvider
-    ];
-
-    //TODO: refactor to just new ProviderDescription(provider.name, provider.image); -LC
+    //TODO: Why not just change the data sent down to be 'imageUrl' instead of 'image'?
     var getProvider = function (provider) {
-        //Provider is IProviderDescription
-        if (provider.name) {
-            return new ProviderDescription(provider.name, provider.image);
-        }
-        //provider is a string
-        console.error('We should not require this provider mapping functionality. It means this client js file is tightly coupled to providers. We should be supplying all we need via the providers (including fakes)');
-        var whitespaceGlobalRegex = / /g;
-        for (var i = 0; i < providers.length; i++) {
-            if (provider.toLowerCase() === providers[i].name.toLowerCase().replace(whitespaceGlobalRegex, '')) {
-                return providers[i];
-            }
-        }
-        throw new Error("No providers found with name " + name);
+        return new ProviderDescription(provider.name, provider.image);
     };
 
     //Contact Profile
@@ -120,7 +86,7 @@
         self.createdDate = new Date(data.createdDate);
         self.lastModifiedDate = new Date(data.lastModifiedDate);
         self.title = data.title;
-        self.provider = data.provider;
+        self.provider = getProvider(data.provider);
         self.imageUrls = data.imageUrls;
     };
 
@@ -130,8 +96,7 @@
         self.actionDate = new Date(data.actionDate);
         self.actionPerformed = data.actionPerformed;
         self.isCompleted = data.isCompleted;
-        //self.provider = getProvider(data.provider);
-        self.provider = new ProviderDescription(data.provider.name, data.provider.image);
+        self.provider = getProvider(data.provider);
     };
 
     var ListViewModel = function (ctor) {
