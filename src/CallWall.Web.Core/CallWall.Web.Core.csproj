@@ -57,7 +57,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -115,6 +115,7 @@
     <Compile Include="EnumerableEx.cs" />
     <Compile Include="IRunnable.cs" />
     <Compile Include="ITypeRegistry.cs" />
+    <Compile Include="JsonExtensions.cs" />
     <Compile Include="NotificationBase.cs" />
     <Compile Include="NotificationExtensions.cs" />
     <Compile Include="NotifyEventComparer.cs" />

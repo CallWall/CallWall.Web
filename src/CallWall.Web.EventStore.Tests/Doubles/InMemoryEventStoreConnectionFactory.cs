@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using EventStore.ClientAPI;
 
 namespace CallWall.Web.EventStore.Tests.Doubles
@@ -29,10 +30,10 @@ namespace CallWall.Web.EventStore.Tests.Doubles
             Trace.WriteLine("Done (hopefully).");
         }
 
-        public IEventStoreConnection Connect()
+        public async Task<IEventStoreConnection> Connect()
         {
             var conn = EventStoreConnection.Create(_ipEndPoint);
-            conn.Connect();
+            await conn.ConnectAsync();
             return conn;
         }
 
