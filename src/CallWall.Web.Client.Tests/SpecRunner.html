@@ -8,45 +8,17 @@
     <link rel="stylesheet" type="text/css" href="Content/jasmine/jasmine.css">
     <script type="text/javascript" src="Scripts/jasmine/jasmine.js"></script>
     <script type="text/javascript" src="Scripts/jasmine/jasmine-html.js"></script>
+    <script type="text/javascript" src="Scripts/jasmine/boot.js"></script>
 
     <!-- include source files here... -->
 
-    <script type="text/javascript" src="Scripts/knockout-3.0.0.js"></script>
+    <script type="text/javascript" src="Scripts/knockout-3.1.0.js"></script>
     <script type="text/javascript" src="Scripts/Inhouse/ContactSummariesModels.js"></script>
     <script type="text/javascript" src="Scripts/Inhouse/Dashboard/DashboardModel.js"></script>
 
     <!-- include spec files here... -->
     <script type="text/javascript" src="Scripts/specs/ContactSpec.js"></script>
     <script type="text/javascript" src="Scripts/specs/Dashboard/DashboardModelSpec.js"></script>
-
-    <script type="text/javascript">
-        (function () {
-            var jasmineEnv = jasmine.getEnv();
-            jasmineEnv.updateInterval = 1000;
-
-            var htmlReporter = new jasmine.HtmlReporter();
-
-            jasmineEnv.addReporter(htmlReporter);
-
-            jasmineEnv.specFilter = function (spec) {
-                return htmlReporter.specFilter(spec);
-            };
-
-            var currentWindowOnload = window.onload;
-
-            window.onload = function () {
-                if (currentWindowOnload) {
-                    currentWindowOnload();
-                }
-                execJasmine();
-            };
-
-            function execJasmine() {
-                jasmineEnv.execute();
-            }
-
-        })();
-  </script>
 
 </head>
 
