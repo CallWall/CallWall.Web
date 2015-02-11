@@ -69,11 +69,11 @@ namespace CallWall.Web.Hubs
             _headVersionSubsription.Disposable = subscription;
         }
 
-        public override Task OnDisconnected()
+        public override Task OnDisconnected(bool stopCalled)
         {
-            _logger.Debug("ContactSummariesHub.OnDisconnected()");
+            _logger.Debug("ContactSummariesHub.OnDisconnected({0})", stopCalled);
             _contactsSummarySubsription.Dispose();
-            return base.OnDisconnected();
+            return base.OnDisconnected(stopCalled);
         }
     }
 

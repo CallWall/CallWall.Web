@@ -49,11 +49,11 @@ namespace CallWall.Web.Hubs
             _subscription.Disposable = subscription;
         }
 
-        public override Task OnDisconnected()
+        public override Task OnDisconnected(bool stopCalled)
         {
-            Debug.Print("ContactCalendarEventsHub.OnDisconnected()");
+            Debug.Print("ContactCalendarEventsHub.OnDisconnected({0})", stopCalled);
             _subscription.Dispose();
-            return base.OnDisconnected();
+            return base.OnDisconnected(stopCalled);
         }
     }
 }
