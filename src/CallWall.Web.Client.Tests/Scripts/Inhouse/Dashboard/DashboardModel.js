@@ -1,4 +1,4 @@
-﻿/// <reference path="../../knockout-3.1.0.debug.js" />
+﻿/// <reference path="../../knockout-3.2.0.debug.js" />
 
 (function (ko, callWall) {
     var addRange = function (targetKoArrar, newItems, selector) {

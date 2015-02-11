@@ -116,14 +116,14 @@
     <Content Include="..\CallWall.Web\Scripts\jquery.validate.unobtrusive.min.js">
       <Link>Scripts\jquery.validate.unobtrusive.min.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\knockout-3.1.0.debug.js">
-      <Link>Scripts\knockout-3.1.0.debug.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.2.0.debug.js">
+      <Link>Scripts\knockout-3.2.0.debug.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\knockout-3.1.0.js">
-      <Link>Scripts\knockout-3.1.0.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\knockout-3.2.0.js">
+      <Link>Scripts\knockout-3.2.0.js</Link>
     </Content>
-    <Content Include="..\CallWall.Web\Scripts\modernizr-2.7.2.js">
-      <Link>Scripts\modernizr-2.7.2.js</Link>
+    <Content Include="..\CallWall.Web\Scripts\modernizr-2.8.3.js">
+      <Link>Scripts\modernizr-2.8.3.js</Link>
     </Content>
     <Content Include="..\CallWall.Web\Scripts\_references.js">
       <Link>Scripts\_references.js</Link>

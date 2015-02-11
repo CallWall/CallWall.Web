@@ -298,6 +298,8 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\knockout-3.2.0.debug.js" />
+    <Content Include="Scripts\knockout-3.2.0.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\pouchdb-3.0.6.js" />
     <Content Include="Scripts\Inhouse\ContactSummaryPersistence.js" />
@@ -314,8 +316,6 @@
     <Content Include="Scripts\jquery.color.svg-names-2.1.2.js" />
     <Content Include="Scripts\jquery.color.svg-names-2.1.2.min.js" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
-    <Content Include="Scripts\knockout-3.1.0.debug.js" />
-    <Content Include="Scripts\knockout-3.1.0.js" />
     <Content Include="Scripts\pouchdb-3.0.6.min.js" />
     <Content Include="Scripts\rx-lite.d.ts" />
     <Content Include="Scripts\rx.compat.js" />
