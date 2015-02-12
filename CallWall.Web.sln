@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web", "src\CallWall.Web\CallWall.Web.csproj", "{99018229-EAA3-406F-BF5B-0EB28E4B30F0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BE00BE07-F1C7-4998-B801-7FE1AB4D6B99} = {BE00BE07-F1C7-4998-B801-7FE1AB4D6B99}
@@ -42,6 +44,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.EventStore.Tests", "src\CallWall.Web.EventStore.Tests\CallWall.Web.EventStore.Tests.csproj", "{19AE2B76-62BA-46D1-BD66-35EAE9167E5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallWall.Web.GoogleProvider.Tests", "src\CallWall.Web.GoogleProvider.Tests\CallWall.Web.GoogleProvider.Tests.csproj", "{93AF0C51-D326-4A72-BB2A-DE341174F0BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStore", "EventStore", "{D0E45AA7-5631-4857-B375-24B1DB8A060A}"
+	ProjectSection(SolutionItems) = preProject
+		tools\Install-EventStore.ps1 = tools\Install-EventStore.ps1
+		tools\InstallLocalEventStoreServer.bat = tools\InstallLocalEventStoreServer.bat
+		tools\StartDevLocalEventStore.bat = tools\StartDevLocalEventStore.bat
+		tools\StartInMemoryLocalEventStore.bat = tools\StartInMemoryLocalEventStore.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,9 +119,10 @@ Global
 		{A09E0B89-5FA8-4493-938F-35C180D5FDEC} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
 		{00269FFF-9346-4A9C-BEF7-113E311313CC} = {FB54BAB6-A5B2-4C45-93C3-AD715D1B61F7}
 		{493BF281-3FDA-4900-BECB-72A4AE60A237} = {B71E4E53-6185-4F0C-9262-340E744C3C20}
+		{191B20F0-2E16-4075-83FD-7A151EE2820D} = {B3115B1E-7CB6-4D1D-8036-1571EE15803B}
 		{19AE2B76-62BA-46D1-BD66-35EAE9167E5C} = {B71E4E53-6185-4F0C-9262-340E744C3C20}
 		{93AF0C51-D326-4A72-BB2A-DE341174F0BF} = {B71E4E53-6185-4F0C-9262-340E744C3C20}
-		{191B20F0-2E16-4075-83FD-7A151EE2820D} = {B3115B1E-7CB6-4D1D-8036-1571EE15803B}
+		{D0E45AA7-5631-4857-B375-24B1DB8A060A} = {E66FC3B3-CF48-47EA-B023-A372300D352A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35

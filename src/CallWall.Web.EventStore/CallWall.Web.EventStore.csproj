@@ -117,10 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="UninstallDevLocalEventStore.bat" />
-    <None Include="InstallDevLocalEventStore.bat" />
     <None Include="packages.config" />
-    <None Include="StartDevLocalEventStore.bat" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CallWall.Web.Core\CallWall.Web.Core.csproj">
