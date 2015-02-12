@@ -1,0 +1,1 @@
+"..\Server\EventStore\EventStore.ClusterNode.exe" --db ..\Server\EventStore\CallWallData --log ..\Server\EventStore\CallWallLogs

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using CallWall.Web.EventStore.Configuration;
 using EventStore.ClientAPI;
 using IESLogger = EventStore.ClientAPI.ILogger;
-using EventStore.ClientAPI.SystemData;
 
 namespace CallWall.Web.EventStore
 {
     public interface IEventStoreConnectionFactory
     {
-        IEventStoreConnection Connect();
+        Task<IEventStoreConnection> Connect();
     }
 
     public sealed class EventStoreConnectionFactory : IEventStoreConnectionFactory
@@ -27,14 +27,15 @@ namespace CallWall.Web.EventStore
         }
 
         //TODO: Opportunity to share a single connection. Check for best practices. -LC
-        public IEventStoreConnection Connect()
+        public async Task<IEventStoreConnection> Connect()
         {
             var connectionSettings = ConnectionSettings.Create()
                 .KeepReconnecting()
                 .UseCustomLogger(_esLogger);
             var endPoint = new IPEndPoint(ConfiguredIpAddress.Value, ConfiguredPort.Value);
             var conn =  EventStoreConnection.Create(connectionSettings, endPoint);
-            conn.Connect();
+            await conn.ConnectAsync();
+            
             return conn;
         }
 

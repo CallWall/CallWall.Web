@@ -57,11 +57,11 @@ namespace CallWall.Web.Hubs
             }
         }
 
-        public override Task OnDisconnected()
+        public override Task OnDisconnected(bool stopCalled)
         {
-            Debug.Print("ContactProfileHub.OnDisconnected()");
+            Debug.Print("ContactProfileHub.OnDisconnected({0})", stopCalled);
             _subscription.Dispose();
-            return base.OnDisconnected();
+            return base.OnDisconnected(stopCalled);
         }
     }
 }

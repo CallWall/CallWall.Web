@@ -54,7 +54,7 @@ namespace CallWall.Web.EventStore.Tests
             new FetchUserContactProfileScenario(_eventStoreClient)
                 .Given(s => s.Given_a_ContactSynchronizationService())
                 .When(s => s.When_a_user_registers_and_triggers_an_AccountRefresh())
-                .Then(s => s.Then_contacts_are_available_by_key(s.User))
+                .Then(s => s.Then_contacts_are_available_by_key())
                 .BDDfy();
 
         }
@@ -95,11 +95,11 @@ namespace CallWall.Web.EventStore.Tests
                 User = await _userRepository.RegisterNewUser(_account, Guid.NewGuid());
             }
 
-            public async Task Then_contacts_are_available_by_key(User user)
+            public async Task Then_contacts_are_available_by_key()
             {
                 await WaitForContactsToBeLoaded();
 
-                var actual = await _userContactRepository.GetContactDetails(user, new[] { "alex.adams@mail.com" })
+                var actual = await _userContactRepository.GetContactDetails(User, new[] { "alex.adams@mail.com" })
                     .Take(1)
                     .Timeout(TimeSpan.FromSeconds(5))
                     .ToTask();
