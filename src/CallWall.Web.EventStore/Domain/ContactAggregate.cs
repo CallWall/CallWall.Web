@@ -292,17 +292,20 @@ namespace CallWall.Web.EventStore.Domain
             //Check total count
             //Union the two sets
             //return Union < prior count
-            var myEmails = (Handles ?? Enumerable.Empty<ContactHandle>())
-                .Where(h => h.HandleType == ContactHandleTypes.Email)
-                .Select(h => NormailizeEmail(h.Handle))
-                .ToArray();
-            var otherEmails = (contact.Handles ?? Enumerable.Empty<ContactHandle>())
-                .Where(h => h.HandleType == ContactHandleTypes.Email)
-                .Select(h => NormailizeEmail(h.Handle))
-                .ToArray();
+            var myEmails = NormalizedEmails(Handles);
+            var otherEmails = NormalizedEmails(contact.Handles);
 
             var sumCount = myEmails.Length + otherEmails.Length;
             return myEmails.Concat(otherEmails).Distinct().Count() < sumCount;
+        }
+
+        private static string[] NormalizedEmails(IEnumerable<ContactHandle> contactHandles)
+        {
+            return (contactHandles ?? Enumerable.Empty<ContactHandle>())
+                .Where(h => h.HandleType == ContactHandleTypes.Email)
+                .Select(h => NormailizeEmail(h.Handle))
+                .Distinct()
+                .ToArray();
         }
 
         private static string NormailizeEmail(string emailAddress)
@@ -323,7 +326,7 @@ namespace CallWall.Web.EventStore.Domain
 
             var standardisedDomain = lowerCased.Replace("@googlemail.com", "@gmail.com");
             var filterRemoved = RemoveFilterSuffix(standardisedDomain);
-            var filteredPeriods = filterRemoved.Replace(".", string.Empty);
+            var filteredPeriods = RemoveLocalPeriods(filterRemoved);
             return filteredPeriods;
         }
 
@@ -336,6 +339,13 @@ namespace CallWall.Web.EventStore.Domain
                 return emailAddress.Remove(plusSignIdx, atSignIndex - plusSignIdx);
             }
             return emailAddress;
+        }
+        private static string RemoveLocalPeriods(string emailAddress)
+        {
+            var atSignIndex = emailAddress.IndexOf('@');
+            var localPart = emailAddress.Substring(0, atSignIndex);
+            var domainPart = emailAddress.Substring(atSignIndex);
+            return localPart.Replace(".", string.Empty) + domainPart;            
         }
 
         private static bool IsGmail(string lowerCased)
