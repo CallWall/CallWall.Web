@@ -68,15 +68,15 @@ namespace CallWall.Web.EventStore.Contacts
                 .Where(batch => batch.Any())
                 .Select(batch => Observable.Create<Unit>(
                         async (o, ct) =>
-                              {
-                                  TakeSnapshot();
-                                  foreach (var contact in batch)
-                                  {
-                                      UpdateContact(contact);
-                                  }
-                                  await UpdateComplete(userId);
-                                  o.OnCompleted();
-                              }))
+                        {
+                            TakeSnapshot();
+                            foreach (var contact in batch)
+                            {
+                                UpdateContact(contact);
+                            }
+                            await UpdateComplete(userId);
+                            o.OnCompleted();
+                        }))
                 .Concat()
                 .Subscribe(_ => { }, UpdateFailed);
         }
@@ -152,7 +152,6 @@ namespace CallWall.Web.EventStore.Contacts
             //TODO: Do I make a single stream for all AccountContact updates? Or do i subscribe to all streams as they accounts are registered?-LC
 
             var streamName = ContactStreamNames.AccountContacts(_provider, _accountId);
-            //await _eventStore.SaveEvent(streamName, ExpectedVersion.Any, new Guid(), ContactEventType.AccountContactUpdate, payload);
             await _eventStoreClient.SaveEvent(streamName, _writeVersion, Guid.NewGuid(), ContactEventType.AccountContactUpdate, payload);
 
             _writeVersion++;
@@ -186,7 +185,7 @@ namespace CallWall.Web.EventStore.Contacts
             {
                 AccountId = contact.AccountId,
                 Provider = contact.Provider,
-                ProviderId = contact.ProviderId,                
+                ProviderId = contact.ProviderId,
             };
             if (contact.IsDeleted)
             {
@@ -198,6 +197,9 @@ namespace CallWall.Web.EventStore.Contacts
                 result.AvatarUris = contact.AvatarUris.ToArray();
                 result.Tags = contact.Tags.ToArray();
                 result.Handles = contact.Handles.ToArray();
+                result.Organizations = contact.Organizations.Select(o => new ContactAssociationRecord { Association = o.Association, Name = o.Name }).ToArray();
+                result.Relationships = contact.Relationships.Select(r => new ContactAssociationRecord { Association = r.Association, Name = r.Name }).ToArray();
+
             }
             return result;
         }

@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using CallWall.Web.Domain;
+using CallWall.Web.GoogleProvider.Providers.Contacts;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
@@ -102,7 +103,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                     var avatar = GetAvatar(xContactEntry, accessToken);
                     var tags = GetTags(xContactEntry);
                     var handles = GetHandles(xContactEntry);
-                    var organizations = Enumerable.Empty<IContactAssociation>(); 
+                    var organizations = GetOrganizations(xContactEntry);
                     var relationships = Enumerable.Empty<IContactAssociation>(); 
 
                     //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
@@ -126,7 +127,24 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 int.Parse(totalResults.Value),
                 int.Parse(itemsPerPage.Value));
         }
-        
+
+        private static IEnumerable<IContactAssociation> GetOrganizations(XElement xContactEntry)
+        {
+            var organizations = from xElement in xContactEntry.XPathSelectElements("gd:organization", Ns)
+                                where xElement.XPathSelectElement("gd:orgName", Ns) !=null
+                                select new ContactAssociation(ToContactAssociation(xElement.Attribute("rel")), xElement.XPathSelectElement("gd:orgName", Ns).Value);
+            return organizations;
+        }
+        private static string ToContactAssociation(XAttribute relAttribute)
+        {
+            //Could be a look
+            if (relAttribute == null || relAttribute.Value == null)
+                return "Other";
+            var hashIndex = relAttribute.Value.LastIndexOf("#", StringComparison.Ordinal);
+            var association = relAttribute.Value.Substring(hashIndex + 1);
+            return PascalCase(association);
+        }
+
         private static bool IsDeleted(XElement xContactEntry)
         {
             //Check from presence of a <gd:deleted/> element. Not sure what its contents will be.
