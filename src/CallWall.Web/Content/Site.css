@@ -61,9 +61,9 @@ div.contact-card td.avatar-cell {
     background: #808080;
     position: relative;
 }
-    div.contact-card img.avatar-img {
-        position: absolute;
-    }
+div.contact-card img.avatar-img {
+    position: absolute;
+}
 
 
 div.contact-card td.title {
@@ -74,6 +74,15 @@ div.contact-card td.title h3 {
     text-overflow: ellipsis; 
     max-width: 200px; 
     overflow: hidden;
+}
+
+div.contact-card td.title a {
+    color: black;
+    text-decoration: none;
+}
+div.contact-card td.title a:hover {
+    color: black;
+    text-decoration: underline;
 }
 
 img.account-icon {

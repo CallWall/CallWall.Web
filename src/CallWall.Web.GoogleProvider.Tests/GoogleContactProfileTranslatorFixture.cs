@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CallWall.Web.Domain;
@@ -80,7 +81,7 @@ namespace CallWall.Web.GoogleProvider.Tests
             public void When_translating_with_(string accessToken, IAccount account)
             {
                 _account = account;
-                _batch = _sut.Translate(_responsePayload, "accessToken", account);
+                _batch = _sut.Translate(_responsePayload, "accessToken", account, new Dictionary<string, string> { { "http://www.google.com/m8/feeds/groups/lee.ryan.campbell%40gmail.com/base/6","MyGroup" } });
             }
 
             public void Then_result_batch_contains_deleted_record(string providerId)
@@ -99,11 +100,12 @@ namespace CallWall.Web.GoogleProvider.Tests
         {
             var account = Substitute.For<IAccount>();
             account.AccountId.Returns("MyAccountId");
-            var httpReponse =
-                File.ReadAllText(
-                    @"C:\Users\Lee\SkyDrive\CallWall\Development\Google\SampleContactRequest_response_large.xml");
+            var httpReponse = File.ReadAllText(@"C:\Users\Lee\SkyDrive\CallWall\Development\Google\SampleContactRequest_response_large.xml");
+            var groupsHttpReponse = File.ReadAllText(@"C:\Users\Lee\SkyDrive\CallWall\Development\Google\ContactGroups_response.xml");
+
             var translator = new GoogleContactProfileTranslator();
-            var results = translator.Translate(httpReponse, "junkAccessToken", account);
+            var groups = translator.ToGroupDictionary(groupsHttpReponse);
+            var results = translator.Translate(httpReponse, "junkAccessToken", account, groups);
 
             var titles = results.Items
                 .Where(summary => !summary.IsDeleted

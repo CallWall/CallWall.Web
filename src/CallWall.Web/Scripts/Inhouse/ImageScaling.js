@@ -38,7 +38,7 @@
     return result;
 }
 function OnImageLoad(evt) {
-    console.log('OnImageLoad(%O)', evt);
+    //console.log('OnImageLoad(%O)', evt);
 
     var img = evt.currentTarget;
 
@@ -57,9 +57,9 @@ function OnImageLoad(evt) {
             var th = $(img).parent().height();
 
             // compute the new size and offsets
-            console.log('OnImageLoad - ScaleImage(%i, %i, %i, %i)', w, h, tw, th);
+            //console.log('OnImageLoad - ScaleImage(%i, %i, %i, %i)', w, h, tw, th);
             var result = ScaleImage(w, h, tw, th, false);
-            console.log('OnImageLoad - result = %O', result);
+            //console.log('OnImageLoad - result = %O', result);
 
             // adjust the image coordinates and size
             img.width = result.width;

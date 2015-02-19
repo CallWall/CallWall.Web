@@ -145,34 +145,6 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             return emails;
         }
 
-        public IGoogleContactProfile AddTags(IGoogleContactProfile contactProfile, string response)
-        {
-            var xDoc = XDocument.Parse(response);
-            var xGroupFeed = xDoc.Root;
-            if (xGroupFeed == null)
-                return contactProfile;
-
-            var groups =
-                (
-                    from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
-                    let id = groupEntry.Element(ToXName("x", "id"))
-                    let title = groupEntry.Element(ToXName("x", "title"))
-                    where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
-                    select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
-                ).ToDictionary(g => g.Id, g => g.Title);
-
-
-            foreach (var groupUri in contactProfile.GroupUris)
-            {
-                string tag;
-                if (groups.TryGetValue(groupUri.ToString(), out tag))
-                {
-                    contactProfile.AddTag(tag);
-                }
-            }
-
-            return contactProfile;
-        }
 
         private static XName ToXName(string prefix, string name)
         {
@@ -204,5 +176,39 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             var tail = input.Substring(1);
             return head + tail;
         }
+
+
+        //TODO: Implement the following from legacy code
+
+        public IGoogleContactProfile AddTags(IGoogleContactProfile contactProfile, string response)
+        {
+            var xDoc = XDocument.Parse(response);
+            var xGroupFeed = xDoc.Root;
+            if (xGroupFeed == null)
+                return contactProfile;
+
+            var groups =
+                (
+                    from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
+                    let id = groupEntry.Element(ToXName("x", "id"))
+                    let title = groupEntry.Element(ToXName("x", "title"))
+                    where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
+                    select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
+                ).ToDictionary(g => g.Id, g => g.Title);
+
+
+            foreach (var groupUri in contactProfile.GroupUris)
+            {
+                string tag;
+                if (groups.TryGetValue(groupUri.ToString(), out tag))
+                {
+                    contactProfile.AddTag(tag);
+                }
+            }
+
+            return contactProfile;
+        }
+
+
     }
 }

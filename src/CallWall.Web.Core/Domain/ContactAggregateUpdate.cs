@@ -24,6 +24,9 @@ namespace CallWall.Web.Domain
         public ContactHandle[] AddedHandles { get; set; }
         public ContactHandle[] RemovedHandles { get; set; }
 
+        public ContactAssociation[] AddedOrganizations { get; set; }
+        public ContactAssociation[] RemovedOrganizations { get; set; }
+
         public override string ToString()
         {
             if (IsDeleted)

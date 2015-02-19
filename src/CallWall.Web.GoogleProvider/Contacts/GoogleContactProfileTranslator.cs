@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -76,7 +77,27 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         #endregion
 
-        public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccount account)
+
+        public Dictionary<string, string> ToGroupDictionary(string response)
+        {
+            var xDoc = XDocument.Parse(response);
+            var xGroupFeed = xDoc.Root;
+            if (xGroupFeed == null)
+                return new Dictionary<string, string>();
+
+            var groups =
+                (
+                    from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
+                    let id = groupEntry.Element(ToXName("x", "id"))
+                    let title = groupEntry.Element(ToXName("x", "title"))
+                    where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
+                    select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
+                ).ToDictionary(g => g.Id, g => g.Title);
+
+            return groups;
+        }
+
+        public BatchOperationPage<IAccountContactSummary> Translate(string response, string accessToken, IAccount account, Dictionary<string, string> groups)
         {
             //response can be non xml i.e. "Temporary problem - please try again later and consider using batch operations. The user is over quota."
             var xDoc = XDocument.Parse(response);
@@ -101,9 +122,9 @@ namespace CallWall.Web.GoogleProvider.Contacts
                     var fullName = GetFullName(xContactEntry);
                     var dateOfBirth = GetDateOfBirth(xContactEntry);
                     var avatar = GetAvatar(xContactEntry, accessToken);
-                    var tags = GetTags(xContactEntry);
-                    var handles = GetHandles(xContactEntry);
-                    var organizations = GetOrganizations(xContactEntry);
+                    var tags = GetTags(xContactEntry, groups).ToArray();
+                    var handles = GetHandles(xContactEntry).ToArray();
+                    var organizations = GetOrganizations(xContactEntry).ToArray();
                     var relationships = Enumerable.Empty<IContactAssociation>(); 
 
                     //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
@@ -128,13 +149,9 @@ namespace CallWall.Web.GoogleProvider.Contacts
                 int.Parse(itemsPerPage.Value));
         }
 
-        private static IEnumerable<IContactAssociation> GetOrganizations(XElement xContactEntry)
-        {
-            var organizations = from xElement in xContactEntry.XPathSelectElements("gd:organization", Ns)
-                                where xElement.XPathSelectElement("gd:orgName", Ns) !=null
-                                select new ContactAssociation(ToContactAssociation(xElement.Attribute("rel")), xElement.XPathSelectElement("gd:orgName", Ns).Value);
-            return organizations;
-        }
+        
+
+        
         private static string ToContactAssociation(XAttribute relAttribute)
         {
             //Could be a look
@@ -229,6 +246,13 @@ namespace CallWall.Web.GoogleProvider.Contacts
             return null;
         }
 
+        private static IEnumerable<ContactHandle> GetHandles(XElement xContactEntry)
+        {
+            return GetEmailAddresses(xContactEntry)
+                .Concat(GetPhoneNumbers(xContactEntry));
+
+        }
+
         private static IEnumerable<ContactHandle> GetEmailAddresses(XElement xContactEntry)
         {
             //<gd:email rel='http://schemas.google.com/g/2005#home' address='bob@gmail.com' primary='true'/>
@@ -257,7 +281,30 @@ namespace CallWall.Web.GoogleProvider.Contacts
             return phoneNumbers;
         }
 
-        public static string ExtractTelephoneNumber(XElement phoneXElement)
+        private static IEnumerable<IContactAssociation> GetOrganizations(XElement xContactEntry)
+        {
+            /*<gd:organization rel='http://schemas.google.com/g/2005#work'><gd:orgName>Technip</gd:orgName></gd:organization>*/
+            //Or
+            /*<gd:organization rel=\"http://schemas.google.com/g/2005#other\"><gd:orgName>Technip</gd:orgName><gd:orgTitle>Executive Director</gd:orgTitle></gd:organization>*/
+            var organizations = from xElement in xContactEntry.XPathSelectElements("gd:organization", Ns)
+                                where xElement.XPathSelectElement("gd:orgName", Ns) != null
+                                select ExtractOrganization(xElement);
+                                
+            return organizations;
+        }
+
+        private static IContactAssociation ExtractOrganization(XElement xElement)
+        {
+            var orgName = xElement.XPathSelectElement("gd:orgName", Ns).Value;
+            var xTitle = xElement.XPathSelectElement("gd:orgTitle", Ns);
+            if (xTitle != null)
+            {
+                return new ContactAssociation(orgName, xTitle.Value);
+            }
+            return new ContactAssociation(xElement.Attribute("rel").Value, orgName);
+        }
+
+        private static string ExtractTelephoneNumber(XElement phoneXElement)
         {
             if (phoneXElement.Attribute("uri") != null)
             {
@@ -271,7 +318,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
             }
             return phoneXElement.Value;
         }
-
 
         private static string StripAnchor(XAttribute attribute)
         {
@@ -301,45 +347,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                                 .FirstOrDefault();
             return googleAvatar;
         }
-
-        private static IEnumerable<string> GetTags(XElement xContactEntry)
-        {
-            return Enumerable.Empty<string>();
-
-            //var xDoc = XDocument.Parse(response);
-            //var xGroupFeed = xDoc.Root;
-            //if (xGroupFeed == null)
-            //    return Enumerable.Empty<string>();
-
-            //var groups =
-            //    (
-            //        from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
-            //        let id = groupEntry.Element(ToXName("x", "id"))
-            //        let title = groupEntry.Element(ToXName("x", "title"))
-            //        where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
-            //        select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
-            //    ).ToDictionary(g => g.Id, g => g.Title);
-
-
-            //foreach (var groupUri in contactProfile.GroupUris)
-            //{
-            //    string tag;
-            //    if (groups.TryGetValue(groupUri.ToString(), out tag))
-            //    {
-            //        contactProfile.AddTag(tag);
-            //    }
-            //}
-
-            //return contactProfile;
-        }
-
-        private static IEnumerable<ContactHandle> GetHandles(XElement xContactEntry)
-        {
-            return GetEmailAddresses(xContactEntry)
-                .Concat(GetPhoneNumbers(xContactEntry));
-
-        }
-
+        
         private static string XPathString(XNode source, string expression, IXmlNamespaceResolver ns)
         {
             var result = source.XPathSelectElement(expression, ns);
@@ -352,5 +360,36 @@ namespace CallWall.Web.GoogleProvider.Contacts
             var tail = input.Substring(1);
             return head + tail;
         }
+
+
+
+
+
+
+        //TODO: Implement the following from legacy code
+
+        private static IEnumerable<IContactAssociation> GetRelationships(XElement xContactEntry)
+        {
+            //<gContact:relation rel='partner'>Anne</gContact:relation>
+            var relationships = from xElement in xContactEntry.XPathSelectElements("gContact:relation", Ns)
+                                select new ContactAssociation(ToContactAssociation(xElement.Attribute("rel")), xElement.Value);
+            return relationships;
+        }
+
+        private static IEnumerable<string> GetTags(XElement xContactEntry, Dictionary<string, string> groupLookup)
+        {
+            return from groupUri in GetGroups(xContactEntry)
+                   select groupLookup[groupUri];
+
+        }
+        private static IEnumerable<string> GetGroups(XElement xContactEntry)
+        {
+            var groupUris = from xElement in xContactEntry.XPathSelectElements("gContact:groupMembershipInfo", Ns)
+                            let hrefAttribute = xElement.Attribute("href")
+                            where hrefAttribute != null
+                            select hrefAttribute.Value;
+            return groupUris;
+        }
+
     }
 }

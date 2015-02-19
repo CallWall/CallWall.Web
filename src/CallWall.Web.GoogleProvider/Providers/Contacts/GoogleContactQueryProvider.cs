@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CallWall.Web.Contracts;
-using CallWall.Web.Contracts.Contact;
 using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Auth;
 using CallWall.Web.Http;
@@ -11,7 +10,7 @@ using CallWall.Web.Http;
 
 namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {
-    public sealed class GoogleContactQueryProvider : IContactQueryProvider,ICurrentGoogleUserProvider
+    public sealed class GoogleContactQueryProvider : /*IContactQueryProvider,*/ICurrentGoogleUserProvider
     {
         private readonly IAuthorizationTokenProvider _authorization;
         private readonly IHttpClient _httpClient;
@@ -84,5 +83,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
                 .Log(_logger, string.Format("EnrichTags({0})", contactProfile.FullName))
                 .Take(1);
         }
+
+
     }
 }
