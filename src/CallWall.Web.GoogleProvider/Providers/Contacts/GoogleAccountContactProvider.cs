@@ -10,7 +10,7 @@ using CallWall.Web.Domain;
 using CallWall.Web.Http;
 using CallWall.Web.Providers;
 
-namespace CallWall.Web.GoogleProvider.Contacts
+namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {
     internal sealed class GoogleAccountContactProvider : IAccountContactProvider
     {

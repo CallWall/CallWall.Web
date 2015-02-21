@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CallWall.Web.Domain;
 
-namespace CallWall.Web.GoogleProvider.Contacts
+namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {
     internal class ContactSummary : IAccountContactSummary
     {
@@ -24,7 +23,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
             Handles = handles;
             Organizations = organizations;
             Relationships = relationships;
-            
         }
 
         public string Provider { get { return Constants.ProviderName; } }
@@ -39,6 +37,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         public string Title { get; private set; }
 
         public string FullName { get; private set; }
+
         public IAnniversary DateOfBirth { get; private set; }
         
         public IEnumerable<string> AvatarUris { get; private set; }
@@ -46,7 +45,6 @@ namespace CallWall.Web.GoogleProvider.Contacts
         public IEnumerable<ContactHandle> Handles { get; private set; }
         public IEnumerable<IContactAssociation> Organizations { get; private set; }
         public IEnumerable<IContactAssociation> Relationships { get; private set; }
-
 
         public bool IsDeleted { get { return false; } }
     }

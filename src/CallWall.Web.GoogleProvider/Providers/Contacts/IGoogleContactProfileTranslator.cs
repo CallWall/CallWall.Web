@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CallWall.Web.Domain;
 
-namespace CallWall.Web.GoogleProvider.Contacts
+namespace CallWall.Web.GoogleProvider.Providers.Contacts
 {
     interface IGoogleContactProfileTranslator
     {

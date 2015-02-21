@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Contacts;
+using CallWall.Web.GoogleProvider.Providers.Contacts;
 using NSubstitute;
 using NUnit.Framework;
 using TestStack.BDDfy;
