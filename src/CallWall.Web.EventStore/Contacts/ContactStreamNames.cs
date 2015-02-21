@@ -6,7 +6,7 @@ namespace CallWall.Web.EventStore.Contacts
     {
         public static string AccountContacts(string provider, string accountId)
         {
-            return "AccountContactsBlah";
+            //return "AccountContactsBlah";
             return string.Format("AccountContacts-{0}-{1}", provider, accountId);
         }
 

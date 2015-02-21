@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using CallWall.Web.Domain;
-using CallWall.Web.GoogleProvider.Providers.Contacts;
 using CallWall.Web.OAuth2Implementation;
 using Newtonsoft.Json.Linq;
 

@@ -46,6 +46,10 @@ namespace CallWall.Web.EventStore.Domain
         /// </summary>
         public IEnumerable<ContactProviderSummary> Providers { get; private set; }
 
+        public IEnumerable<ContactAssociation> Organizations { get; private set; }
+        
+        public IEnumerable<ContactAssociation> Relationships { get; private set; } 
+
         public bool OwnsContact(IAccountContactSummary contact)
         {
             return Providers.Any(p => p.ProviderName == contact.Provider
@@ -168,7 +172,9 @@ namespace CallWall.Web.EventStore.Domain
                     AddedAvatars = Avatars.Any() ? Avatars.ToArray() : null,
                     AddedProviders = Providers.Any() ? Providers.ToArray() : null,
                     AddedTags = Tags.Any() ? Tags.ToArray() : null,
-                    AddedHandles = Handles.Any() ? Handles.ToArray() : null
+                    AddedHandles = Handles.Any() ? Handles.ToArray() : null,
+                    AddedOrganizations = Organizations.Any()? Organizations.ToArray() : null,
+                    AddedRelationships = Relationships.Any() ? Relationships.ToArray() : null,
                 };
             }
 
@@ -177,11 +183,15 @@ namespace CallWall.Web.EventStore.Domain
             var oldTags = _snapshot.Tags.ToSet();
             var oldProviders = _snapshot.Providers.ToSet();
             var oldHandles = _snapshot.Handles.ToSet();
+            var oldOrganizations = _snapshot.Organizations.ToSet();
+            var oldRelationships = _snapshot.Relationships.ToSet();
 
             var avatarDelta = new CollectionDelta<string>(oldAvatars, Avatars);
             var tagDelta = new CollectionDelta<string>(oldTags, Tags);
             var providerDelta = new CollectionDelta<ContactProviderSummary>(oldProviders, Providers);
             var handleDelta = new CollectionDelta<ContactHandle>(oldHandles, Handles);
+            var organizationsDelta = new CollectionDelta<ContactAssociation>(oldOrganizations, Organizations);
+            var relationshipsDelta = new CollectionDelta<ContactAssociation>(oldRelationships, Relationships);
 
             var delta = new ContactAggregateUpdate
             {
@@ -195,7 +205,11 @@ namespace CallWall.Web.EventStore.Domain
                 AddedTags = tagDelta.AddedItems,
                 RemovedTags = tagDelta.RemovedItems,
                 AddedHandles = handleDelta.AddedItems,
-                RemovedHandles = handleDelta.RemovedItems
+                RemovedHandles = handleDelta.RemovedItems,
+                AddedOrganizations = organizationsDelta.AddedItems,
+                RemovedOrganizations = organizationsDelta.RemovedItems,
+                AddedRelationships = relationshipsDelta.AddedItems,
+                RemovedRelationships = relationshipsDelta.RemovedItems,
             };
 
             return delta;
@@ -219,6 +233,12 @@ namespace CallWall.Web.EventStore.Domain
             Tags = _contacts.SelectMany(c => c.Tags ?? Enumerable.Empty<string>()).Distinct().ToArray();
             //TODO: This may need a custom IComparer instance  -LC
             Handles = _contacts.SelectMany(c => c.Handles ?? Enumerable.Empty<ContactHandle>()).Distinct().ToArray();
+            Organizations = _contacts.SelectMany(c => c.Organizations ?? Enumerable.Empty<ContactAssociation>())
+                                     .Select(ca=>new ContactAssociation{Name = ca.Name, Association = ca.Association})
+                                     .Distinct().ToArray();
+            Relationships = _contacts.SelectMany(c => c.Relationships ?? Enumerable.Empty<ContactAssociation>())
+                                     .Select(ca=>new ContactAssociation{Name = ca.Name, Association = ca.Association})
+                                     .Distinct().ToArray();
             Title = GetBestTitle();
         }
 

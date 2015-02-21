@@ -101,7 +101,6 @@
     <Compile Include="Domain\IUser.cs" />
     <Compile Include="Domain\IUserContacts.cs" />
     <Compile Include="Domain\User.cs" />
-    <Compile Include="Domain\UserContacts.cs" />
     <Compile Include="EventStoreClient.cs" />
     <Compile Include="EventStoreExtensions.cs" />
     <Compile Include="EventStoreModule.cs" />

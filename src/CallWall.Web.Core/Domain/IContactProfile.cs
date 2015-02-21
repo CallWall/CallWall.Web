@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CallWall.Web.Domain
 {
-    //TODO: Rationalise, I am now going to try and get all of this information at sync time and store locally (at the AccountContact layer). 
+    //TODO: Rationalize, I am now going to try and get all of this information at sync time and store locally (at the AccountContact layer). 
     //  Will then need to consider what this means at the UserContact layer.
     public interface IContactProfile
     {
