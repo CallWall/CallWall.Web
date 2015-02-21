@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reactive.Linq;
 
 namespace CallWall.Web.Http
 {
@@ -103,6 +104,14 @@ namespace CallWall.Web.Http
         private static string ToString(NameValueCollection nvc)
         {
             return string.Join(", ", nvc.AllKeys.Select(k => string.Format("[{0}:{1}]", k, nvc[k])));
+        }
+    }
+
+    public static class HttpRequestParametersEx
+    {
+        public static IObservable<HttpRequestParameters> AsObservable(this HttpRequestParameters httpRequestParameters)
+        {
+            return Observable.Return(httpRequestParameters);
         }
     }
 }

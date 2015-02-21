@@ -1,83 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using CallWall.Web.Domain;
-using CallWall.Web.GoogleProvider.Providers.Contacts;
 
 namespace CallWall.Web.GoogleProvider.Contacts
 {
-    internal sealed class GoogleContactProfileTranslator
+    internal sealed class GoogleContactProfileTranslator : IGoogleContactProfileTranslator
     {
-        private static readonly XmlNamespaceManager Ns;
+        private static readonly Regex FullDobRegex = new Regex(@"(?<year>\d{4})-(?<month>\d\d)-(?<day>\d\d)");
+        private static readonly Regex YearlessDobRegex = new Regex(@"--(?<month>\d\d)-(?<day>\d\d)");
 
-        #region xml namespace resovers
-
-        static GoogleContactProfileTranslator()
-        {
-            Ns = new XmlNamespaceManager(new NameTable());
-            Ns.AddNamespace("x", "http://www.w3.org/2005/Atom");
-            Ns.AddNamespace("openSearch", "http://a9.com/-/spec/opensearch/1.1/");
-            Ns.AddNamespace("gContact", "http://schemas.google.com/contact/2008");
-            Ns.AddNamespace("batch", "http://schemas.google.com/gdata/batch");
-            Ns.AddNamespace("gd", "http://schemas.google.com/g/2005");
-        }
-
-        private static XName ToXName(string prefix, string name)
-        {
-            var xNamespace = Ns.LookupNamespace(prefix);
-            if (xNamespace == null)
-                throw new InvalidOperationException(prefix + " namespace prefix is not valid");
-            return XName.Get(name, xNamespace);
-        }
-
-        private static class OpenSearch
-        {
-            static OpenSearch()
-            {
-                TotalResults = ToXName("openSearch", "totalResults");
-                StartIndex = ToXName("openSearch", "startIndex");
-                ItemsPerPage = ToXName("openSearch", "itemsPerPage");
-            }
-
-            public static XName TotalResults { get; private set; }
-            public static XName ItemsPerPage { get; private set; }
-            public static XName StartIndex { get; private set; }
-        }
-
-        private static class Atom
-        {
-            static Atom()
-            {
-                Entry = ToXName("x", "entry");
-                Title = ToXName("x", "title");
-            }
-
-            public static XName Entry { get; private set; }
-            public static XName Title { get; private set; }
-        }
-
-        private static class Gd
-        {
-            static Gd()
-            {
-                ETag = ToXName("gd", "etag");
-                Email = ToXName("gd", "email");
-            }
-
-            public static XName ETag { get; private set; }
-            public static XName Email { get; private set; }
-        }
-
-        #endregion
-
-
+        
         public Dictionary<string, string> ToGroupDictionary(string response)
         {
             var xDoc = XDocument.Parse(response);
@@ -87,9 +24,9 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
             var groups =
                 (
-                    from groupEntry in xGroupFeed.Elements(ToXName("x", "entry"))
-                    let id = groupEntry.Element(ToXName("x", "id"))
-                    let title = groupEntry.Element(ToXName("x", "title"))
+                    from groupEntry in xGroupFeed.Elements("x", "entry")
+                    let id = groupEntry.Element("x", "id")
+                    let title = groupEntry.Element("x", "title")
                     where id != null && title != null && !string.IsNullOrWhiteSpace(title.Value)
                     select new { Id = id.Value, Title = title.Value.Replace("System Group: ", string.Empty) }
                 ).ToDictionary(g => g.Id, g => g.Title);
@@ -104,7 +41,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             if (xDoc.Root == null)
                 return null;
 
-            var entries = xDoc.Root.Elements(Atom.Entry);
+            var entries = xDoc.Root.Elements(XmlEx.Atom.Entry);
             var contacts = new List<IAccountContactSummary>();
             foreach (var xContactEntry in entries)
             {
@@ -137,9 +74,9 @@ namespace CallWall.Web.GoogleProvider.Contacts
             }
 
 
-            var totalResults = xDoc.Root.Element(OpenSearch.TotalResults);
-            var startIndex = xDoc.Root.Element(OpenSearch.StartIndex);
-            var itemsPerPage = xDoc.Root.Element(OpenSearch.ItemsPerPage);
+            var totalResults = xDoc.Root.Element(XmlEx.OpenSearch.TotalResults);
+            var startIndex = xDoc.Root.Element(XmlEx.OpenSearch.StartIndex);
+            var itemsPerPage = xDoc.Root.Element(XmlEx.OpenSearch.ItemsPerPage);
             if (startIndex == null || itemsPerPage == null || totalResults == null)
                 return new BatchOperationPage<IAccountContactSummary>(contacts, 0, 1, -1);
 
@@ -165,23 +102,23 @@ namespace CallWall.Web.GoogleProvider.Contacts
         private static bool IsDeleted(XElement xContactEntry)
         {
             //Check from presence of a <gd:deleted/> element. Not sure what its contents will be.
-            return xContactEntry.XPathSelectElements("gd:deleted", Ns).Any();
+            return xContactEntry.XPathSelectElements("gd:deleted", XmlEx.Ns).Any();
         }
 
         private static string GetId(XElement xContactEntry)
         {
-            return XPathString(xContactEntry, "x:id", Ns);
+            return XPathString(xContactEntry, "x:id", XmlEx.Ns);
         }
 
         private static string GetTitle(XElement xContactEntry)
         {
-            var title = XPathString(xContactEntry, "x:title", Ns);
+            var title = XPathString(xContactEntry, "x:title", XmlEx.Ns);
             if (string.IsNullOrWhiteSpace(title))
-                title = XPathString(xContactEntry, "gd:name/gd:fullName", Ns);
+                title = XPathString(xContactEntry, "gd:name/gd:fullName", XmlEx.Ns);
             if (string.IsNullOrWhiteSpace(title))
             {
-                var givenName = XPathString(xContactEntry, "gd:name/gd:givenName", Ns);
-                var familyName = XPathString(xContactEntry, "gd:name/gd:familyName", Ns);
+                var givenName = XPathString(xContactEntry, "gd:name/gd:givenName", XmlEx.Ns);
+                var familyName = XPathString(xContactEntry, "gd:name/gd:familyName", XmlEx.Ns);
                 title = string.Format("{0} {1}", givenName, familyName).Trim();
             }
             if (string.IsNullOrWhiteSpace(title))
@@ -209,18 +146,17 @@ namespace CallWall.Web.GoogleProvider.Contacts
                     "gd:name/gd:familyName",
                     "gd:name/gd:nameSuffix"
                 }
-                .Select(namePart => XPathString(xContactEntry, namePart, Ns))
+                .Select(namePart => XPathString(xContactEntry, namePart, XmlEx.Ns))
                 .Where(val => !string.IsNullOrWhiteSpace(val));
         
             return string.Join(" ", nameParts).Trim();
         }
 
-        private static readonly Regex FullDobRegex = new Regex(@"(?<year>\d{4})-(?<month>\d\d)-(?<day>\d\d)");
-        private static readonly Regex YearlessDobRegex = new Regex(@"--(?<month>\d\d)-(?<day>\d\d)");
+        
         private static IAnniversary GetDateOfBirth(XElement xContactEntry)
         {
             //<gContact:birthday when="1979-06-01"/>
-            var xBirthday = xContactEntry.Elements(ToXName("gContact", "birthday"))
+            var xBirthday = xContactEntry.Elements("gContact", "birthday")
                 .Select(x => x.Attribute("when"))
                 .FirstOrDefault(att => att != null);
 
@@ -259,7 +195,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             //<gd:email rel="http://schemas.google.com/g/2005#other" address="bob2@gmail.com" />
             //TODO: Return "Other" email qualifier as null. -LC
             //TODO: Perf test using xContactEntry.XPathSelectElements("gd:email", Ns) vs xContactEntry.Elements(Gd.Email) -LC
-            var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", Ns)
+            var emails = from xElement in xContactEntry.XPathSelectElements("gd:email", XmlEx.Ns)
                          //var emails = from xElement in xContactEntry.Elements(Gd.Email)
                          orderby (xElement.Attribute("primary") != null) descending
                          select new ContactEmailAddress(xElement.Attribute("address").Value, StripAnchor(xElement.Attribute("rel")));
@@ -273,7 +209,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
             //<gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile" primary="true">07816881423</gd:phoneNumber>
 
             //TODO: Prefer Uri (with "tel:" removed) else use Element value -LC
-            var phoneNumbers = from xElement in xContactEntry.XPathSelectElements("gd:phoneNumber", Ns)
+            var phoneNumbers = from xElement in xContactEntry.XPathSelectElements("gd:phoneNumber", XmlEx.Ns)
                                orderby (xElement.Attribute("primary") != null) descending
                                select new ContactEmailAddress(
                                    ExtractTelephoneNumber(xElement),
@@ -286,8 +222,8 @@ namespace CallWall.Web.GoogleProvider.Contacts
             /*<gd:organization rel='http://schemas.google.com/g/2005#work'><gd:orgName>Technip</gd:orgName></gd:organization>*/
             //Or
             /*<gd:organization rel=\"http://schemas.google.com/g/2005#other\"><gd:orgName>Technip</gd:orgName><gd:orgTitle>Executive Director</gd:orgTitle></gd:organization>*/
-            var organizations = from xElement in xContactEntry.XPathSelectElements("gd:organization", Ns)
-                                where xElement.XPathSelectElement("gd:orgName", Ns) != null
+            var organizations = from xElement in xContactEntry.XPathSelectElements("gd:organization", XmlEx.Ns)
+                                where xElement.XPathSelectElement("gd:orgName", XmlEx.Ns) != null
                                 select ExtractOrganization(xElement);
                                 
             return organizations;
@@ -295,8 +231,8 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         private static IContactAssociation ExtractOrganization(XElement xElement)
         {
-            var orgName = xElement.XPathSelectElement("gd:orgName", Ns).Value;
-            var xTitle = xElement.XPathSelectElement("gd:orgTitle", Ns);
+            var orgName = xElement.XPathSelectElement("gd:orgName", XmlEx.Ns).Value;
+            var xTitle = xElement.XPathSelectElement("gd:orgTitle", XmlEx.Ns);
             if (xTitle != null)
             {
                 return new ContactAssociation(orgName, xTitle.Value);
@@ -334,13 +270,13 @@ namespace CallWall.Web.GoogleProvider.Contacts
 
         private static string GetAvatar(XElement xContactEntry, string accessToken)
         {
-            var googleAvatar = xContactEntry.Elements(ToXName("x", "link"))
+            var googleAvatar = xContactEntry.Elements("x", "link")
                                 .Where(x => x.Attribute("rel") != null
                                             && x.Attribute("rel").Value == "http://schemas.google.com/contacts/2008/rel#photo"
                                             && x.Attribute("type") != null
                                             && x.Attribute("type").Value == "image/*"
                                             && x.Attribute("href") != null
-                                            && x.Attribute(Gd.ETag) != null)    //The absence of an etag attribute means that there is no image content --https://groups.google.com/forum/#!topic/google-contacts-api/bbIf5tcvhU0
+                                            && x.Attribute(XmlEx.Gd.ETag) != null)    //The absence of an etag attribute means that there is no image content --https://groups.google.com/forum/#!topic/google-contacts-api/bbIf5tcvhU0
                                 .Select(x => x.Attribute("href"))
                                 .Where(att => att != null)
                                 .Select(att => att.Value + "?access_token=" + accessToken)
@@ -371,7 +307,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         private static IEnumerable<IContactAssociation> GetRelationships(XElement xContactEntry)
         {
             //<gContact:relation rel='partner'>Anne</gContact:relation>
-            var relationships = from xElement in xContactEntry.XPathSelectElements("gContact:relation", Ns)
+            var relationships = from xElement in xContactEntry.XPathSelectElements("gContact:relation", XmlEx.Ns)
                                 select new ContactAssociation(ToContactAssociation(xElement.Attribute("rel")), xElement.Value);
             return relationships;
         }
@@ -384,7 +320,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
         }
         private static IEnumerable<string> GetGroups(XElement xContactEntry)
         {
-            var groupUris = from xElement in xContactEntry.XPathSelectElements("gContact:groupMembershipInfo", Ns)
+            var groupUris = from xElement in xContactEntry.XPathSelectElements("gContact:groupMembershipInfo", XmlEx.Ns)
                             let hrefAttribute = xElement.Attribute("href")
                             where hrefAttribute != null
                             select hrefAttribute.Value;

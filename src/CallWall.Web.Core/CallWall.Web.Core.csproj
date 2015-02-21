@@ -138,7 +138,6 @@
     <Compile Include="Contracts\Communication\ICommunicationQueryProvider.cs" />
     <Compile Include="Contracts\Communication\IMessage.cs" />
     <Compile Include="Contracts\Communication\MessageDirection.cs" />
-    <Compile Include="Contracts\IAuthorizationTokenProvider.cs" />
     <Compile Include="Contracts\IPersonalIdentifier.cs" />
     <Compile Include="Contracts\IProfile.cs" />
     <Compile Include="Contracts\IProviderDescription.cs" />
