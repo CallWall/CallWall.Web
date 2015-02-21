@@ -1,6 +1,5 @@
 ﻿using CallWall.Web.Domain;
 using CallWall.Web.GoogleProvider.Auth;
-using CallWall.Web.GoogleProvider.Contacts;
 using CallWall.Web.GoogleProvider.Providers.Contacts;
 using CallWall.Web.GoogleProvider.Providers.Gmail;
 using CallWall.Web.GoogleProvider.Providers.Gmail.Imap;

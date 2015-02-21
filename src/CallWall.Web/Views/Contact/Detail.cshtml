@@ -44,21 +44,21 @@
 <script type="text/html" id="ContactProfileTemplate">
     <h3>Details</h3>
     <div id="contactProfileProgress" data-bind="template: { name: 'ProgressBarTemplate', data: isProcessing }"></div>
-    <h4>Organizations</h4>
+    <h4 data-bind="visible: organizations().length">Organizations</h4>
     <!-- ko foreach: organizations -->
     <div class="kvp">
         <div class="key" data-bind="text: association"></div>
         <div data-bind="text: name"></div>
     </div>
     <!-- /ko -->    
-    <h4>Relationships</h4>
+    <h4 data-bind="visible: relationships().length">Relationships</h4>
     <!-- ko foreach: relationships -->
     <div class="kvp">
         <div class="key" data-bind="text: association"></div>
         <div data-bind="text: name"></div>
     </div>
     <!-- /ko -->
-    <h4>Contacts</h4>
+    <h4 data-bind="visible: handles().length">Contacts</h4>
     <!-- ko foreach: handles -->
     <div class="kvp">
         <div class="key" data-bind="text: name"></div>
