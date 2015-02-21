@@ -66,7 +66,9 @@ namespace CallWall.Web.EventStore.Contacts
                 update.RemovedTags.ToList().ForEach(tag => contact.Tags.Remove(tag));
             if (update.RemovedOrganizations != null)
                 update.RemovedOrganizations.ToList().ForEach(org => contact.Organizations.Remove(org));
-
+            if (update.RemovedRelationships != null)
+                update.RemovedRelationships.ToList().ForEach(org => contact.Relationships.Remove(org));
+    
             if (update.AddedAvatars != null)
                 contact.AvatarUris.AddRange(update.AddedAvatars);
             if (update.AddedHandles != null)
@@ -77,6 +79,8 @@ namespace CallWall.Web.EventStore.Contacts
                 contact.Tags.AddRange(update.AddedTags);
             if (update.AddedOrganizations != null)
                 update.AddedOrganizations.ToList().ForEach(org => contact.Organizations.Add(org));
+            if (update.AddedRelationships != null)
+                update.AddedRelationships.ToList().ForEach(org => contact.Relationships.Add(org));
         }
 
         private void IndexHandles(ContactAggregateUpdate update, ContactProfile contact)

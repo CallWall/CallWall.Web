@@ -26,6 +26,9 @@ namespace CallWall.Web.Domain
 
         public ContactAssociation[] AddedOrganizations { get; set; }
         public ContactAssociation[] RemovedOrganizations { get; set; }
+        
+        public ContactAssociation[] AddedRelationships { get; set; }
+        public ContactAssociation[] RemovedRelationships { get; set; }
 
         public override string ToString()
         {

@@ -125,7 +125,7 @@ namespace CallWall.Web.GoogleProvider.Contacts
                     var tags = GetTags(xContactEntry, groups).ToArray();
                     var handles = GetHandles(xContactEntry).ToArray();
                     var organizations = GetOrganizations(xContactEntry).ToArray();
-                    var relationships = Enumerable.Empty<IContactAssociation>(); 
+                    var relationships = GetRelationships(xContactEntry).ToArray();
 
                     //TODO: Need to converge on a std naming AccountId==AcountUserName?! -LC
                     var contact = new ContactSummary(providerId, account.AccountId, 
