@@ -35,5 +35,10 @@ namespace CallWall.Web.Domain
         public string DisplayName { get { return _displayName; } }
 
         public IEnumerable<IAccount> Accounts { get { return _accounts; } }
+
+        public override string ToString()
+        {
+            return string.Format("Id:'{0}', DisplayName:'{1}', Accounts:'{2}'", Id, DisplayName, string.Join(",", Accounts.Select(a=>a.AccountId)));
+        }
     }
 }

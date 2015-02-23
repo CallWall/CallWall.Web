@@ -25,6 +25,11 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
 
         public IObservable<IMessage> GetMessages(User user, string[] contactKeys)
         {
+            if(user==null)throw new ArgumentNullException("user");
+            if (contactKeys == null) throw new ArgumentNullException("contactKeys");
+            if (contactKeys.Length == 0) 
+                return Observable.Empty<IMessage>();
+
             return GetAuthorizedGMailAccounts(user)
                 .Select(acc => SearchImap(contactKeys, acc))
                 .Merge()

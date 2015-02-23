@@ -15,7 +15,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
         public FetchMessageOperation(ulong messageId, IEnumerable<string> currentUserEmailAddressList, ILoggerFactory loggerFactory)
             : base(loggerFactory)
         {
-            _command = string.Format("FETCH {0} BODY.PEEK[HEADER.FIELDS (FROM TO Message-ID Subject Date)]", messageId);
+            _command = string.Format("FETCH {0} (BODY.PEEK[HEADER.FIELDS (FROM TO Message-ID Subject Date)] X-GM-THRID)", messageId);
             _currentUserEmailAddressList = currentUserEmailAddressList.Select(add => add.ToLowerInvariant()).ToArray();
         }
 
