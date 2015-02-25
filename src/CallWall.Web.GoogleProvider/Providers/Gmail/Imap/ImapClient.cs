@@ -57,20 +57,20 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
                              .Log(_logger, string.Format("FindEmailIds('{0}')", query));
         }
 
-        public IObservable<IMessage> FetchEmailSummaries(IEnumerable<ulong> messageIds, IEnumerable<string> fromAddresses)
+        public IObservable<IMessage> FetchEmailSummaries(IEnumerable<ulong> messageIds, string accountEmailAddress)
         {
             _logger.Debug("FetchEmailSummaries({0})", string.Join(", ", messageIds));
             return messageIds
-                .Select(id=>LoadMessage(id, fromAddresses))
+                .Select(id=>LoadMessage(id, accountEmailAddress))
                 .Concat()
                 .Where(msg => msg != null)
                 .Log(_logger, "FetchEmailSummaries");
         }
 
 
-        private IObservable<GmailEmail> LoadMessage(ulong messageId, IEnumerable<string> fromAddresses)
+        private IObservable<GmailEmail> LoadMessage(ulong messageId, string accountEmailAddress)
         {
-            return Observable.Start(() => LoadMessageSync(messageId, fromAddresses), _dedicatedScheduler)
+            return Observable.Start(() => LoadMessageSync(messageId, accountEmailAddress), _dedicatedScheduler)
                              .Log(_logger, string.Format("LoadMessage({0})", messageId));
         }
 
@@ -130,9 +130,9 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
             throw new IOException("IMAP search failed");
         }
 
-        private GmailEmail LoadMessageSync(ulong messageId, IEnumerable<string> fromAddresses)
+        private GmailEmail LoadMessageSync(ulong messageId, string accountEmailAddress)
         {
-            var op = new FetchMessageOperation(messageId, fromAddresses, _loggerFactory);
+            var op = new FetchMessageOperation(messageId, accountEmailAddress, _loggerFactory);
             if (Execute(op))
             {
                 var email = op.ExtractMessage();

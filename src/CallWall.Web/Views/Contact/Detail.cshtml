@@ -102,7 +102,14 @@
                 </tr>
             </table>
             <div>
+                <!-- ko if: deepLink -->
+                <a href="#" target="_blank" data-bind="attr: { href: deepLink }" >
+                    <h5 data-bind="text: subject, attr: { title: subject }"></h5>
+                </a>
+                <!-- /ko -->
+                <!-- ko if: !deepLink -->
                 <h5 data-bind="text: subject, attr: { title: subject }"></h5>
+                <!-- /ko -->
                 <p data-bind="text: content, attr: { title: content }"></p>
             </div>
         </li>

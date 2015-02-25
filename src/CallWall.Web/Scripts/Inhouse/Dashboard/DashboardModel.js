@@ -71,6 +71,7 @@
         self.isOutbound = data.isOutbound;
         self.subject = data.subject;
         self.content = data.content;
+        self.deepLink = data.deepLink;
 
         self.provider = getProvider(data.provider);
     };

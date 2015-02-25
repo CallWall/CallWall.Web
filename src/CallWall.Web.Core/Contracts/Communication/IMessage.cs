@@ -33,6 +33,11 @@ namespace CallWall.Web.Contracts.Communication
         IProviderDescription Provider { get; }
 
         MessageType MessageType { get; }
+
+        /// <summary>
+        /// A means of linking from the CallWall app or website into the application or site directly to the message.
+        /// </summary>
+        string DeepLink { get; }
     }
 
     public enum MessageType
