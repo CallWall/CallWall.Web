@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
 {
     [TestFixture]
-    //[Timeout(1000)]
+    [Timeout(1000)]
     public class FetchMessageOperationFixture
     {
         private const string Prefix = "CW01";
@@ -50,21 +50,21 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
         {
             var expectedEmail = CreateStubMessage();
             Assume.That(!expectedEmail.FromAddress.Contains(_accountEmailAddress));
-            var expectedDeepLink = string.Format("https://mail.google.com/mail/?authuser={0}#all/{1}",
+            var expectedDeepLink = string.Format("https://mail.google.com/mail/?authuser={0}#all/{1:x}",
                 _accountEmailAddress.ToLower(), expectedEmail.ThreadId);
             var sendStream = new MemoryStream();
             var receiveStreamReader = CreateReceiveStreamReader(Prefix, expectedEmail, ToStandardFormat);
             var wasSent = _sut.Execute(Prefix, sendStream, receiveStreamReader);
 
             Assert.IsTrue(wasSent);
-            var message = (IMessage)_sut.ExtractMessage();
-            Assert.AreEqual(null, message.Content);
-            Assert.AreEqual(MessageDirection.Inbound, message.Direction);
-            Assert.AreEqual(MessageType.Email, message.MessageType);
-            Assert.AreEqual(GmailProviderDescription.Instance, message.Provider);
-            Assert.AreEqual(expectedEmail.Subject, message.Subject);
-            Assert.AreEqual(expectedEmail.TimeStamp, message.Timestamp);
-            Assert.AreEqual(expectedDeepLink, message.DeepLink);
+            var actual = (IMessage)_sut.ExtractMessage();
+            Assert.AreEqual(null, actual.Content);
+            Assert.AreEqual(MessageDirection.Inbound, actual.Direction);
+            Assert.AreEqual(MessageType.Email, actual.MessageType);
+            Assert.AreEqual(GmailProviderDescription.Instance, actual.Provider);
+            Assert.AreEqual(expectedEmail.Subject, actual.Subject);
+            Assert.AreEqual(expectedEmail.TimeStamp, actual.Timestamp);
+            Assert.AreEqual(expectedDeepLink, actual.DeepLink);
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             var expectedEmail = CreateStubMessage();
             expectedEmail.FromAddress = string.Format("Me <{0}>", _accountEmailAddress);
             Assume.That(expectedEmail.FromAddress.Contains(_accountEmailAddress));
-            var expectedDeepLink = string.Format("https://mail.google.com/mail/?authuser={0}#all/{1}",
+            var expectedDeepLink = string.Format("https://mail.google.com/mail/?authuser={0}#all/{1:x}",
                 _accountEmailAddress.ToLower(), expectedEmail.ThreadId);
             var sendStream = new MemoryStream();
             var receiveStreamReader = CreateReceiveStreamReader(Prefix, expectedEmail, ToStandardFormat);

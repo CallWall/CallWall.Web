@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using CallWall.Web.Contracts;
+using CallWall.Web.Contracts.Communication;
 using CallWall.Web.Domain;
 using CallWall.Web.Providers;
 using Microsoft.AspNet.SignalR;
@@ -40,7 +42,7 @@ namespace CallWall.Web.Hubs
                 var query = from contactProfile in _contactRepository.GetContactDetails(user, contactId)
                             from commProvider in _communicationProviders
                             from message in commProvider.GetMessages(user, contactProfile.ContactKeys())
-                            select message;
+                            select new Message(message);
                 var subscription = query
                     .Log(_logger, "GetMessages")
                     .Subscribe(msg => Clients.Caller.OnNext(msg),
@@ -62,5 +64,29 @@ namespace CallWall.Web.Hubs
             _subscription.Dispose();
             return base.OnDisconnected(stopCalled);
         }
+    }
+
+    /// <summary>
+    /// Wrapper so that explicit implemented parts of <see cref="IMessage"/> are still serialized.
+    /// </summary>
+    public class Message : IMessage
+    {
+        public Message(IMessage source)
+        {
+            Timestamp = source.Timestamp;
+            Direction = source.Direction;
+            Subject = source.Subject;
+            Content = source.Content;
+            Provider = source.Provider;
+            MessageType = source.MessageType;
+            DeepLink = source.DeepLink;
+        }
+        public DateTimeOffset Timestamp { get; private set; }
+        public MessageDirection Direction { get; private set; }
+        public string Subject { get; private set; }
+        public string Content { get; private set; }
+        public IProviderDescription Provider { get; private set; }
+        public MessageType MessageType { get; private set; }
+        public string DeepLink { get; private set; }
     }
 }

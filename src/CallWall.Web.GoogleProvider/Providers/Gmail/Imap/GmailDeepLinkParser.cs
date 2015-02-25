@@ -11,7 +11,8 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
             string threadId;
             if (TryParseThreadId(line, out threadId))
             {
-                return string.Format("https://mail.google.com/mail/?authuser={0}#all/{1}", accountEmailAddress, threadId);
+                long lngThreadId = long.Parse(threadId);
+                return string.Format("https://mail.google.com/mail/?authuser={0}#all/{1:x}", accountEmailAddress, lngThreadId);
             }
             return null;
         }
