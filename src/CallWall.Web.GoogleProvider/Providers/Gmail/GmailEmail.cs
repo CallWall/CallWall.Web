@@ -9,14 +9,14 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
         private readonly DateTimeOffset _timestamp;
         private readonly MessageDirection _direction;
         private readonly string _subject;
-        private readonly string _content;
+        private readonly string _deepLink;
 
-        public GmailEmail(DateTimeOffset timestamp, MessageDirection direction, string subject, string content)
+        public GmailEmail(DateTimeOffset timestamp, MessageDirection direction, string subject, string deeplink)
         {
             _timestamp = timestamp;
             _direction = direction;
             _subject = subject;
-            _content = content;
+            _deepLink = deeplink;
         }
 
         public DateTimeOffset Timestamp { get { return _timestamp; } }
@@ -25,11 +25,14 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
 
         public string Subject { get { return _subject; } }
 
-        public string Content { get { return _content; } }
+        public string DeepLink { get { return _deepLink; }  }
 
-        public IProviderDescription Provider { get { return GmailProviderDescription.Instance; } }
 
-        public MessageType MessageType { get { return MessageType.Email; } }
+        IProviderDescription IMessage.Provider { get { return GmailProviderDescription.Instance; } }
+
+        MessageType IMessage.MessageType { get { return MessageType.Email; } }
+
+        string IMessage.Content { get { return null; } }
 
         public override string ToString()
         {

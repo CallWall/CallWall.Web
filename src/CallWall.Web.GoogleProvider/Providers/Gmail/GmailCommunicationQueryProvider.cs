@@ -67,7 +67,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
                         from isSelected in imapClient.SelectFolder("[Gmail]/All Mail")
                         let queryText = ToSearchQuery(contactKeys)
                         from emailIds in imapClient.FindEmailIds(queryText)
-                        from email in imapClient.FetchEmailSummaries(emailIds.Reverse().Take(15), account.Handles.Where(ch => ch.HandleType == ContactHandleTypes.Email).Select(ch => ch.Handle))
+                        from email in imapClient.FetchEmailSummaries(emailIds.Reverse().Take(15), account.Handles.Single(ch => ch.HandleType == ContactHandleTypes.Email).Handle)
                         select email;
 
             return query;

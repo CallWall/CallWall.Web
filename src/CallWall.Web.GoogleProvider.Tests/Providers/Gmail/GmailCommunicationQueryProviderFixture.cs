@@ -315,16 +315,25 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
                 var expectedEmailHandles = _user.Accounts
                     .SelectMany(acc => acc.Handles)
                     .Where(h => h.HandleType == ContactHandleTypes.Email)
-                    .Select(h => h.Handle)
-                    .ToArray();
-                var pairs = Enumerable.Zip(_imapClients, _emailIds, Tuple.Create);
-                foreach (var pair in pairs)
+                    .Select(h=>h.Handle)
+                    .ToList();
+
+                var itemsByIndex = Enumerable.Range(0, _imapClients.Count)
+                    .Select(i => new
+                    {
+                        ImapClient = _imapClients[i],
+                        EmailIds = _emailIds[i],
+                        AccountHandle = expectedEmailHandles[i]
+                    });
+
+                foreach (var item in itemsByIndex)
                 {
-                    var imapClient = pair.Item1;
-                    var expectedEmailIds = pair.Item2.Reverse().Take(topCount);
+                    var imapClient = item.ImapClient;
+                    var expectedEmailIds = item.EmailIds.Reverse().Take(topCount);
+                    var expectedAccountHandle = item.AccountHandle;
                     imapClient.Received().FetchEmailSummaries(
-                        Arg.Is<IEnumerable<ulong>>(emailIds=>emailIds.SequenceEqual(expectedEmailIds)), 
-                        Arg.Is<IEnumerable<string>>(fromAddresses => fromAddresses.SequenceEqual(expectedEmailHandles)));
+                        Arg.Is<IEnumerable<ulong>>(emailIds=>emailIds.SequenceEqual(expectedEmailIds)),
+                        Arg.Is<string>(fromAddress => string.Equals(fromAddress, expectedAccountHandle, StringComparison.OrdinalIgnoreCase)));
                 }
             }
 
@@ -349,12 +358,12 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             {
                 _subscription.Dispose();
             }
-
         }
 
         private static User CreateStubUser()
         {
-            return new User(Guid.NewGuid(), "Test User", Enumerable.Empty<IAccount>());
+            var account = CreateGmailAccount();
+            return new User(Guid.NewGuid(), "Test User", new[] { account });
         }
 
         private static IAccount CreateGmailAccount()
@@ -368,6 +377,16 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             account.CurrentSession.HasExpired().Returns(false);
             account.CurrentSession.AuthorizedResources.Returns(resources);
             account.CurrentSession.AccessToken.Returns(accessToken);
+            var handles = new[]
+            {
+                new ContactHandle()
+                {
+                    Handle = "Lee@mail.com",
+                    HandleType = ContactHandleTypes.Email,
+                    Qualifier = "main"
+                }
+            };
+            account.Handles.Returns(handles);
 
             return account;
         }

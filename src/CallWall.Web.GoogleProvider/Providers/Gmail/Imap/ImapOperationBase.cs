@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Security;
 using System.Text;
 
 namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
@@ -30,7 +29,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
             get { return _logger; }
         }
 
-        public virtual bool Execute(string prefix, SslStream sendStream, StreamReader receiveStream)
+        public virtual bool Execute(string prefix, Stream sendStream, StreamReader receiveStream)
         {
             using (Logger.Time(string.Format("Executing IMAP Command '{0}'", ToImapCommand(prefix).Replace("\r\n", string.Empty))))
             {
@@ -55,7 +54,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
                                      });
         }
 
-        protected virtual bool Send(string prefix, SslStream sendStream)
+        protected virtual bool Send(string prefix, Stream sendStream)
         {
             var commandText = ToImapCommand(prefix);
             Logger.Trace("[-->] {0}", commandText);
@@ -93,7 +92,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
                     while (canExpectMoreLines)
                     {
                         var line = receiveStream.ReadLine();
-                        Logger.Trace("[<--]{0}", line.TrimTo(100)); //Has tried to log 256KB of text before. Not so fast :-(
+                        Logger.Trace("[<--]{0}", line.TrimTo(120)); //Has tried to log 256KB of text before. Not so fast :-(
 
                         if (line != null)
                         {

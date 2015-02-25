@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 
 namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
@@ -24,7 +25,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
             get { return _command; }
         }
 
-        public override bool Execute(string prefix, System.Net.Security.SslStream sendStream, System.IO.StreamReader receiveStream)
+        public override bool Execute(string prefix, Stream sendStream, StreamReader receiveStream)
         {
             if (base.Execute(prefix, sendStream, receiveStream))
             {

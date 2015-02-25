@@ -69,8 +69,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="ConsoleLoggerFactory.cs" />
     <Compile Include="GoogleContactProfileTranslatorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\Gmail\FetchMessageOperationFixture.cs" />
     <Compile Include="Providers\Gmail\GmailCommunicationQueryProviderFixture.cs" />
   </ItemGroup>
   <ItemGroup>
