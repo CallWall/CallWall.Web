@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using CallWall.Web.Contracts.Communication;
 
 namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
@@ -92,7 +91,5 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
 
             return null;
         }
-
-
     }
 }

@@ -67,10 +67,11 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail
                         from isSelected in imapClient.SelectFolder("[Gmail]/All Mail")
                         let queryText = ToSearchQuery(contactKeys)
                         from emailIds in imapClient.FindEmailIds(queryText)
-                        from email in imapClient.FetchEmailSummaries(emailIds.Reverse().Take(15), account.Handles.Single(ch => ch.HandleType == ContactHandleTypes.Email).Handle)
+                        from email in imapClient.FetchEmailSummaries(emailIds.Reverse(), account.Handles.Single(ch => ch.HandleType == ContactHandleTypes.Email).Handle)
                         select email;
 
-            return query;
+            return query.Distinct(msg => msg.DeepLink)
+                        .Take(10);
         }
 
         private static string ToSearchQuery(IEnumerable<string> contactKeys)

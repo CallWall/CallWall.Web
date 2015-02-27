@@ -67,7 +67,6 @@ namespace CallWall.Web.GoogleProvider.Providers.Gmail.Imap
                 .Log(_logger, "FetchEmailSummaries");
         }
 
-
         private IObservable<GmailEmail> LoadMessage(ulong messageId, string accountEmailAddress)
         {
             return Observable.Start(() => LoadMessageSync(messageId, accountEmailAddress), _dedicatedScheduler)
