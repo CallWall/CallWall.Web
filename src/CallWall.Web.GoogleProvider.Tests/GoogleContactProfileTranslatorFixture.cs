@@ -100,8 +100,8 @@ namespace CallWall.Web.GoogleProvider.Tests
         {
             var account = Substitute.For<IAccount>();
             account.AccountId.Returns("MyAccountId");
-            var httpReponse = File.ReadAllText(@"C:\Users\Lee\SkyDrive\CallWall\Development\Google\SampleContactRequest_response_large.xml");
-            var groupsHttpReponse = File.ReadAllText(@"C:\Users\Lee\SkyDrive\CallWall\Development\Google\ContactGroups_response.xml");
+            var httpReponse = File.ReadAllText(@"SampleContactRequest_response_large.xml");
+            var groupsHttpReponse = File.ReadAllText(@"ContactGroups_response.xml");
 
             var translator = new GoogleContactProfileTranslator();
             var groups = translator.ToGroupDictionary(groupsHttpReponse);
