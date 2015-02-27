@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using CallWall.Web.Contracts.Communication;
 using CallWall.Web.GoogleProvider.Providers.Gmail;
@@ -50,8 +48,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
         {
             var expectedEmail = CreateStubMessage();
             Assume.That(!expectedEmail.FromAddress.Contains(_accountEmailAddress));
-            var expectedDeepLink = string.Format("https://mail.google.com/mail/?authuser={0}#all/{1:x}",
-                _accountEmailAddress.ToLower(), expectedEmail.ThreadId);
+            var expectedDeepLink = CreateDeepLink(_accountEmailAddress, expectedEmail.ThreadId);
             var sendStream = new MemoryStream();
             var receiveStreamReader = CreateReceiveStreamReader(Prefix, expectedEmail, ToStandardFormat);
             var wasSent = _sut.Execute(Prefix, sendStream, receiveStreamReader);
@@ -73,8 +70,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             var expectedEmail = CreateStubMessage();
             expectedEmail.FromAddress = string.Format("Me <{0}>", _accountEmailAddress);
             Assume.That(expectedEmail.FromAddress.Contains(_accountEmailAddress));
-            var expectedDeepLink = string.Format("https://mail.google.com/mail/?authuser={0}#all/{1:x}",
-                _accountEmailAddress.ToLower(), expectedEmail.ThreadId);
+            var expectedDeepLink = CreateDeepLink(_accountEmailAddress, expectedEmail.ThreadId);
             var sendStream = new MemoryStream();
             var receiveStreamReader = CreateReceiveStreamReader(Prefix, expectedEmail, ToStandardFormat);
             var wasSent = _sut.Execute(Prefix, sendStream, receiveStreamReader);
@@ -90,6 +86,31 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             Assert.AreEqual(expectedDeepLink, message.DeepLink);
         }
 
+        [Test]
+        public void Should_process_multiline_To_inbound_message()
+        {
+            var expectedEmail = CreateStubMessage();
+            expectedEmail.ToAddressLines = new[]
+            {
+                "Bilbo Baggins <bilbo@lotr.com>, Johnny Cash",
+                "<john@cash.com>"
+            };
+            Assume.That(!expectedEmail.FromAddress.Contains(_accountEmailAddress));
+            var expectedDeepLink = CreateDeepLink(_accountEmailAddress, expectedEmail.ThreadId);
+            var sendStream = new MemoryStream();
+            var receiveStreamReader = CreateReceiveStreamReader(Prefix, expectedEmail, ToStandardFormat);
+            var wasSent = _sut.Execute(Prefix, sendStream, receiveStreamReader);
+
+            Assert.IsTrue(wasSent);
+            var actual = (IMessage)_sut.ExtractMessage();
+            Assert.AreEqual(null, actual.Content);
+            Assert.AreEqual(MessageDirection.Inbound, actual.Direction);
+            Assert.AreEqual(MessageType.Email, actual.MessageType);
+            Assert.AreEqual(GmailProviderDescription.Instance, actual.Provider);
+            Assert.AreEqual(expectedEmail.Subject, actual.Subject);
+            Assert.AreEqual(expectedEmail.TimeStamp, actual.Timestamp);
+            Assert.AreEqual(expectedDeepLink, actual.DeepLink);
+        }
 
         private static readonly object[] DateFormatCases =
         {
@@ -106,7 +127,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             new object[] {"Thu, 3 Dec 2009 12:12:39 -0800 (PST)",  new DateTimeOffset(2009, 12, 03, 12, 12, 39, TimeSpan.FromHours(-8))},
             new object[] {"Tue, 8 Apr 2008 01:15:41 -0500 (CDT)",  new DateTimeOffset(2008, 04, 08, 01, 15, 41, TimeSpan.FromHours(-5))},
             new object[] {"Sat, 28 Jun 2008 16:03:23 +1000 (EST)", new DateTimeOffset(2008, 06, 28, 16, 03, 23, TimeSpan.FromHours(10))},
-            new object[] {"Sat, 24 Jul 2010 01:02:02 -0700 (PDT)", new DateTimeOffset(2010, 07, 24, 01, 02, 02, TimeSpan.FromHours(-7))},
+            new object[] {"Sat, 24 Jul 2010 01:02:02 -0700 (PDT)", new DateTimeOffset(2010, 07, 24, 01, 02, 02, TimeSpan.FromHours(-7))}
         };
 
         [TestCaseSource("DateFormatCases")]
@@ -124,7 +145,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             Assert.AreEqual(expectedEmail.TimeStamp, message.Timestamp);
         }
 
-        //Deep-linking
+        
 
         private static StreamReader CreateReceiveStreamReader(string prefix, Email expectedEmail, Func<DateTimeOffset, string> dateFormatter)
         {
@@ -135,7 +156,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             sb.AppendLine(string.Format("Subject: {0}", expectedEmail.Subject));
             var dateString = dateFormatter(expectedEmail.TimeStamp);
             sb.AppendLine(string.Format("Date: {0}", dateString));
-            sb.AppendLine(string.Format("To: {0}", String.Join(",", expectedEmail.ToAddresses)));
+            sb.AppendLine(string.Format("To: {0}", String.Join("\r\n ", expectedEmail.ToAddressLines)));
             sb.AppendLine("");
             sb.AppendLine(")");
             sb.AppendLine(prefix + " OK Success");
@@ -162,11 +183,17 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
                 ThreadId = 1493451527478692916,
                 MessageId = "788FC3E5-6F7E-40F9-BBD1-DE481B237D7A@gmail.com",
                 FromAddress = "Karen MacCarthy-Farrers <farrers@cmail.com>",
-                ToAddresses = new[] { "Rhys Campston <rhysryancampston@cmail.com>" },
+                ToAddressLines = new[] { "Rhys Campston <rhysryancampston@cmail.com>" },
                 Subject = "Re: Point Walter Triathlon/Duathlon Results",
                 TimeStamp = new DateTimeOffset(2015, 02, 22, 12, 003, 46, TimeSpan.Zero)
             };
             return message;
+        }
+
+        private static string CreateDeepLink(string accountEmailAddress, long threadId)
+        {
+            return string.Format("https://mail.google.com/mail/?authuser={0}#all/{1:x}",
+                accountEmailAddress.ToLower(), threadId);
         }
 
         private static string ToStandardFormat(DateTimeOffset input)
@@ -180,7 +207,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             public long ThreadId { get; set; }
             public string MessageId { get; set; }
             public string FromAddress { get; set; }
-            public string[] ToAddresses { get; set; }
+            public string[] ToAddressLines { get; set; }
             public string Subject { get; set; }
             public DateTimeOffset TimeStamp { get; set; }
         }
