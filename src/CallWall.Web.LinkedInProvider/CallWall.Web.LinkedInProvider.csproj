@@ -73,7 +73,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\AccountConfiguration.cs" />
+    <Compile Include="Auth\ILinkedInAccountProvider.cs" />
+    <Compile Include="Auth\LinkedInAccountProvider.cs" />
+    <Compile Include="Auth\ProviderConfiguration.cs" />
     <Compile Include="Contacts\ContactAssociation.cs" />
     <Compile Include="Contacts\ContactSummary.cs" />
     <Compile Include="LinkedInModule.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Auth\LinkedInAuthentication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Auth\ResourceScope.cs" />
+    <Compile Include="XmlEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CallWall.Web.Core\CallWall.Web.Core.csproj">

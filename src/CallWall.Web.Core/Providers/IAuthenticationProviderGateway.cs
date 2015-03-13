@@ -7,7 +7,7 @@ namespace CallWall.Web.Providers
     public interface IAuthenticationProviderGateway
     {
         IAccountAuthentication GetAuthenticationProvider(string account);
-        IEnumerable<IAccountConfiguration> GetAccountConfigurations();
+        IEnumerable<IProviderConfiguration> GetProviderConfigurations();
         Uri AuthenticationUri(string account, string callBackUri, string[] resource);
     }
 }

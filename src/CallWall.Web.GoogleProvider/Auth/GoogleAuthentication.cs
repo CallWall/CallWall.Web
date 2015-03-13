@@ -39,9 +39,9 @@ namespace CallWall.Web.GoogleProvider.Auth
             get { return Constants.ProviderName; }
         }
 
-        public override IAccountConfiguration Configuration
+        public override IProviderConfiguration Configuration
         {
-            get { return AccountConfiguration.Instance; }
+            get { return ProviderConfiguration.Instance; }
         }
 
         protected override async Task<IAccount> CreateAccount(ISession session)

@@ -19,12 +19,10 @@ namespace CallWall.Web.Domain
         /// </summary>
         string DisplayName { get; }
 
-
         /// <summary>
         /// The contact handles that are associated to the account. 
         /// </summary>
         IEnumerable<ContactHandle> Handles { get; }
-
 
         /// <summary>
         /// The current session information for the account.

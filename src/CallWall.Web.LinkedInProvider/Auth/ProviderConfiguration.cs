@@ -4,11 +4,11 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.LinkedInProvider.Auth
 {
-    public sealed class AccountConfiguration : IAccountConfiguration
+    public sealed class ProviderConfiguration : IProviderConfiguration
     {
-        public static readonly IAccountConfiguration Instance = new AccountConfiguration();
+        public static readonly IProviderConfiguration Instance = new ProviderConfiguration();
 
-        private AccountConfiguration()
+        private ProviderConfiguration()
         {}
 
         public string Name { get { return "LinkedIn"; } }

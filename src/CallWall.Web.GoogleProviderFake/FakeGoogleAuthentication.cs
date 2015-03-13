@@ -11,7 +11,7 @@ namespace CallWall.Web.GoogleProviderFake
 {
     public class FakeGoogleAuthentication : IAccountAuthentication
     {
-        public IAccountConfiguration Configuration { get { return FakeGoogleAccountConfiguration.Instance; } }
+        public IProviderConfiguration Configuration { get { return FakeGoogleProviderConfiguration.Instance; } }
 
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {
@@ -42,11 +42,8 @@ namespace CallWall.Web.GoogleProviderFake
 
         private static FakeAccount CreateFakeAccount()
         {
-            return new FakeAccount
-            {
-                DisplayName = Environment.UserName,
-                AccountId = Environment.UserDomainName
-            };
+            return new FakeAccount(Environment.UserDomainName, Environment.UserName,
+                string.Format("{0}@gmail.com", Environment.UserName));
         }
 
         private class AuthState

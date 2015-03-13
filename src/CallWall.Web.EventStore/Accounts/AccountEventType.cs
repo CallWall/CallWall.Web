@@ -2,7 +2,8 @@ namespace CallWall.Web.EventStore.Accounts
 {
     internal static class AccountEventType
     {
-        public const string AccountRegististered = "AccountRegistered";
+        //public const string AccountRegististered = "AccountRegistered";
+        //public const string AccountRegististered = UserEventType.AccountRegistered;
 
         /// <summary>
         /// Indicates that this Account was used to login to CallWall.

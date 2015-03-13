@@ -20,7 +20,7 @@ namespace CallWall.Web.Providers
             return _authenticationProviders.Single(ap => string.Equals(ap.Configuration.Name, account, StringComparison.Ordinal));
         }
 
-        public IEnumerable<IAccountConfiguration> GetAccountConfigurations()
+        public IEnumerable<IProviderConfiguration> GetProviderConfigurations()
         {
             return _authenticationProviders.Select(ap => ap.Configuration);
         }

@@ -86,6 +86,10 @@ div.contact-card td.title a:hover {
 }
 
 img.account-icon {
+    height: 30px;
+    max-height: 30px;
+}
+img.provider-icon {
     height: 40px;
     max-height: 40px;
 }

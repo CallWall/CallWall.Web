@@ -88,6 +88,7 @@
     <Compile Include="GetUserContactDetailsFixture.cs" />
     <Compile Include="NewUserRegistrationFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserAddsAccountFixture.cs" />
     <Compile Include="UserContactsUpdatedFixture.cs" />
   </ItemGroup>
   <ItemGroup>

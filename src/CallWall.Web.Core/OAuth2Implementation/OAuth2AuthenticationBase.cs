@@ -21,7 +21,7 @@ namespace CallWall.Web.OAuth2Implementation
 
         public abstract string ProviderName { get; }
 
-        public abstract IAccountConfiguration Configuration { get; }
+        public abstract IProviderConfiguration Configuration { get; }
 
         public Uri AuthenticationUri(string redirectUri, IList<string> scopes)
         {

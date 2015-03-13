@@ -34,7 +34,7 @@ namespace CallWall.Web.GoogleProviderFake
             _name = name;
             //TODO: How do I get content/resources/images from a Provider build into dir that is safe for the web to serve? -LC
             //_image = new Uri(string.Format("/Providers/GoogleFakeContent/{0}", image), UriKind.Relative);
-            _image = new Uri(string.Format("/Content/Images/Google/{0}", image), UriKind.Relative);
+            _image = new Uri(string.Format("/Content/Google/Images/{0}", image), UriKind.Relative);
             _resource = resource;
         }
 

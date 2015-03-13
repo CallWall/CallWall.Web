@@ -1,0 +1,6 @@
+﻿@model IEnumerable<CallWall.Web.Models.OAuthProviderListItem>
+
+@foreach (var provider in Model)
+{
+  @Html.DisplayFor(m => provider, "ProviderConfiguration")
+} 

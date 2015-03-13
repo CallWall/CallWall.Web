@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CallWall.Web.Domain;
 
@@ -15,6 +16,7 @@ namespace CallWall.Web.LinkedInProvider.Contacts
 
         public ContactSummary(string accountId, string id, string firstname, string lastname, string primaryAvatar, IEnumerable<string> tags, IEnumerable<IContactAssociation> organizations)
         {
+            if(string.Equals(id, "private")) throw new ArgumentException("private contacts should be ignored");
             _accountId = accountId;
             _providerId = id;
             _title = string.Format("{0} {1}", firstname, lastname);

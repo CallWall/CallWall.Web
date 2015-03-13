@@ -112,6 +112,7 @@
     <Compile Include="StreamNames.cs" />
     <Compile Include="Users\UserCreatedEvent.cs" />
     <Compile Include="Users\UserEventType.cs" />
+    <Compile Include="Users\UserRegisteredAccountEvent.cs" />
     <Compile Include="Users\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>

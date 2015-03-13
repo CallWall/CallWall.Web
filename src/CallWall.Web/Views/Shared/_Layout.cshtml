@@ -19,18 +19,11 @@
                     <span class="icon-bar"></span>
                 </button>
                 @Html.ActionLink("CallWall", "Index", "Home", null, new { @class = "brand" })
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        @Html.MenuLink( "Home", "Index", "Home", null, null, "active" )
-                        @Html.MenuLink( "About", "About", "Home", null, null, "active" )
-                        @Html.MenuLink( "Downloads", "Download", "Home", null, null, "active" )
-                        @Html.MenuLink( "Help", "Index", "Help", null, null, "active" )
-                    </ul>
-                    @Html.Partial("_LoginPartial")
-                </div>
+                @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
+
     <div class="container">
         @RenderBody()
         <hr />

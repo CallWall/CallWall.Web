@@ -36,6 +36,7 @@ namespace CallWall.Web.GoogleProviderFake
             public string Content { get; private set; }
             public Contracts.IProviderDescription Provider { get; private set; }
             public MessageType MessageType { get; private set; }
+            public string DeepLink { get { return null; } }
 
             public Message(DateTimeOffset timestamp, bool isOutbound, string subject, string content, Contracts.IProviderDescription provider)
             {

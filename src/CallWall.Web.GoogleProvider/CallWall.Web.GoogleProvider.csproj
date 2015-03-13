@@ -81,7 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\AccountConfiguration.cs" />
+    <Compile Include="Auth\ProviderConfiguration.cs" />
     <Compile Include="Auth\AccountTranslator.cs" />
     <Compile Include="Auth\GoogleAccountProvider.cs" />
     <Compile Include="Auth\IAccountTranslator.cs" />

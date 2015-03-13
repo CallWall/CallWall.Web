@@ -36,6 +36,11 @@ namespace CallWall.Web.Domain
 
         public IEnumerable<IAccount> Accounts { get { return _accounts; } }
 
+        public User AddAccount(IAccount account)
+        {
+            return new User(_id, _displayName, _accounts.Concat(new[] { account }));
+        }
+
         public override string ToString()
         {
             return string.Format("Id:'{0}', DisplayName:'{1}', Accounts:'{2}'", Id, DisplayName, string.Join(",", Accounts.Select(a=>a.AccountId)));

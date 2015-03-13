@@ -6,7 +6,7 @@ namespace CallWall.Web.Domain
 {
     public interface IAccountAuthentication
     {
-        IAccountConfiguration Configuration { get; }
+        IProviderConfiguration Configuration { get; }
 
         Uri AuthenticationUri(string redirectUri, IList<string> scopes);
 

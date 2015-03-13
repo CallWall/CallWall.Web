@@ -92,7 +92,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public async Task When_a_user_registers_and_triggers_an_AccountRefresh()
             {
-                User = await _userRepository.RegisterNewUser(_account, Guid.NewGuid());
+                User = await _userRepository.Login(_account);
             }
 
             public async Task Then_contacts_are_available_by_key()

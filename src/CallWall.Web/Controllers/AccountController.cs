@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Security;
-using System.Security.Principal;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Security;
 using CallWall.Web.Domain;
@@ -42,25 +40,38 @@ namespace CallWall.Web.Controllers
 
         public ActionResult LogOff()
         {
-            //_sessionProvider.LogOff();
             FormsAuthentication.SignOut();
             return new RedirectResult("/");
         }
 
         [AllowAnonymous]
         [ChildActionOnly]
+        [AsyncTimeout(2000)]
+        public async Task<ActionResult> CurrentRegisteredAccountList()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return new EmptyResult();
+            }
+            var userId = User.UserId();
+            var user =  await _loginProvider.GetUser(userId);
+
+            var authorizedAccounts = from acc in user.Accounts
+                    from provider in _authenticationProviderGateway.GetProviderConfigurations()
+                    where acc.Provider == provider.Name
+                    select new OAuthAccountListItem(acc, provider);
+
+            return PartialView("_OAuthAccountListPartial", authorizedAccounts);
+        }
+
+        [AllowAnonymous]
+        [ChildActionOnly]
         public ActionResult OAuthProviderList()
         {
-            //TODO : Need to be able to get a list of Providers that a User already has registered with. -LC
-            //var activeProviders = _sessionProvider.GetSessions(User).Select(s => s.Provider);
-            //var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
-            //                                                     .Select(ap => new OAuthAccountListItem(ap, activeProviders.Contains(ap.Name)));
+            var providers = _authenticationProviderGateway.GetProviderConfigurations()
+                                                                 .Select(ap => new OAuthProviderListItem(ap));
 
-            var accountProviders = _authenticationProviderGateway.GetAccountConfigurations()
-                                                                 .Select(ap => new OAuthAccountListItem(ap, false));
-
-            //var accountProviders = Enumerable.Empty<OAuthAccountListItem>();
-            return PartialView("_OAuthAccountListPartial", accountProviders);
+            return PartialView("_OAuthProviderListPartial", providers);
         }
 
         [AllowAnonymous, AcceptVerbs(HttpVerbs.Post)]
@@ -86,14 +97,25 @@ namespace CallWall.Web.Controllers
         [AsyncTimeout(2000)]
         public async Task<ActionResult> Oauth2CallbackAsync(string code, string state)
         {
-            var user =  await _loginProvider.Login(code, state);
-            SetPrincipal(user);
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.UserId();
+                var version = User.TicketVersion();
+                var user = await _loginProvider.RegisterAccount(userId, code, state);
+                SetPrincipal(user, version+1);    
+            }
+            else
+            {
+                var user = await _loginProvider.Login(code, state);
+                SetPrincipal(user);    
+            }
+            
             return new RedirectResult("~/");
         }
 
-        private void SetPrincipal(User user)
+        private void SetPrincipal(User user, int version = 1)
         {
-            var authTicket = new FormsAuthenticationTicket(1, user.DisplayName, 
+            var authTicket = new FormsAuthenticationTicket(version, user.DisplayName, 
                 DateTime.UtcNow, DateTime.MaxValue, true, user.Id.ToString(), "CallWallAuth");
             
             var encTicket = FormsAuthentication.Encrypt(authTicket);
