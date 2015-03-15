@@ -20,7 +20,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As an end user",
         IWant = "I want to be able to fetch my contacts by a set of keys",
         SoThat = "So that I can see their details with just a public key like a phone number or email address")]
-    //[Timeout(1000)]
+    [Timeout(20000)]
     public class GetUserContactDetailsFixture
     {
         #region Setup/TearDown

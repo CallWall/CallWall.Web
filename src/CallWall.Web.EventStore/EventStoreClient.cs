@@ -49,7 +49,6 @@ namespace CallWall.Web.EventStore
 
                 return new CompositeDisposable(Disposable.Create(() =>
                                                                  {
-
                                                                      try
                                                                      {
                                                                          subscription.Stop(TimeSpan.FromSeconds(2));
@@ -122,11 +121,9 @@ namespace CallWall.Web.EventStore
 
         public async Task<IDisposable> AllEvents(Action<ResolvedEvent> onEventReceived)
         {
-            //TODO: When to dispose? -LC
             var conn = await _connectionFactory.Connect();
             try
             {
-                
                 //TODO: Handle the subscription dropped callback? -LC
                 //  Potentially pass in a strategy for handling the subscription drop? -LC
                 var subscription = await conn.SubscribeToAllAsync(true,
@@ -138,7 +135,7 @@ namespace CallWall.Web.EventStore
                     },
                     AdminUserCredentials);
                 _logger.Debug("Subscribed to all events");
-                return subscription;
+                return new CompositeDisposable(subscription, conn);
             }
             catch (Exception e)
             {

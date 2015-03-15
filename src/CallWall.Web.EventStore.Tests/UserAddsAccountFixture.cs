@@ -16,6 +16,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As a user",
         IWant = "I want to add additional account",
         SoThat = "So that I can see aggregate contact information for multiple sources.")]
+    [Timeout(20000)]
     public class UserAddsAccountFixture
     {
         #region Setup/TearDown

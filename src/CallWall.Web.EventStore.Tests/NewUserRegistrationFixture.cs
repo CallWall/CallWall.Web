@@ -17,6 +17,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As an anon user",
         IWant = "I want to register with CallWall",
         SoThat = "So that I can use the system")]
+    [Timeout(20000)]
     public class NewUserRegistrationFixture
     {
         #region Setup/TearDown
