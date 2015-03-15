@@ -75,11 +75,11 @@ namespace CallWall.Web.Controllers
         }
 
         [AllowAnonymous, AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Authenticate(string account, string[] resource)
+        public ActionResult Authenticate(string providerName, string[] resource)
         {
             var callBackUri = CreateCallBackUri();
 
-            var redirectUri = _authenticationProviderGateway.AuthenticationUri(account,
+            var redirectUri = _authenticationProviderGateway.AuthenticationUri(providerName,
                 callBackUri,
                 resource);
 

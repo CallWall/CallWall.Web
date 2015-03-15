@@ -267,16 +267,12 @@ namespace CallWall.Web.EventStore.Tests
                 Assert.AreEqual(summary.Title, update.NewTitle);
             }
 
-
-
             public void Dispose()
             {
                 _userRepository.Dispose();
                 _userContactSynchronizationService.Dispose();
                 _accountContactSynchronizationService.Dispose();
             }
-
-
         }
 
         #region Factory methods

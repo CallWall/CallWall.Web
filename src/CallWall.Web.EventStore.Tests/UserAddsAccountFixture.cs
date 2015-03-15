@@ -49,17 +49,6 @@ namespace CallWall.Web.EventStore.Tests
                .BDDfy();
         }
 
-        [Test]
-        public void AddingAccountLoadsAccountContactsToUserContacts()
-        {
-            new UserWithSingleAccountAddsAccount(_eventStoreClient)
-               .Given(s => s.Given_a_signed_in_user())
-               .When(s => s.When_user_adds_account())
-               .Then(s => s.Then_user_contacts_include_new_account_contacts())
-               .TearDownWith(s => s.Dispose())
-               .BDDfy();
-        }
-
         public class UserWithSingleAccountAddsAccount : IDisposable
         {
             private readonly UserRepository _userRepository;            
@@ -102,11 +91,6 @@ namespace CallWall.Web.EventStore.Tests
             public void Then_user_has_all_accounts()
             {
                 CollectionAssert.AreEqual(_allAccounts, _updatedUser.Accounts);
-            }
-
-            public void Then_user_contacts_include_new_account_contacts()
-            {
-                throw new NotImplementedException();
             }
 
             public void Dispose()

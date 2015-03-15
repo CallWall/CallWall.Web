@@ -1,12 +1,10 @@
 using System;
-using System.Data;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.Common.Utils;
 using EventStore.ClientAPI.Exceptions;
 using EventStore.ClientAPI.SystemData;
 
@@ -39,21 +37,6 @@ namespace CallWall.Web.EventStore
                 });
         }
 
-        //[Obsolete("Use GetEvents and don't provide a version/EventId")]
-        //public IObservable<string> GetAllEvents(string streamName)
-        //{
-        //    return Observable.Create<byte[]>(o =>
-        //    {
-        //        var conn = _connectionFactory.Connect();
-
-        //        Action<EventStoreCatchUpSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2.OriginalEvent.Data);
-
-        //        var subscription = conn.SubscribeToStreamFrom(streamName, StreamPosition.Start, false, callback);
-
-        //        return new CompositeDisposable(Disposable.Create(() => subscription.Stop(TimeSpan.FromSeconds(2))), conn);
-        //    })
-        //    .Select(Encoding.UTF8.GetString);
-        //}
         public IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion = null)
         {
             return Observable.Create<ResolvedEvent>(async o =>

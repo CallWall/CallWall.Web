@@ -16,14 +16,13 @@ namespace CallWall.Web.EventStore.Tests.Doubles
         /// </remarks>
         public void Write(LogLevel level, string message, Exception exception)
         {
-            //return;
+            return;
             var threadName = ThreadName();
             Console.WriteLine("[{2}] {0} - {1}", level, message, threadName);
             if (exception != null)
             {
                 Console.WriteLine(exception);
             }
-
         }
 
         private static string ThreadName()

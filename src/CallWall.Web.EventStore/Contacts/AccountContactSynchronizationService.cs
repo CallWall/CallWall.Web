@@ -24,19 +24,9 @@ namespace CallWall.Web.EventStore.Contacts
                 case UserEventType.UserCreated:
                     AddAccount(resolvedEvent.OriginalEvent);
                     break;
-                //case AccountEventType.AccountRegististered:
-                //    AddAccount();
-                //    break;
-                //case AccountEventType.AccountDeregistered:
-                //case AccountEventType.AccountRevoked:
-                //    //Strip out contacts from old account. May require a re-parse of contacts from existing accounts.
-                //    break;
                 case ContactEventType.AccountContactRefreshRequest:
                     ProcessRefreshRequest(resolvedEvent.OriginalEvent);
                     break;
-                //case AccountEventType.SessionRefresh
-                //  UpdateAccountSession(resolvedEvent.OriginalEvent);
-                //  break;
             }
         }
 

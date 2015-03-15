@@ -47,8 +47,8 @@ namespace CallWall.Web.EventStore.Domain
         public IEnumerable<ContactProviderSummary> Providers { get; private set; }
 
         public IEnumerable<ContactAssociation> Organizations { get; private set; }
-        
-        public IEnumerable<ContactAssociation> Relationships { get; private set; } 
+
+        public IEnumerable<ContactAssociation> Relationships { get; private set; }
 
         public bool OwnsContact(IAccountContactSummary contact)
         {
@@ -59,8 +59,8 @@ namespace CallWall.Web.EventStore.Domain
 
         public bool IsMatch(IAccountContactSummary contact)
         {
-            if (contact == null) throw new ArgumentNullException();
-            if (OwnsContact(contact)) throw new InvalidOperationException();
+            if (contact == null) throw new ArgumentNullException("contact");
+            MustNotOwnContact(contact);
 
             return IsEmailMatch(contact)
                 || IsPhoneMatch(contact)
@@ -68,11 +68,13 @@ namespace CallWall.Web.EventStore.Domain
                 || IsFuzzyTitleMatch(contact);
         }
 
+
+
         public void Add(IAccountContactSummary contact)
         {
 #if DEBUG
-            if (contact == null) throw new ArgumentNullException();
-            if (OwnsContact(contact)) throw new InvalidOperationException();
+            if (contact == null) throw new ArgumentNullException("contact");
+            MustNotOwnContact(contact);
 #endif
             _contacts.Add(contact);
             _isDirty = true;
@@ -82,8 +84,8 @@ namespace CallWall.Web.EventStore.Domain
         public void Update(IAccountContactSummary newValue)
         {
 #if DEBUG
-            if (newValue == null) throw new ArgumentNullException();
-            if (!OwnsContact(newValue)) throw new InvalidOperationException();
+            if (newValue == null) throw new ArgumentNullException("newValue");
+            MustOwnContact(newValue);
 #endif
             var oldValue = _contacts.Single(c => c.Provider == newValue.Provider
                                       && c.AccountId == newValue.AccountId
@@ -98,7 +100,7 @@ namespace CallWall.Web.EventStore.Domain
         {
 #if DEBUG
             if (contact == null) throw new ArgumentNullException();
-            if (!OwnsContact(contact)) throw new InvalidOperationException();
+            MustOwnContact(contact);
 #endif
             var contactsSnapshot = _contacts.ToList()
                 .Where(c => contact.Provider == c.Provider)
@@ -173,7 +175,7 @@ namespace CallWall.Web.EventStore.Domain
                     AddedProviders = Providers.Any() ? Providers.ToArray() : null,
                     AddedTags = Tags.Any() ? Tags.ToArray() : null,
                     AddedHandles = Handles.Any() ? Handles.ToArray() : null,
-                    AddedOrganizations = Organizations.Any()? Organizations.ToArray() : null,
+                    AddedOrganizations = Organizations.Any() ? Organizations.ToArray() : null,
                     AddedRelationships = Relationships.Any() ? Relationships.ToArray() : null,
                 };
             }
@@ -234,10 +236,10 @@ namespace CallWall.Web.EventStore.Domain
             //TODO: This may need a custom IComparer instance  -LC
             Handles = _contacts.SelectMany(c => c.Handles ?? Enumerable.Empty<ContactHandle>()).Distinct().ToArray();
             Organizations = _contacts.SelectMany(c => c.Organizations ?? Enumerable.Empty<ContactAssociation>())
-                                     .Select(ca=>new ContactAssociation{Name = ca.Name, Association = ca.Association})
+                                     .Select(ca => new ContactAssociation { Name = ca.Name, Association = ca.Association })
                                      .Distinct().ToArray();
             Relationships = _contacts.SelectMany(c => c.Relationships ?? Enumerable.Empty<ContactAssociation>())
-                                     .Select(ca=>new ContactAssociation{Name = ca.Name, Association = ca.Association})
+                                     .Select(ca => new ContactAssociation { Name = ca.Name, Association = ca.Association })
                                      .Distinct().ToArray();
             Title = GetBestTitle();
         }
@@ -285,6 +287,16 @@ namespace CallWall.Web.EventStore.Domain
             return regex.IsMatch(value);
         }
 
+#if DEBUG
+        private void MustOwnContact(IAccountContactSummary contact)
+        {
+            if (!OwnsContact(contact)) throw new InvalidOperationException("contact must belong to this ContactAggregate");
+        }
+        private void MustNotOwnContact(IAccountContactSummary contact)
+        {
+            if (OwnsContact(contact)) throw new InvalidOperationException("contact already belongs to this ContactAggregate");
+        }
+#endif
 
         //TODO: Move algos out to separate set of rules. -LC
         #region Matching Algos
@@ -365,7 +377,7 @@ namespace CallWall.Web.EventStore.Domain
             var atSignIndex = emailAddress.IndexOf('@');
             var localPart = emailAddress.Substring(0, atSignIndex);
             var domainPart = emailAddress.Substring(atSignIndex);
-            return localPart.Replace(".", string.Empty) + domainPart;            
+            return localPart.Replace(".", string.Empty) + domainPart;
         }
 
         private static bool IsGmail(string lowerCased)

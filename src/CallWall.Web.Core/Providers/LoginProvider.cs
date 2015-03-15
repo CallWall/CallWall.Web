@@ -9,14 +9,14 @@ namespace CallWall.Web.Providers
     public sealed class LoginProvider : ILoginProvider
     {
         private readonly IUserRepository _userRepository;
-        private readonly IEnumerable<IAccountAuthentication> _authenticationProviders;
+        private readonly IAccountAuthentication[] _authenticationProviders;
         private readonly ILogger _logger;
 
         public LoginProvider(IUserRepository userRepository, ILoggerFactory loggerFactory, IEnumerable<IAccountAuthentication> authenticationProviders)
         {
             _userRepository = userRepository;
             _logger = loggerFactory.CreateLogger(GetType());
-            _authenticationProviders = authenticationProviders;
+            _authenticationProviders = authenticationProviders.ToArray();
         }
 
         public async Task<User> Login(string oAuthCode, string oAuthState)
@@ -46,6 +46,7 @@ namespace CallWall.Web.Providers
 
         private async Task<IAccount> CreateAccount(string code, string state)
         {
+            //TODO: Need to cater for Fail for any provider to be able to create Account from state. -LC
             var authProvider = _authenticationProviders.Single(ap => ap.CanCreateAccountFromState(code, state));
             var account = await authProvider.CreateAccountFromOAuthCallback(code, state);
             return account;
