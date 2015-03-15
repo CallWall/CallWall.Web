@@ -4,11 +4,11 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.GoogleProvider.Auth
 {
-    internal sealed class AccountConfiguration : IAccountConfiguration
+    internal sealed class ProviderConfiguration : IProviderConfiguration
     {
-        public static readonly IAccountConfiguration Instance = new AccountConfiguration();
+        public static readonly IProviderConfiguration Instance = new ProviderConfiguration();
 
-        private AccountConfiguration()
+        private ProviderConfiguration()
         {}
 
         public string Name { get { return Constants.ProviderName; } }

@@ -23,7 +23,6 @@ namespace CallWall.Web.EventStore.Tests.Doubles
             {
                 Console.WriteLine(exception);
             }
-
         }
 
         private static string ThreadName()

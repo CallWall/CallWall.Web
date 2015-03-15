@@ -20,7 +20,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As an end user",
         IWant = "I want to be able to fetch my contacts by a set of keys",
         SoThat = "So that I can see their details with just a public key like a phone number or email address")]
-    //[Timeout(1000)]
+    [Timeout(20000)]
     public class GetUserContactDetailsFixture
     {
         #region Setup/TearDown
@@ -92,7 +92,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public async Task When_a_user_registers_and_triggers_an_AccountRefresh()
             {
-                User = await _userRepository.RegisterNewUser(_account, Guid.NewGuid());
+                User = await _userRepository.Login(_account);
             }
 
             public async Task Then_contacts_are_available_by_key()

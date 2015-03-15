@@ -15,5 +15,11 @@ namespace CallWall.Web
 
             return Guid.Parse(userId);
         }
+        public static int TicketVersion(this IPrincipal principal)
+        {
+            if (!principal.Identity.IsAuthenticated) throw new SecurityException();
+            var formsIdentitiy = (FormsIdentity)principal.Identity;
+            return formsIdentitiy.Ticket.Version;
+        }
     }
 }

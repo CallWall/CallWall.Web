@@ -1,15 +1,19 @@
 ﻿@model CallWall.Web.Models.OAuthAccountListItem
-
-@using (Html.BeginForm("Authenticate", "Account"))
+<!-- TODO: Collapse the resources (expander) to leave focus on the New Account section -LC -->
+@using (Html.BeginForm("RemoveAccount", "Account"))
 {
     @Html.AntiForgeryToken()
     <input type="hidden" name="account" value="@Model.Name"/>
     <fieldset>
         <legend>
-            <img src="@Model.Image" height="100" alt="@Model.Name" class="account-icon"/>
+            <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>
+            <input type="submit" value="Revoke" style="float: right"/>
+            <img src="@Model.Image" height="50" alt="@Model.Name" class="account-icon"/>
+            @Html.DisplayFor(m => m.AccountHandle)
         </legend>
-        @Html.EditorFor(m => m.Resources)
-        <input type="submit" value="@string.Format("{0}", Model.IsActive ? "Registered":"Register")" style="float: right" @string.Format("{0}", Model.IsActive ? "disabled='disabled'":"")/>
+        <div id="Resources-@Model.AccountId">
+            @Html.EditorFor(m => m.ResourceSelections)
+        </div>
     </fieldset>
 }
 

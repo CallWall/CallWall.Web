@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CallWall.Web.EventStore.Users;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.Common.Utils;
 
 namespace CallWall.Web.EventStore.Contacts
 {
@@ -25,9 +24,9 @@ namespace CallWall.Web.EventStore.Contacts
                 case UserEventType.UserCreated:
                     AddUser(resolvedEvent.OriginalEvent);
                     break;
-                //case AccountEventType.AccountRegististered:
-                //    AddAccount();
-                //    break;
+                case UserEventType.AccountRegistered:
+                    AddAccount(resolvedEvent.OriginalEvent);
+                    break;
                 //case AccountEventType.AccountDeregistered:
                 //case AccountEventType.AccountRevoked:
                 //    //Strip out contacts from old account. May require a re-parse of contacts from existing accounts.
@@ -38,13 +37,19 @@ namespace CallWall.Web.EventStore.Contacts
             }
         }
 
+        private void AddAccount(RecordedEvent accountRegisteredEvent)
+        {
+            var payload = accountRegisteredEvent.Deserialize<UserRegisteredAccountEvent>();
+            LinkUserIdToAccountId(payload.UserId, payload.Account.AccountId);
+        }
+
         private void AddUser(RecordedEvent userCreatedEvent)
         {
             var payload = userCreatedEvent.Deserialize<UserCreatedEvent>();
-            Logger.Trace("Adding account '{0}' to user '{1}'", payload.Account.AccountId, payload.Id);
-            _accountIdToUserId[payload.Account.AccountId] = payload.Id;
+            LinkUserIdToAccountId(payload.Id, payload.Account.AccountId);
         }
 
+       
         private void UpdateContact(RecordedEvent originalEvent)
         {
             var payload = originalEvent.Deserialize<AccountContactBatchUpdateRecord>();
@@ -71,6 +76,12 @@ namespace CallWall.Web.EventStore.Contacts
 
             SaveBatch(streamName, userContacts.Version, ContactEventType.UserAggregateContactUpdate, payload)
                 .Wait();
+        }
+
+        private void LinkUserIdToAccountId(Guid userId, string accountId)
+        {
+            Logger.Trace("Adding account '{0}' to user '{1}'", accountId, userId);
+            _accountIdToUserId[accountId] = userId;
         }
 
         private UserContacts GetUserContacts(AccountContactBatchUpdateRecord payload)

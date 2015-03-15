@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Security.Authentication;
+﻿using System.Security.Authentication;
 using System.Threading.Tasks;
 using CallWall.Web.Domain;
 using CallWall.Web.OAuth2Implementation;
@@ -10,14 +9,14 @@ namespace CallWall.Web.LinkedInProvider.Auth
     //https://developer.linkedin.com/documents/authentication
     public class LinkedInAuthentication : OAuth2AuthenticationBase, IAccountAuthentication
     {
-        private readonly IAccountFactory _accountFactory;
+        private readonly ILinkedInAccountProvider _accountProvider;
 
-        public LinkedInAuthentication(IAccountFactory accountFactory)
+        public LinkedInAuthentication(ILinkedInAccountProvider accountProvider)
         {
-            _accountFactory = accountFactory;
+            _accountProvider = accountProvider;
         }
 
-        public override IAccountConfiguration Configuration { get { return AccountConfiguration.Instance; } }
+        public override IProviderConfiguration Configuration { get { return ProviderConfiguration.Instance; } }
 
         public override string RequestAuthorizationBaseUri { get { return "https://www.linkedin.com/uas/oauth2/authorization"; } }
 
@@ -53,11 +52,12 @@ namespace CallWall.Web.LinkedInProvider.Auth
 
         protected override async Task<IAccount> CreateAccount(ISession session)
         {
-            //HACK: This should obviously go to LinkedIn and fetch the details. -LC
-            await Task.Delay(10);
+            ////HACK: This should obviously go to LinkedIn and fetch the details. -LC
+            //await Task.Delay(10);
 
-            return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session, Enumerable.Empty<ContactHandle>());
+            //return _accountFactory.Create("lee.ryan.campbell@gmail.com", ProviderName, "Lee HACK", session, Enumerable.Empty<ContactHandle>());
+
+            return await _accountProvider.CreateAccount(session);
         }
-
     }
 }

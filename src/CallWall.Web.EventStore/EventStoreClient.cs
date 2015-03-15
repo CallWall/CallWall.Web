@@ -1,12 +1,10 @@
 using System;
-using System.Data;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.Common.Utils;
 using EventStore.ClientAPI.Exceptions;
 using EventStore.ClientAPI.SystemData;
 
@@ -39,21 +37,6 @@ namespace CallWall.Web.EventStore
                 });
         }
 
-        //[Obsolete("Use GetEvents and don't provide a version/EventId")]
-        //public IObservable<string> GetAllEvents(string streamName)
-        //{
-        //    return Observable.Create<byte[]>(o =>
-        //    {
-        //        var conn = _connectionFactory.Connect();
-
-        //        Action<EventStoreCatchUpSubscription, ResolvedEvent> callback = (arg1, arg2) => o.OnNext(arg2.OriginalEvent.Data);
-
-        //        var subscription = conn.SubscribeToStreamFrom(streamName, StreamPosition.Start, false, callback);
-
-        //        return new CompositeDisposable(Disposable.Create(() => subscription.Stop(TimeSpan.FromSeconds(2))), conn);
-        //    })
-        //    .Select(Encoding.UTF8.GetString);
-        //}
         public IObservable<ResolvedEvent> GetEvents(string streamName, int? fromVersion = null)
         {
             return Observable.Create<ResolvedEvent>(async o =>
@@ -66,7 +49,6 @@ namespace CallWall.Web.EventStore
 
                 return new CompositeDisposable(Disposable.Create(() =>
                                                                  {
-
                                                                      try
                                                                      {
                                                                          subscription.Stop(TimeSpan.FromSeconds(2));
@@ -139,11 +121,9 @@ namespace CallWall.Web.EventStore
 
         public async Task<IDisposable> AllEvents(Action<ResolvedEvent> onEventReceived)
         {
-            //TODO: When to dispose? -LC
             var conn = await _connectionFactory.Connect();
             try
             {
-                
                 //TODO: Handle the subscription dropped callback? -LC
                 //  Potentially pass in a strategy for handling the subscription drop? -LC
                 var subscription = await conn.SubscribeToAllAsync(true,
@@ -155,7 +135,7 @@ namespace CallWall.Web.EventStore
                     },
                     AdminUserCredentials);
                 _logger.Debug("Subscribed to all events");
-                return subscription;
+                return new CompositeDisposable(subscription, conn);
             }
             catch (Exception e)
             {

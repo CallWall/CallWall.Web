@@ -43,6 +43,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -178,7 +179,7 @@
     <Compile Include="Providers\ISessionProvider.cs" />
     <Compile Include="Providers\LoginProvider.cs" />
     <Compile Include="Providers\UriExtensions.cs" />
-    <Compile Include="Providers\IAccountConfiguration.cs" />
+    <Compile Include="Providers\IProviderConfiguration.cs" />
     <Compile Include="Providers\IAccountContactProvider.cs" />
     <Compile Include="Unity\EnumerableResolutionStrategy.cs" />
     <Compile Include="Unity\GenericSupportExtension.cs" />

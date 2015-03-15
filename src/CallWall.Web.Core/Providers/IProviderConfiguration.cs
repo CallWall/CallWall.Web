@@ -4,7 +4,8 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web
 {
-    public interface IAccountConfiguration
+    //TODO: COnsider a rename from *Configuration as this isn't really config. Maybe metadata, features, description... -LC
+    public interface IProviderConfiguration
     {
         string Name { get; }
         Uri Image { get; }

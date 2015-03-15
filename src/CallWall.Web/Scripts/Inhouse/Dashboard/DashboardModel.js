@@ -8,7 +8,27 @@
         }
         for (var i = 0; i < newItems.length; i++) {
             var item = selector(newItems[i]);
-            targetKoArrar.push(selector(item));
+            if (targetKoArrar.indexOf(item) < 0) {
+                targetKoArrar.push(selector(item));
+            }
+        }
+    }
+    var addRangeDistinct = function (targetKoArrar, newItems, selector) {
+        if (newItems == null) return;
+        if (!selector) {
+            selector = function (x) { return x; };
+        }
+        var map = [];
+        for (var i = 0; i < targetKoArrar.length; i++) {
+            map[i] = JSON.stringify(x);
+        }
+        for (var i = 0; i < newItems.length; i++) {
+            var item = selector(newItems[i]);
+            var itemkey = JSON.stringify(item);
+            if (map.indexOf(itemkey) < 0) {
+                targetKoArrar.push(selector(item));
+                map[map.length] = itemkey;
+            }
         }
     }
     
@@ -59,8 +79,10 @@
                 self.avatar(data.avatarUris[0]);
             }
             addRange(self.tags, data.tags);
-            addRange(self.organizations, data.organizations, function(d) { return new ContactAssociation(d); });
-            addRange(self.relationships, data.relationships, function (d) { return new ContactAssociation(d); });
+            //TODO: Add tests for this Distinct feature. -LC
+            addRangeDistinct(self.organizations, data.organizations, function (d) { return new ContactAssociation(d); });
+            addRangeDistinct(self.relationships, data.relationships, function (d) { return new ContactAssociation(d); });
+            //TODO: conflate duplicate handles -LC
             addRange(self.handles, data.handles);
         };
     };

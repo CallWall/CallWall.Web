@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CallWall.Web.Domain;
 using CallWall.Web.EventStore.Contacts;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.Common.Utils;
 
 namespace CallWall.Web.EventStore.Accounts
 {

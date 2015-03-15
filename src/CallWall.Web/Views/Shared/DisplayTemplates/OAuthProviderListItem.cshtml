@@ -1,0 +1,17 @@
+﻿@model CallWall.Web.Models.OAuthProviderListItem
+
+@using (Html.BeginForm("Authenticate", "Account"))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="providerName" value="@Model.Name"/>
+    <fieldset>
+        <legend>
+            <img src="@Model.Image" height="100" alt="@Model.Name" class="provider-icon"/>
+        </legend>
+        @Html.EditorFor(m => m.Resources)
+        <input type="submit" value="Register" style="float: right"/>
+    </fieldset>
+}
+
+
+

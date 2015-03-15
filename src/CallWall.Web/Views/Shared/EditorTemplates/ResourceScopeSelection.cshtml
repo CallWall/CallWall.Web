@@ -1,0 +1,9 @@
+﻿@model CallWall.Web.Models.ResourceScopeSelection
+
+<div class="span3">
+    <label>
+        <img src="@Model.Image" alt="@Model.Name" class="resource-scope-icon"/>
+        <input type="checkbox" name="resource" value="@Model.Resource" @string.Format("{0}", Model.IsAuthorized?"checked='checked'":"") disabled='disabled'/>
+        @Html.DisplayFor(scope => scope.Name)
+    </label>
+</div>

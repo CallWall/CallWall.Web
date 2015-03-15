@@ -42,6 +42,8 @@ namespace CallWall.Web.LinkedInProvider.Contacts
                             return Observable.Empty<IAccountContactSummary>().Subscribe(o);
                         }
                         return contacts.Contacts
+                            //TODO: Add test to check the exclusion of private accounts. -LC
+                            .Where(c => !string.Equals(c.Id, "private"))
                             .Select(c => TranslateToContactSummary(account.AccountId, c))
                             .ToObservable()
                             .Subscribe(o);

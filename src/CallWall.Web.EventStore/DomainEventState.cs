@@ -38,5 +38,9 @@ namespace CallWall.Web.EventStore
             public override bool IsListening { get { return true; } }
         }
 
+        public override string ToString()
+        {
+            return GetType().Name;
+        }
     }
 }

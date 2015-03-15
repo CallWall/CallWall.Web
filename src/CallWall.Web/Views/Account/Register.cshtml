@@ -13,6 +13,22 @@
     There may be mandatory resources for a provider, and some resources may have dependencies on other resources.
     -->
 
+<!--
+    Add a form where the current accounts are displayed.
+    User can revoke access to these.
+    As a future feature, it would be nice to see 
+    * how many contacts are linked from each account
+    * last time CW made access to this account
+    * Any issues that CW has had with that account
+    
+    -->
+
+<section class="social" id="existingAccounts">
+    <h3>Current accounts</h3>
+    @Html.Action("CurrentRegisteredAccountList", new { ReturnUrl = ViewBag.ReturnUrl })
+</section>
+
 <section class="social" id="socialLoginForm">
+    <h3>Add an additional account</h3>
     @Html.Action("OAuthProviderList", new { ReturnUrl = ViewBag.ReturnUrl })
 </section>

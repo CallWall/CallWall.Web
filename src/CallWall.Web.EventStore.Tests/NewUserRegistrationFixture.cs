@@ -17,6 +17,7 @@ namespace CallWall.Web.EventStore.Tests
         AsA = "As an anon user",
         IWant = "I want to register with CallWall",
         SoThat = "So that I can use the system")]
+    [Timeout(20000)]
     public class NewUserRegistrationFixture
     {
         #region Setup/TearDown
@@ -91,7 +92,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public async Task When_the_user_registers_with_an_unrecongised_account()
             {
-                _user = await _userRepository.RegisterNewUser(_account, Guid.NewGuid());
+                _user = await _userRepository.Login(_account);
             }
 
             public void Then_a_user_is_created()
@@ -142,7 +143,6 @@ namespace CallWall.Web.EventStore.Tests
             {
                 var accountFactory = new AccountFactory();
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, Substitute.For<IAccountContactRefresher>());
-                
 
                 _account = new StubAccount();
                 _allAccounts.Add(_account);
@@ -153,7 +153,7 @@ namespace CallWall.Web.EventStore.Tests
             public async Task Given_an_existing_user()
             {
                 await UserRepository.Run();
-                await UserRepository.RegisterNewUser(_account, Guid.NewGuid());
+                await UserRepository.Login(_account);
             }
 
             public async Task When_user_logs_in_by_account()
