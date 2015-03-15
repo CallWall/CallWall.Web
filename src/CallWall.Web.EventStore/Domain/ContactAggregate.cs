@@ -59,17 +59,16 @@ namespace CallWall.Web.EventStore.Domain
 
         public bool IsMatch(IAccountContactSummary contact)
         {
+#if DEBUG
             if (contact == null) throw new ArgumentNullException("contact");
             MustNotOwnContact(contact);
-
+#endif
             return IsEmailMatch(contact)
                 || IsPhoneMatch(contact)
                 || IsTitleMatch(contact)
                 || IsFuzzyTitleMatch(contact);
         }
-
-
-
+        
         public void Add(IAccountContactSummary contact)
         {
 #if DEBUG
@@ -217,14 +216,14 @@ namespace CallWall.Web.EventStore.Domain
             return delta;
         }
 
-        private bool IsValid()
-        {
-            return !string.IsNullOrWhiteSpace(Title);
-        }
-
         public void CommitChange()
         {
             _isDirty = false;
+        }
+
+        private bool IsValid()
+        {
+            return !string.IsNullOrWhiteSpace(Title);
         }
 
         private void Refresh()
