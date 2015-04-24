@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Contacts
@@ -16,7 +16,7 @@ namespace CallWall.Web.EventStore.Contacts
                       
         public string[] AvatarUris { get; set; }
         public string[] Tags { get; set; }
-        public ContactHandle[] Handles { get; set; }
+        public ContactHandleRecord[] Handles { get; set; }
         public ContactAssociationRecord[] Organizations { get; set; }
         public ContactAssociationRecord[] Relationships { get; set; }
 
@@ -24,7 +24,7 @@ namespace CallWall.Web.EventStore.Contacts
         IAnniversary IAccountContactSummary.DateOfBirth { get { return DateOfBirth; }}
         IEnumerable<string> IAccountContactSummary.AvatarUris { get { return AvatarUris; } }
         IEnumerable<string> IAccountContactSummary.Tags { get { return Tags; } }
-        IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles; } }
+        IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles.Select(h=>h.ToContactHandle()); } }
         IEnumerable<IContactAssociation> IAccountContactSummary.Organizations { get { return Organizations; }}
         IEnumerable<IContactAssociation> IAccountContactSummary.Relationships { get { return Relationships; } }
     }

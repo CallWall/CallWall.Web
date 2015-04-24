@@ -554,12 +554,7 @@ namespace CallWall.Web.GoogleProvider.Tests.Providers.Gmail
             account.CurrentSession.AccessToken.Returns(accessToken);
             var handles = new[]
             {
-                new ContactHandle()
-                {
-                    Handle = "Lee@mail.com",
-                    HandleType = ContactHandleTypes.Email,
-                    Qualifier = "main"
-                }
+                new ContactEmailAddress("Lee@mail.com", "main")
             };
             account.Handles.Returns(handles);
 

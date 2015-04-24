@@ -1,15 +1,9 @@
 namespace CallWall.Web.Domain
 {
-    public abstract class ContactHandleTypes
-    {
-        public static readonly string Phone = "Phone";
-        public static readonly string Email = "Email";
-    }
-
-    public class ContactHandle
+    public abstract class ContactHandle
     {
         /// <summary>
-        /// THe type of handle this represents e.g. PhoneNumber, Email, UserId
+        /// The type of handle this represents e.g. PhoneNumber, Email, UserId
         /// </summary>
         public string HandleType { get; set; }
         /// <summary>
@@ -21,6 +15,11 @@ namespace CallWall.Web.Domain
         /// </summary>
         public string Qualifier { get; set; }
 
+        /// <summary>
+        /// The normalized values of the handle. e.g. +64 21-1234-4567 might be normalized to ["02112344567", "+642112344567"], and "Bob.Dodds@gmail.com" might be ["bobdodds@gmail.com"]
+        /// </summary>
+        /// <returns>An array of the normalized values for the handle</returns>
+        public abstract string[] NormalizedHandle();
 
         protected bool Equals(ContactHandle other)
         {
@@ -39,7 +38,7 @@ namespace CallWall.Web.Domain
         {
             unchecked
             {
-                return ((HandleType != null ? HandleType.GetHashCode() : 0)*397) ^ (Handle != null ? Handle.GetHashCode() : 0);
+                return ((HandleType != null ? HandleType.GetHashCode() : 0) * 397) ^ (Handle != null ? Handle.GetHashCode() : 0);
             }
         }
 
@@ -51,26 +50,6 @@ namespace CallWall.Web.Domain
         public static bool operator !=(ContactHandle left, ContactHandle right)
         {
             return !Equals(left, right);
-        }
-    }
-
-    public sealed class ContactEmailAddress : ContactHandle
-    {
-        public ContactEmailAddress(string emailAddress, string qualifier)
-        {
-            HandleType = ContactHandleTypes.Email;
-            Handle = emailAddress;
-            Qualifier = qualifier;
-        }
-    }
-
-    public sealed class ContactPhoneNumber : ContactHandle
-    {
-        public ContactPhoneNumber(string phoneNumber, string qualifier)
-        {
-            HandleType = ContactHandleTypes.Phone;
-            Handle = phoneNumber;
-            Qualifier = qualifier;
         }
     }
 }

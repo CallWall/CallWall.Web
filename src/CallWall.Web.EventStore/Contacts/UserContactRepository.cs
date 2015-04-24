@@ -40,7 +40,9 @@ namespace CallWall.Web.EventStore.Contacts
 
         public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
         {
-            return GetContactLookupFor(user).Select(cl => cl.GetByContactKeys(contactKeys));
+            return GetContactLookupFor(user)
+                .Log(_logger, "GetContactDetails")
+                .Select(cl => cl.GetByContactKeys(contactKeys));
         }
 
         private IObservable<ContactLookup> GetContactLookupFor(User user)

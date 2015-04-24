@@ -65,6 +65,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PhoneNumbers, Version=4.10.0.62, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\libphonenumber-csharp.4.10.0.62\lib\PhoneNumbers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -120,6 +124,11 @@
     </Compile>
     <Compile Include="CallWallModuleSection.cs" />
     <Compile Include="Domain\ContactAssociation.cs" />
+    <Compile Include="Domain\ContactEmailAddress.cs" />
+    <Compile Include="Domain\ContactHandleRecord.cs" />
+    <Compile Include="Domain\ContactHandleTypes.cs" />
+    <Compile Include="Domain\ContactPhoneNumber.cs" />
+    <Compile Include="Domain\PhoneNumber.cs" />
     <Compile Include="EnumerableEx.cs" />
     <Compile Include="IRunnable.cs" />
     <Compile Include="ITypeRegistry.cs" />

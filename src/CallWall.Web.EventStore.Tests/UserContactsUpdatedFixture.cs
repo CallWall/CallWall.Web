@@ -109,7 +109,10 @@ namespace CallWall.Web.EventStore.Tests
                     new ContactProviderSummary(matchingContact.Provider, matchingContact.AccountId,
                         matchingContact.ProviderId),
                 },
-                AddedHandles = initialContact.Handles.Concat(matchingContact.Handles.Skip(1)).ToArray()
+                AddedHandles = initialContact.Handles
+                    .Concat(matchingContact.Handles.Skip(1))
+                    .Select(h => new ContactHandleRecord(h))
+                    .ToArray()
             };
 
             new UserContactUpdateSingleContactAggregateScenario()
@@ -215,7 +218,7 @@ namespace CallWall.Web.EventStore.Tests
                         ProviderName = "Google"
                     }
                },
-               AddedHandles = new ContactHandle[]
+                AddedHandles = new ContactHandle[]
                {
                    new ContactEmailAddress("erynne.campbell@barclays.com", "work"),
                    new ContactEmailAddress("Erynne.Campbell@barclayscapital.com", "work"),
@@ -223,7 +226,8 @@ namespace CallWall.Web.EventStore.Tests
                    new ContactPhoneNumber("+61417910632", "mobile"),
                    new ContactPhoneNumber("+447554257819", "mobile"),
                    new ContactEmailAddress("Erynne.Campbell@gmail.com", "Obsolete"),                    
-               }
+               }.Select(h => new ContactHandleRecord(h))
+               .ToArray()
             };
 
             new UserContactUpdateSingleContactAggregateScenario()

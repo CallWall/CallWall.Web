@@ -68,7 +68,7 @@ namespace CallWall.Web.EventStore.Domain
                 || IsTitleMatch(contact)
                 || IsFuzzyTitleMatch(contact);
         }
-        
+
         public void Add(IAccountContactSummary contact)
         {
 #if DEBUG
@@ -173,7 +173,7 @@ namespace CallWall.Web.EventStore.Domain
                     AddedAvatars = Avatars.Any() ? Avatars.ToArray() : null,
                     AddedProviders = Providers.Any() ? Providers.ToArray() : null,
                     AddedTags = Tags.Any() ? Tags.ToArray() : null,
-                    AddedHandles = Handles.Any() ? Handles.ToArray() : null,
+                    AddedHandles = Handles.Any() ? Handles.Select(h => new ContactHandleRecord(h)).ToArray() : null,
                     AddedOrganizations = Organizations.Any() ? Organizations.ToArray() : null,
                     AddedRelationships = Relationships.Any() ? Relationships.ToArray() : null,
                 };
@@ -205,7 +205,7 @@ namespace CallWall.Web.EventStore.Domain
                 RemovedProviders = providerDelta.RemovedItems,
                 AddedTags = tagDelta.AddedItems,
                 RemovedTags = tagDelta.RemovedItems,
-                AddedHandles = handleDelta.AddedItems,
+                AddedHandles = handleDelta.AddedItems == null ? null : handleDelta.AddedItems.Select(h => new ContactHandleRecord(h)).ToArray(),
                 RemovedHandles = handleDelta.RemovedItems,
                 AddedOrganizations = organizationsDelta.AddedItems,
                 RemovedOrganizations = organizationsDelta.RemovedItems,
