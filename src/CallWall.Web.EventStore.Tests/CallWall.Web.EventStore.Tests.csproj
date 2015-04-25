@@ -84,7 +84,7 @@
     <Compile Include="ContactProviderSummaryComparer.cs" />
     <Compile Include="Doubles\ConsoleLogger.cs" />
     <Compile Include="Doubles\ConsoleLoggerFactory.cs" />
-    <Compile Include="Doubles\InMemoryEventStoreConnectionFactory.cs" />
+    <Compile Include="Doubles\EmbeddedEventStoreConnectionFactory.cs" />
     <Compile Include="Doubles\StubAccount.cs" />
     <Compile Include="Doubles\StubAccountContactProvider.cs" />
     <Compile Include="Doubles\StubContactSummary.cs" />
