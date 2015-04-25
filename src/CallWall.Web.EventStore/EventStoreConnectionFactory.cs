@@ -17,16 +17,14 @@ namespace CallWall.Web.EventStore
         private static readonly Lazy<CallWallEventStoreSection> Config = new Lazy<CallWallEventStoreSection>(CallWallEventStoreSection.GetConfig);
         private static readonly Lazy<IPAddress> ConfiguredIpAddress = new Lazy<IPAddress>(LoadIpAddressFromConfig);
         private static readonly Lazy<int> ConfiguredPort = new Lazy<int>(LoadPortFromConfig);
-        private readonly CallWall.Web.ILogger _logger;
         private readonly EventStoreLoggerBridge _esLogger;
 
         public EventStoreConnectionFactory(ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger(GetType());
-            _esLogger = new EventStoreLoggerBridge(_logger);
+            var logger = loggerFactory.CreateLogger(GetType());
+            _esLogger = new EventStoreLoggerBridge(logger);
         }
 
-        //TODO: Opportunity to share a single connection. Check for best practices. -LC
         public async Task<IEventStoreConnection> Connect()
         {
             var connectionSettings = ConnectionSettings.Create()
