@@ -86,13 +86,11 @@
     <Compile Include="Contacts\ContactLookup.cs" />
     <Compile Include="Contacts\ContactProfile.cs" />
     <Compile Include="Contacts\ContactStreamNames.cs" />
-    <Compile Include="Contacts\ContactRepository.cs" />
     <Compile Include="Contacts\IAccountContactsFactory.cs" />
     <Compile Include="Contacts\UserContacts.cs" />
     <Compile Include="Contacts\UserContactSynchronizationService.cs" />
-    <Compile Include="Contacts\IUserContactRepository.cs" />
     <Compile Include="Contacts\RefreshContactsCommand.cs" />
-    <Compile Include="Contacts\UserContactRepository.cs" />
+    <Compile Include="Contacts\EventStoreContactRepository.cs" />
     <Compile Include="DomainEventBase.cs" />
     <Compile Include="DomainEventState.cs" />
     <Compile Include="Domain\AccountContacts.cs" />

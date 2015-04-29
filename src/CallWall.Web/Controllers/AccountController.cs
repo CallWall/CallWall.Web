@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -11,6 +10,7 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly IAuthenticationProviderGateway _authenticationProviderGateway;
@@ -23,11 +23,13 @@ namespace CallWall.Web.Controllers
             _loginProvider = loginProvider;
         }
 
+        [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult LogIn()
         {
             return View();

@@ -24,7 +24,7 @@ namespace CallWall.Web.EventStore.Contacts
         IAnniversary IAccountContactSummary.DateOfBirth { get { return DateOfBirth; }}
         IEnumerable<string> IAccountContactSummary.AvatarUris { get { return AvatarUris; } }
         IEnumerable<string> IAccountContactSummary.Tags { get { return Tags; } }
-        IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles.Select(h=>h.ToContactHandle()); } }
+        IEnumerable<ContactHandle> IAccountContactSummary.Handles { get { return Handles == null ? Enumerable.Empty<ContactHandle>() : Handles.Select(h => h.ToContactHandle()); } }
         IEnumerable<IContactAssociation> IAccountContactSummary.Organizations { get { return Organizations; }}
         IEnumerable<IContactAssociation> IAccountContactSummary.Relationships { get { return Relationships; } }
     }
