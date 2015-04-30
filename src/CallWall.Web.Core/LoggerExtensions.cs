@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace CallWall.Web
@@ -266,23 +267,26 @@ namespace CallWall.Web
 
             logger.Debug("{0}.{1}{2}", typeName, method.Name, parenth);
         }
-        
+
+        private static int counter = 0;
         [System.Diagnostics.DebuggerStepThrough]
         public static IObservable<T> Log<T>(this IObservable<T> source, ILogger logger, string name)
         {
+            var idx = Interlocked.Increment(ref counter);
+            var prefix = string.Format("{0:D4}{1}", idx, name);
             return Observable.Using(
-                ()=> logger.Time(name),
+                () => logger.Time(prefix),
                 timer=> Observable.Create<T>(
                     o =>
                         {
-                            logger.Trace("{0}.Subscribe()", name);
+                            logger.Trace("{0}.Subscribe()", prefix);
                             var subscription = source
                                 .Do(
-                                    i => logger.Trace("{0}.OnNext({1})", name, i),
-                                    ex => logger.Trace("{0}.OnError({1})", name, ex),
-                                    () => logger.Trace("{0}.OnCompleted()", name))
+                                    i => logger.Trace("{0}.OnNext({1})", prefix, i),
+                                    ex => logger.Trace("{0}.OnError({1})", prefix, ex),
+                                    () => logger.Trace("{0}.OnCompleted()", prefix))
                                 .Subscribe(o);
-                            var disposal = Disposable.Create(() => logger.Trace("{0}.Dispose()", name));
+                            var disposal = Disposable.Create(() => logger.Trace("{0}.Dispose()", prefix));
                             return new CompositeDisposable(subscription, disposal);
                         })
                 );

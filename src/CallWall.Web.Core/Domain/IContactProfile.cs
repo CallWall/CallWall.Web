@@ -8,6 +8,8 @@ namespace CallWall.Web.Domain
     //  Will then need to consider what this means at the UserContact layer.
     public interface IContactProfile
     {
+        int Id { get; }
+
         /// <summary>
         /// How the user commonly references the contact e.g. Dan Rowe
         /// </summary>
