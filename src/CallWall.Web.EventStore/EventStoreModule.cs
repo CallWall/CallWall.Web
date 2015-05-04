@@ -10,14 +10,12 @@ namespace CallWall.Web.EventStore
             registry.RegisterSingleton<IEventStoreClient, EventStoreClient>();
             registry.RegisterSingleton<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
             registry.RegisterSingleton<Accounts.IAccountContactRefresher, Accounts.AccountContactRefresher>();
-            registry.RegisterSingleton<Contacts.IAccountContactsFactory, Contacts.AccountContactsFactory>();
-            registry.RegisterSingleton<IContactRepository, Contacts.EventStoreContactRepository>();
+            registry.RegisterSingleton<IContactFeedRepository, Contacts.EventStoreContactFeedRepository>();
+            registry.RegisterSingleton<IContactRepository, Contacts.EventStoreContactFeedRepository>();//HACK: The EventStore shouldn't be doing this work.
             //registry.RegisterType<IAccountContactProvider, Contacts.EventStoreAccountContactProvider>("EventStoreAccountContactProvider");
 
 
             registry.RegisterSingleton<IUserRepository, Users.UserRepository>();
-            registry.RegisterSingleton<IAccountFactory, Accounts.AccountFactory>();
-   
             registry.RegisterType<IProcess, EventStoreProcess>("EventStoreProcess");
         }
     }

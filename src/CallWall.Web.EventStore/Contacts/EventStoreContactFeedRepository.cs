@@ -5,12 +5,12 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Contacts
 {
-    public class EventStoreContactRepository : IContactRepository
+    public class EventStoreContactFeedRepository : IContactFeedRepository, IContactRepository
     {
         private readonly IEventStoreClient _eventStoreClient;
         private readonly ILogger _logger;
 
-        public EventStoreContactRepository(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
+        public EventStoreContactFeedRepository(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
         {
             _eventStoreClient = eventStoreClient;
             _logger = loggerFactory.CreateLogger(GetType());

@@ -92,7 +92,7 @@ namespace CallWall.Web.EventStore.Tests
         public class FetchUserContactProfileScenario : IDisposable
         {
             private readonly UserRepository _userRepository;
-            private readonly IContactRepository _contactRepository;
+            private readonly EventStoreContactFeedRepository _contactFeedRepository;
             private readonly UserContactSynchronizationService _userContactSynchronizationService;
             private readonly IAccount _account;
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
@@ -100,7 +100,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public FetchUserContactProfileScenario(IEventStoreClient eventStoreClient)
             {
-                _contactRepository = new EventStoreContactRepository(eventStoreClient, new ConsoleLoggerFactory());
+                _contactFeedRepository = new EventStoreContactFeedRepository(eventStoreClient, new ConsoleLoggerFactory());
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
@@ -149,7 +149,7 @@ namespace CallWall.Web.EventStore.Tests
             {
                 await WaitForContactsToBeLoaded();
 
-                var actual = await _contactRepository.LookupContactByKey(User, new[] { contactKey })
+                var actual = await _contactFeedRepository.LookupContactByKey(User, new[] { contactKey })
                     .Take(1)
                     .Timeout(TimeSpan.FromSeconds(10))
                     .ToTask();
@@ -171,7 +171,7 @@ namespace CallWall.Web.EventStore.Tests
                 var user = await _userRepository.Login(_account);
                 Trace.WriteLine("Account logged in");
 
-                var contacts = await _contactRepository.GetContactUpdates(user, 0)
+                var contacts = await _contactFeedRepository.GetContactUpdates(user, 0)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Select(evt => evt.Value)
                     .Take(expected.Count)

@@ -402,6 +402,10 @@
       <Project>{191b20f0-2e16-4075-83fd-7a151ee2820d}</Project>
       <Name>CallWall.Web.EventStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CallWall.Web.InMemoryRepository\CallWall.Web.InMemoryRepository.csproj">
+      <Project>{35300284-65bd-4f27-964e-0ea95a0cb091}</Project>
+      <Name>CallWall.Web.InMemoryRepository</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

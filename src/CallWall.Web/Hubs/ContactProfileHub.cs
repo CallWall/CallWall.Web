@@ -17,9 +17,9 @@ namespace CallWall.Web.Hubs
         private readonly ILoginProvider _loginProvider;
         private readonly ILogger _logger;
 
-        public ContactProfileHub(IContactRepository contactsProviders, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
+        public ContactProfileHub(IContactRepository contactsFeedProviders, ILoginProvider loginProvider, ILoggerFactory loggerFactory)
         {
-            _contactRepository = contactsProviders;
+            _contactRepository = contactsFeedProviders;
             _loginProvider = loginProvider;
             _logger = loggerFactory.CreateLogger(GetType());
         }

@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CallWall.Web.Domain;
 
-namespace CallWall.Web.EventStore.Domain
+namespace CallWall.Web.Domain
 {
     //TODO: Remove all the safety checking once Unit/Component tests prove the safety (else we will take a massive unnecessary perf hit) -LC
     internal sealed class ContactAggregate : IContactAggregate

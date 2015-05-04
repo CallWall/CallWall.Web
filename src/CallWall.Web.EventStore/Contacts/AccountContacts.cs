@@ -87,7 +87,7 @@ namespace CallWall.Web.EventStore.Contacts
             IAccountContactSummary existingContact;
             if (_contactSummaries.TryGetValue(updatedContact.ProviderId, out existingContact))
             {
-                if (ContactComparer.Instance.Equals(existingContact, updatedContact))
+                if (AccountContactSummaryComparer.Instance.Equals(existingContact, updatedContact))
                     return;
             }
             //  mark as modified

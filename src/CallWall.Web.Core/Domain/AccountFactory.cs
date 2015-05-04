@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CallWall.Web.Domain;
+using CallWall.Web.EventStore.Accounts;
 
-namespace CallWall.Web.EventStore.Accounts
+namespace CallWall.Web.Domain
 {
     //Was useful when the Account object had methods that delegated to Repos. Maybe not needed now. -LC
     public class AccountFactory : IAccountFactory
