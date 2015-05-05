@@ -9,6 +9,7 @@ namespace CallWall.Web.InMemoryRepository
         {
             registry.RegisterSingleton<IUserRepository, UserRepository>();
             registry.RegisterSingleton<IContactFeedRepository, ContactFeedRepository>();
+            registry.RegisterSingleton<IContactRepository, ContactRepository>();
 
             registry.RegisterType<IProcess, InMemoryRepositoryProcess>("InMemoryRepositoryProcess");
         }
@@ -16,18 +17,25 @@ namespace CallWall.Web.InMemoryRepository
 
     public sealed class InMemoryRepositoryProcess : IProcess
     {
+        private readonly IContactRepository _contactRepository;
         private readonly IContactFeedRepository _contactFeedRepository;
 
-        public InMemoryRepositoryProcess(IContactFeedRepository contactFeedRepository)
+        public InMemoryRepositoryProcess(IContactRepository contactRepository, IContactFeedRepository contactFeedRepository)
         {
+            _contactRepository = contactRepository;
             _contactFeedRepository = contactFeedRepository;
         }
 
         public async Task Run()
         {
-            var runnable = _contactFeedRepository as IRunnable;
+            var runnable = _contactRepository as IRunnable;
+            if (runnable != null)
+                await runnable.Run();
+            runnable = _contactFeedRepository as IRunnable;
             if (runnable != null)
                 await runnable.Run();
         }
+
+        
     }
 }

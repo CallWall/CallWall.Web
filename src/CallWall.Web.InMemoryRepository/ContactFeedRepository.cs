@@ -10,10 +10,12 @@ using CallWall.Web.Providers;
 
 namespace CallWall.Web.InMemoryRepository
 {
-    public class ContactFeedRepository : IContactFeedRepository, IRunnable
+    sealed class ContactFeedRepository : IContactFeedRepository, IRunnable
     {
+        private readonly object _gate = new object();
         private readonly UserRepository _userRepository;
-        private readonly ConcurrentDictionary<Guid, UserState> _userContactsMap = new ConcurrentDictionary<Guid, UserState>(); 
+        private readonly Dictionary<Guid, UserState> _userContactsMap = new Dictionary<Guid, UserState>(); 
+        private readonly Subject<UserState> _allUserContactUpdates = new Subject<UserState>(); 
         private readonly IReadOnlyDictionary<string, IAccountContactProvider> _accountContactProviders;
         private readonly ILogger _logger;
 
@@ -30,7 +32,12 @@ namespace CallWall.Web.InMemoryRepository
         public async Task Run()
         {
             _userRepository.AccountRefreshRequests.Subscribe(OnAccountContactRefresh);
-            await Task.Yield();
+            await Task.FromResult(0);
+        }
+
+        internal IObservable<UserContactUpdates> GetAllUserContactUpdates()
+        {
+            return _allUserContactUpdates.Select(us => new UserContactUpdates(us.UserId, us.ContactUpdates));
         }
 
         public IObservable<int> ObserveContactUpdatesHeadVersion(User user)
@@ -48,18 +55,27 @@ namespace CallWall.Web.InMemoryRepository
         private void OnAccountContactRefresh(AccountContactRefreshRequest refreshRequest)
         {
             _logger.Trace("OnAccountContactRefresh({0}, {1}, {2})", refreshRequest.UserId, refreshRequest.Account.AccountId, refreshRequest.TriggeredBy);
-            var userState = _userContactsMap.GetOrAdd(
-                refreshRequest.UserId,
-                userId => new UserState(userId, _accountContactProviders));
+
+            UserState userState;
+            var userId = refreshRequest.UserId;
+            lock (_gate)
+            {
+                if (!_userContactsMap.TryGetValue(userId, out userState))
+                {
+                    userState = new UserState(userId, _accountContactProviders);
+                    _userContactsMap[userId] = userState;
+                    _allUserContactUpdates.OnNext(userState);
+                }
+            }
+            
 
             userState.RefreshAccount(refreshRequest.Account);
         }
 
-
         private sealed class UserState : IDisposable
         {
-            private readonly Guid _userId;
             private readonly UserContacts _contactAggregator;
+            private readonly Guid _userId;
             private readonly IReadOnlyDictionary<string, IAccountContactProvider> _providers;
             private readonly ReplaySubject<Event<ContactAggregateUpdate>> _contactUpdates = new ReplaySubject<Event<ContactAggregateUpdate>>();
             private readonly BehaviorSubject<int> _head = new BehaviorSubject<int>(-1);
@@ -68,12 +84,14 @@ namespace CallWall.Web.InMemoryRepository
 
             public UserState(Guid userId, IReadOnlyDictionary<string, IAccountContactProvider> accountContactProviders)
             {
-                _userId = userId;
-                _contactAggregator = new UserContacts(_userId);
+                _userId = userId; 
+                _contactAggregator = new UserContacts(userId);
                 _providers = accountContactProviders;
                 _contactUpdates.Select(evt => evt.EventId)
                     .Subscribe(_head);
             }
+
+            public Guid UserId { get { return _userId; } }
 
             public IObservable<Event<ContactAggregateUpdate>> ContactUpdates
             {
@@ -120,6 +138,21 @@ namespace CallWall.Web.InMemoryRepository
                 _contactFeedSubscription.Dispose();
             }
         }
+    }
 
+    internal class UserContactUpdates
+    {
+        private readonly Guid _userId;
+        private readonly IObservable<Event<ContactAggregateUpdate>> _contactUpdates;
+
+        public UserContactUpdates(Guid userId, IObservable<Event<ContactAggregateUpdate>> contactUpdates)
+        {
+            _userId = userId;
+            _contactUpdates = contactUpdates;
+        }
+
+        public Guid UserId { get { return _userId; } }
+
+        public IObservable<Event<ContactAggregateUpdate>> ContactUpdates { get { return _contactUpdates; } }
     }
 }
