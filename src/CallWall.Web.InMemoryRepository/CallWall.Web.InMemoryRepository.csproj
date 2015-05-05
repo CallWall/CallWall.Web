@@ -60,6 +60,7 @@
     <Compile Include="InMemoryRepositoryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskEx.cs" />
+    <Compile Include="UserContactUpdates.cs" />
     <Compile Include="UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>

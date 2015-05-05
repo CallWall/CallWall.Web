@@ -22,6 +22,18 @@ namespace CallWall.Web.Domain
             _isDirty = true;
         }
 
+        private ContactAggregate(ContactAggregate source)
+        {
+            Id = source.Id;
+            foreach (var accountContactSummary in source._contacts)
+            {
+                _contacts.Add(accountContactSummary);
+            }
+            Refresh();
+            Version = source.Version;
+            _isDirty = source._isDirty;
+        }
+
         public int Id { get; private set; }
         public int Version { get; private set; }
 
@@ -135,11 +147,7 @@ namespace CallWall.Web.Domain
 
         public IContactAggregate Snapshot()
         {
-            var copy = new ContactAggregate(_contacts[0]);
-            foreach (var contact in _contacts.Skip(1))
-            {
-                copy.Add(contact);
-            }
+            var copy = new ContactAggregate(this);
             _snapshot = copy;
             return copy;
         }
