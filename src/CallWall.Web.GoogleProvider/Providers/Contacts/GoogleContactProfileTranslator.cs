@@ -207,7 +207,7 @@ namespace CallWall.Web.GoogleProvider.Providers.Contacts
             //TODO: Prefer Uri (with "tel:" removed) else use Element value -LC
             var phoneNumbers = from xElement in xContactEntry.XPathSelectElements("gd:phoneNumber", XmlEx.Ns)
                                orderby (xElement.Attribute("primary") != null) descending
-                               select new ContactEmailAddress(
+                               select new ContactPhoneNumber(
                                    ExtractTelephoneNumber(xElement),
                                    StripAnchor(xElement.Attribute("rel")));
             return phoneNumbers;

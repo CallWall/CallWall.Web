@@ -21,7 +21,7 @@ namespace CallWall.Web.Domain
         public ContactProviderSummary[] AddedProviders { get; set; }
         public ContactProviderSummary[] RemovedProviders { get; set; }
 
-        public ContactHandle[] AddedHandles { get; set; }
+        public ContactHandleRecord[] AddedHandles { get; set; }
         public ContactHandle[] RemovedHandles { get; set; }
 
         public ContactAssociation[] AddedOrganizations { get; set; }

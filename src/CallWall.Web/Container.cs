@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CallWall.Web.EventStore;
 using CallWall.Web.Contracts;
+using CallWall.Web.Domain;
 using CallWall.Web.Http;
 using CallWall.Web.Hubs;
 using CallWall.Web.Logging;
@@ -42,6 +42,7 @@ namespace CallWall.Web
             container.RegisterType<ISchedulerProvider, SchedulerProvider>();
 
             container.RegisterType<IAuthenticationProviderGateway, AuthenticationProviderGateway>();
+            container.RegisterType<IAccountFactory, AccountFactory>();
             RegisterHubs(container);
             
             InitialiseModules(container);

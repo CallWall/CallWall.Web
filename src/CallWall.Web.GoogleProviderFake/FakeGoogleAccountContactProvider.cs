@@ -28,6 +28,7 @@ namespace CallWall.Web.GoogleProviderFake
         {
             yield return new ContactProfile
             {
+                Id=1,
                 Title = "Lee HUB Campbell",
                 //fullName = "",
                 DateOfBirth = new DateTime(1979, 12, 25),
@@ -53,6 +54,7 @@ namespace CallWall.Web.GoogleProviderFake
             };
             yield return new ContactProfile
             {
+                Id = 2,
                 //title = "Lee Campbell",
                 FullName = "Mr. Lee Ryan Campbell",
                 DateOfBirth = new DateTime(1979, 12, 27),
@@ -129,6 +131,7 @@ namespace CallWall.Web.GoogleProviderFake
 
         private sealed class ContactProfile : IContactProfile
         {
+            public int Id { get; set; }
             public string Title { get; set; }
             public string FullName { get; set; }
             public IEnumerable<string> AvatarUris { get; set; }

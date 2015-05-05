@@ -65,6 +65,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PhoneNumbers, Version=4.10.0.62, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\libphonenumber-csharp.4.10.0.62\lib\PhoneNumbers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -119,7 +123,19 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CallWallModuleSection.cs" />
+    <Compile Include="Domain\Account.cs" />
+    <Compile Include="Domain\AccountContactSummaryComparer.cs" />
+    <Compile Include="Domain\AccountFactory.cs" />
+    <Compile Include="Domain\ContactAggregate.cs" />
     <Compile Include="Domain\ContactAssociation.cs" />
+    <Compile Include="Domain\ContactEmailAddress.cs" />
+    <Compile Include="Domain\ContactHandleRecord.cs" />
+    <Compile Include="Domain\ContactHandleTypes.cs" />
+    <Compile Include="Domain\ContactPhoneNumber.cs" />
+    <Compile Include="Domain\IContactAggregate.cs" />
+    <Compile Include="Domain\IContactRepository.cs" />
+    <Compile Include="Domain\PhoneNumber.cs" />
+    <Compile Include="Domain\UserContacts.cs" />
     <Compile Include="EnumerableEx.cs" />
     <Compile Include="IRunnable.cs" />
     <Compile Include="ITypeRegistry.cs" />
@@ -157,7 +173,7 @@
     <Compile Include="Domain\IContactCollaboration.cs" />
     <Compile Include="Domain\IContactProfile.cs" />
     <Compile Include="Domain\IContactProviderSummary.cs" />
-    <Compile Include="Domain\IContactRepository.cs" />
+    <Compile Include="Domain\IContactFeedRepository.cs" />
     <Compile Include="Domain\IGalleryAlbum.cs" />
     <Compile Include="Domain\IResourceScope.cs" />
     <Compile Include="Domain\ISession.cs" />

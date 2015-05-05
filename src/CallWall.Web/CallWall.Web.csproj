@@ -385,6 +385,7 @@
     <Content Include="Views\Shared\DisplayTemplates\OAuthProviderListItem.cshtml" />
     <Content Include="Views\Account\_OAuthProviderListPartial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ResourceScopeSelection.cshtml" />
+    <Content Include="Views\Contact\Lookup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -400,6 +401,10 @@
     <ProjectReference Include="..\CallWall.Web.EventStore\CallWall.Web.EventStore.csproj">
       <Project>{191b20f0-2e16-4075-83fd-7a151ee2820d}</Project>
       <Name>CallWall.Web.EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CallWall.Web.InMemoryRepository\CallWall.Web.InMemoryRepository.csproj">
+      <Project>{35300284-65bd-4f27-964e-0ea95a0cb091}</Project>
+      <Name>CallWall.Web.InMemoryRepository</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

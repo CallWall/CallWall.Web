@@ -122,15 +122,7 @@ namespace CallWall.Web.EventStore.Users
             {
                 Id = Guid.NewGuid(),
                 DisplayName = account.DisplayName,
-                Account =
-                    new AccountRecord
-                    {
-                        Provider = account.Provider,
-                        AccountId = account.AccountId,
-                        DisplayName = account.DisplayName,
-                        Handles = account.Handles.ToArray(),
-                        CurrentSession = new SessionRecord(account.CurrentSession)
-                    }
+                Account = new AccountRecord(account)
             };
             var payload = userCreatedEvent.ToJson();
 
@@ -144,15 +136,7 @@ namespace CallWall.Web.EventStore.Users
             var userCreatedEvent = new UserRegisteredAccountEvent
             {
                 UserId = userId,
-                Account =
-                    new AccountRecord
-                    {
-                        Provider = account.Provider,
-                        AccountId = account.AccountId,
-                        DisplayName = account.DisplayName,
-                        Handles = account.Handles.ToArray(),
-                        CurrentSession = new SessionRecord(account.CurrentSession)
-                    }
+                Account = new AccountRecord(account)
             };
             var payload = userCreatedEvent.ToJson();
 
@@ -208,7 +192,7 @@ namespace CallWall.Web.EventStore.Users
                 accountRecord.Provider,
                 accountRecord.DisplayName,
                 accountRecord.CurrentSession,
-                accountRecord.Handles);
+                ((IAccount)accountRecord).Handles);
         }
     }
 }

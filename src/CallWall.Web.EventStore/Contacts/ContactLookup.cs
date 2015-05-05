@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using CallWall.Web.Domain;
 
@@ -41,6 +42,7 @@ namespace CallWall.Web.EventStore.Contacts
 
         public IContactProfile GetByContactKeys(string[] contactKeys)
         {
+            Trace.WriteLine("---GetByContactKeys([" + string.Join("], [", contactKeys) + "])");
             var query = from key in contactKeys
                         from contact in _contactsByKey[key]
                         select contact;
@@ -72,7 +74,7 @@ namespace CallWall.Web.EventStore.Contacts
             if (update.AddedAvatars != null)
                 contact.AvatarUris.AddRange(update.AddedAvatars);
             if (update.AddedHandles != null)
-                contact.Handles.AddRange(update.AddedHandles);
+                contact.Handles.AddRange(update.AddedHandles.Select(h=>h.ToContactHandle()));
             //if(update.AddedProviders != null)
             //    contact.Providers.AddRange(update.AddedProviders);
             if (update.AddedTags != null)
@@ -99,13 +101,17 @@ namespace CallWall.Web.EventStore.Contacts
 
         private void AddHandleIndex(ContactAggregateUpdate update, ContactProfile contact)
         {
-            foreach (var handle in update.AddedHandles)
+            var normalizedHandles = update.AddedHandles
+                .Select(h=>h.ToContactHandle())
+                .SelectMany(h=>h.NormalizedHandle());
+            foreach (var handle in normalizedHandles)
             {
                 List<IContactProfile> lookup;
-                if (!_contactsByKey.TryGetValue(handle.Handle, out lookup))
+                if (!_contactsByKey.TryGetValue(handle, out lookup))
                 {
                     lookup = new List<IContactProfile>();
-                    _contactsByKey[handle.Handle] = lookup;
+                    Trace.WriteLine("---Adding Key [" + handle + "]");
+                    _contactsByKey[handle] = lookup;
                 }
                 lookup.Add(contact);
             }
@@ -113,13 +119,13 @@ namespace CallWall.Web.EventStore.Contacts
 
         private void DeleteHandleIndex(IEnumerable<ContactHandle> handles, ContactProfile contact)
         {
-            foreach (var handle in handles)
+            foreach (var handle in handles.SelectMany(h=>h.NormalizedHandle()))
             {
-                var lookup = _contactsByKey[handle.Handle];
+                var lookup = _contactsByKey[handle];
                 lookup.Remove(contact);
                 if (lookup.Count == 0)
                 {
-                    _contactsByKey.Remove(handle.Handle);
+                    _contactsByKey.Remove(handle);
                 }
             }
         }

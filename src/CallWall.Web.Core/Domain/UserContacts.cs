@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
-using CallWall.Web.Domain;
-using CallWall.Web.EventStore.Domain;
 
-namespace CallWall.Web.EventStore.Contacts
+namespace CallWall.Web.Domain
 {
     public class UserContacts
     {
@@ -65,6 +63,9 @@ namespace CallWall.Web.EventStore.Contacts
                 }
                 return;
             }
+            //The provider could send us a Delete for a contact we don't know about.
+            if(contact.IsDeleted)
+                return;
 
             //This pattern produces different results with different order of input. If A & B can be linked on email, and B & C can be linked on phone, then Adding A, then B, thne C will result in one Aggregate contact (ABC). However adding A then C then B will result in two aggregates (AB & C)
             //var match = _contacts.Select(c => c.Match(contact))

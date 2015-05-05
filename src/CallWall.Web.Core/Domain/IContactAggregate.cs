@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using CallWall.Web.Domain;
 
-namespace CallWall.Web.EventStore.Domain
+namespace CallWall.Web.Domain
 {
     /// <summary>
     /// Represents an aggregated view of a single contact with data from multiple accounts.

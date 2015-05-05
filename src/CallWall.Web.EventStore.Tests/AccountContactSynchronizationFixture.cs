@@ -25,19 +25,20 @@ namespace CallWall.Web.EventStore.Tests
     {
         #region Setup/TearDown
 
-        private InMemoryEventStoreConnectionFactory _connectionFactory;
-        private IEventStoreClient _eventStoreClient;
+        private EmbeddedEventStoreConnectionFactory _connectionFactory;
+        private EventStoreClient _eventStoreClient;
 
         [SetUp]
         public void SetUp()
         {
-            _connectionFactory = new InMemoryEventStoreConnectionFactory();
+            _connectionFactory = new EmbeddedEventStoreConnectionFactory();
             _eventStoreClient = new EventStoreClient(_connectionFactory, new ConsoleLoggerFactory());
         }
 
         [TearDown]
         public void TearDown()
         {
+            _eventStoreClient.Dispose();
             _connectionFactory.Dispose();
         }
 
@@ -98,7 +99,7 @@ namespace CallWall.Web.EventStore.Tests
         public class UserRegistrationAccountContactSynchronizationScenario : IDisposable
         {
             private readonly UserRepository _userRepository;
-            private readonly IUserContactRepository _userContactRepository;
+            private readonly IContactFeedRepository _contactFeedRepository;
             private readonly UserContactSynchronizationService _userContactSynchronizationService;
             private readonly IAccount _account;
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
@@ -107,7 +108,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public UserRegistrationAccountContactSynchronizationScenario(IEventStoreClient eventStoreClient)
             {
-                _userContactRepository = new UserContactRepository(eventStoreClient, new ConsoleLoggerFactory());
+                _contactFeedRepository = new EventStoreContactFeedRepository(eventStoreClient, new ConsoleLoggerFactory());
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
@@ -138,7 +139,7 @@ namespace CallWall.Web.EventStore.Tests
 
                 Trace.WriteLine("Expecting " + expected.Count + " values");
 
-                var contacts = await _userContactRepository.GetContactSummariesFrom(_user, 0)
+                var contacts = await _contactFeedRepository.GetContactUpdates(_user, 0)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Select(evt => evt.Value)
                     .Take(expected.Count)
@@ -178,7 +179,7 @@ namespace CallWall.Web.EventStore.Tests
         public class UserAddsAccountAndContactsSynchronizeScenario : IDisposable
         {
             private readonly UserRepository _userRepository;
-            private readonly IUserContactRepository _userContactRepository;
+            private readonly IContactFeedRepository _contactFeedRepository;
             private readonly UserContactSynchronizationService _userContactSynchronizationService;
             private readonly IAccount _initialAccount;
             private readonly IAccount _newAccount;
@@ -190,7 +191,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public UserAddsAccountAndContactsSynchronizeScenario(IEventStoreClient eventStoreClient)
             {
-                _userContactRepository = new UserContactRepository(eventStoreClient, new ConsoleLoggerFactory());
+                _contactFeedRepository = new EventStoreContactFeedRepository(eventStoreClient, new ConsoleLoggerFactory());
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
@@ -237,7 +238,7 @@ namespace CallWall.Web.EventStore.Tests
                 var expectedCount = initialAccountContacts.Count + additionalAccountContacts.Count;
                 Trace.WriteLine("Expecting " + expectedCount + " values");
 
-                var contacts = await _userContactRepository.GetContactSummariesFrom(_updatedUser, 0)
+                var contacts = await _contactFeedRepository.GetContactUpdates(_updatedUser, 0)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Select(evt => evt.Value)
                     .Take(expectedCount)

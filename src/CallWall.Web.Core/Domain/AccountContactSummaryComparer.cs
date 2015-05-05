@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using CallWall.Web.Domain;
 
-namespace CallWall.Web.EventStore.Contacts
+namespace CallWall.Web.Domain
 {
-    public sealed class ContactComparer : IEqualityComparer<IAccountContactSummary>
+    public sealed class AccountContactSummaryComparer : IEqualityComparer<IAccountContactSummary>
     {
-        private static readonly IEqualityComparer<IAccountContactSummary> _instance = new ContactComparer();
+        private static readonly IEqualityComparer<IAccountContactSummary> _instance = new AccountContactSummaryComparer();
         public static IEqualityComparer<IAccountContactSummary> Instance { get { return _instance; } }
 
 
@@ -24,17 +23,17 @@ namespace CallWall.Web.EventStore.Contacts
                        && string.Equals(x.AccountId, y.AccountId);
             }
 
-            return string.Equals(x.Provider, y.Provider) 
-                && string.Equals(x.ProviderId, y.ProviderId) 
-                && string.Equals(x.AccountId, y.AccountId) 
-                && string.Equals(x.Title, y.Title) 
-                && string.Equals(x.FullName, y.FullName) 
-                && x.DateOfBirth.Equals(y.DateOfBirth) 
-                && Equals(x.Tags, y.Tags) 
-                && Equals(x.AvatarUris, y.AvatarUris) 
-                && Equals(x.Handles, y.Handles) 
-                && Equals(x.Organizations, y.Organizations) 
-                && Equals(x.Relationships, y.Relationships);
+            return string.Equals(x.Provider, y.Provider)
+                   && string.Equals(x.ProviderId, y.ProviderId)
+                   && string.Equals(x.AccountId, y.AccountId)
+                   && string.Equals(x.Title, y.Title)
+                   && string.Equals(x.FullName, y.FullName)
+                   && x.DateOfBirth.Equals(y.DateOfBirth)
+                   && Equals(x.Tags, y.Tags)
+                   && Equals(x.AvatarUris, y.AvatarUris)
+                   && Equals(x.Handles, y.Handles)
+                   && Equals(x.Organizations, y.Organizations)
+                   && Equals(x.Relationships, y.Relationships);
         }
 
         public int GetHashCode(IAccountContactSummary obj)

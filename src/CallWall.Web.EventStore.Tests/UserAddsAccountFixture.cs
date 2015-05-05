@@ -21,19 +21,20 @@ namespace CallWall.Web.EventStore.Tests
     {
         #region Setup/TearDown
 
-        private InMemoryEventStoreConnectionFactory _connectionFactory;
-        private IEventStoreClient _eventStoreClient;
+        private EmbeddedEventStoreConnectionFactory _connectionFactory;
+        private EventStoreClient _eventStoreClient;
 
         [SetUp]
         public void SetUp()
         {
-            _connectionFactory = new InMemoryEventStoreConnectionFactory();
+            _connectionFactory = new EmbeddedEventStoreConnectionFactory();
             _eventStoreClient = new EventStoreClient(_connectionFactory, new ConsoleLoggerFactory());
         }
 
         [TearDown]
         public void TearDown()
         {
+            _eventStoreClient.Dispose();
             _connectionFactory.Dispose();
         }
 

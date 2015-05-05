@@ -36,6 +36,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EventStore.Client.3.0.1\lib\net40\EventStore.ClientAPI.dll</HintPath>
     </Reference>
+    <Reference Include="EventStore.ClientAPI.Embedded, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EventStore.Client.Embedded.3.0.2\lib\net40\EventStore.ClientAPI.Embedded.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -80,7 +84,7 @@
     <Compile Include="ContactProviderSummaryComparer.cs" />
     <Compile Include="Doubles\ConsoleLogger.cs" />
     <Compile Include="Doubles\ConsoleLoggerFactory.cs" />
-    <Compile Include="Doubles\InMemoryEventStoreConnectionFactory.cs" />
+    <Compile Include="Doubles\EmbeddedEventStoreConnectionFactory.cs" />
     <Compile Include="Doubles\StubAccount.cs" />
     <Compile Include="Doubles\StubAccountContactProvider.cs" />
     <Compile Include="Doubles\StubContactSummary.cs" />
@@ -112,7 +116,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\..\packages\EventStore.Client.Embedded.3.0.2\build\EventStore.Client.Embedded.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EventStore.Client.Embedded.3.0.2\build\EventStore.Client.Embedded.targets'))" />
   </Target>
+  <Import Project="..\..\packages\EventStore.Client.Embedded.3.0.2\build\EventStore.Client.Embedded.targets" Condition="Exists('..\..\packages\EventStore.Client.Embedded.3.0.2\build\EventStore.Client.Embedded.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

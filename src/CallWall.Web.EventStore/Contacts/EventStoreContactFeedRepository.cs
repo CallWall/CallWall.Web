@@ -5,25 +5,17 @@ using CallWall.Web.Domain;
 
 namespace CallWall.Web.EventStore.Contacts
 {
-    public class UserContactRepository : IUserContactRepository
+    public class EventStoreContactFeedRepository : IContactFeedRepository, IContactRepository
     {
         private readonly IEventStoreClient _eventStoreClient;
         private readonly ILogger _logger;
 
-        public UserContactRepository(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
+        public EventStoreContactFeedRepository(IEventStoreClient eventStoreClient, ILoggerFactory loggerFactory)
         {
             _eventStoreClient = eventStoreClient;
             _logger = loggerFactory.CreateLogger(GetType());
         }
-
-        public IObservable<Event<ContactAggregateUpdate>> GetContactSummariesFrom(User user, int? versionId)
-        {
-            var streamName = ContactStreamNames.UserContacts(user.Id);
-            return _eventStoreClient.GetEvents(streamName, versionId)
-                .Where(resolvedEvent => resolvedEvent.OriginalEvent != null)
-                .Select(resolvedEvent => new Event<ContactAggregateUpdate>(resolvedEvent.OriginalEventNumber, resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate>()));
-        }
-
+        
         public IObservable<int> ObserveContactUpdatesHeadVersion(User user)
         {
             var streamName = ContactStreamNames.UserContacts(user.Id);
@@ -33,14 +25,24 @@ namespace CallWall.Web.EventStore.Contacts
                 _eventStoreClient.GetNewEvents(streamName).Select(resolvedEvent => resolvedEvent.OriginalEventNumber));
         }
 
+        public IObservable<Event<ContactAggregateUpdate>> GetContactUpdates(User user, int versionId)
+        {
+            var streamName = ContactStreamNames.UserContacts(user.Id);
+            return _eventStoreClient.GetEvents(streamName, versionId)
+                .Where(resolvedEvent => resolvedEvent.OriginalEvent != null)
+                .Select(resolvedEvent => new Event<ContactAggregateUpdate>(resolvedEvent.OriginalEventNumber, resolvedEvent.OriginalEvent.Deserialize<ContactAggregateUpdate>()));
+        }
+
         public IObservable<IContactProfile> GetContactDetails(User user, string contactId)
         {
             return GetContactLookupFor(user).Select(cl => cl.GetById(int.Parse(contactId)));
         }
 
-        public IObservable<IContactProfile> GetContactDetails(User user, string[] contactKeys)
+        public IObservable<IContactProfile> LookupContactByKey(User user, string[] contactKeys)
         {
-            return GetContactLookupFor(user).Select(cl => cl.GetByContactKeys(contactKeys));
+            return GetContactLookupFor(user)
+                .Log(_logger, "GetContactDetails")
+                .Select(cl => cl.GetByContactKeys(contactKeys));
         }
 
         private IObservable<ContactLookup> GetContactLookupFor(User user)

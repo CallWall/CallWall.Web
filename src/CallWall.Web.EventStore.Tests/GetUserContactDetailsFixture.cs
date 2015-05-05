@@ -25,44 +25,74 @@ namespace CallWall.Web.EventStore.Tests
     {
         #region Setup/TearDown
 
-        private InMemoryEventStoreConnectionFactory _connectionFactory;
-        private IEventStoreClient _eventStoreClient;
+        private EmbeddedEventStoreConnectionFactory _connectionFactory;
+        private EventStoreClient _eventStoreClient;
 
         [SetUp]
         public void SetUp()
         {
-            _connectionFactory = new InMemoryEventStoreConnectionFactory();
+            _connectionFactory = new EmbeddedEventStoreConnectionFactory();
             _eventStoreClient = new EventStoreClient(_connectionFactory, new ConsoleLoggerFactory());
         }
 
         [TearDown]
         public void TearDown()
         {
+            _eventStoreClient.Dispose();
             _connectionFactory.Dispose();
         }
 
         #endregion
 
         [Test]
-        public void Find_single_contact_by_key()
+        public void Find_single_contact_by_exact_match_email()
         {
             //Create user
             //Load an account contact into ES
             //--> should flow into UserContacts
             // get UserContact by accountContact key
-
+            
             new FetchUserContactProfileScenario(_eventStoreClient)
                 .Given(s => s.Given_a_ContactSynchronizationService())
                 .When(s => s.When_a_user_registers_and_triggers_an_AccountRefresh())
-                .Then(s => s.Then_contacts_are_available_by_key())
+                .Then(s => s.Then_contacts_are_available_by_email_address())
                 .BDDfy();
+        }
 
+        [Test]
+        public void Find_single_contact_by_match_to_normailized_international_PhoneNumber()
+        {
+            //Create user
+            //Load an account contact into ES
+            //--> should flow into UserContacts
+            // get UserContact by accountContact key
+            
+            new FetchUserContactProfileScenario(_eventStoreClient)
+                .Given(s => s.Given_a_ContactSynchronizationService())
+                .When(s => s.When_a_user_registers_and_triggers_an_AccountRefresh())
+                .Then(s => s.Then_contacts_are_available_by_normailized_International_PhoneNumber())
+                .BDDfy();
+        }
+
+        [Test]
+        public void Find_single_contact_by_match_to_normailized_local_PhoneNumber()
+        {
+            //Create user
+            //Load an account contact into ES
+            //--> should flow into UserContacts
+            // get UserContact by accountContact key
+            
+            new FetchUserContactProfileScenario(_eventStoreClient)
+                .Given(s => s.Given_a_ContactSynchronizationService())
+                .When(s => s.When_a_user_registers_and_triggers_an_AccountRefresh())
+                .Then(s => s.Then_contacts_are_available_by_normailized_local_PhoneNumber())
+                .BDDfy();
         }
 
         public class FetchUserContactProfileScenario : IDisposable
         {
             private readonly UserRepository _userRepository;
-            private readonly IUserContactRepository _userContactRepository;
+            private readonly EventStoreContactFeedRepository _contactFeedRepository;
             private readonly UserContactSynchronizationService _userContactSynchronizationService;
             private readonly IAccount _account;
             private readonly AccountContactSynchronizationService _accountContactSynchronizationService;
@@ -70,7 +100,7 @@ namespace CallWall.Web.EventStore.Tests
 
             public FetchUserContactProfileScenario(IEventStoreClient eventStoreClient)
             {
-                _userContactRepository = new UserContactRepository(eventStoreClient, new ConsoleLoggerFactory());
+                _contactFeedRepository = new EventStoreContactFeedRepository(eventStoreClient, new ConsoleLoggerFactory());
                 var accountFactory = new AccountFactory();
                 var accountContactRefresher = new AccountContactRefresher(eventStoreClient);
                 _userRepository = new UserRepository(eventStoreClient, new ConsoleLoggerFactory(), accountFactory, accountContactRefresher);
@@ -95,21 +125,41 @@ namespace CallWall.Web.EventStore.Tests
                 User = await _userRepository.Login(_account);
             }
 
-            public async Task Then_contacts_are_available_by_key()
+            public async Task Then_contacts_are_available_by_email_address()
+            {
+                var expected = new ContactEmailAddress("alex.adams@mail.com","home");
+                await Then_contacts_are_available_by_key("alex.adams@mail.com", "Alex Adams", expected);
+            }
+
+            public async Task Then_contacts_are_available_by_normailized_International_PhoneNumber()
+            {
+                var expected = new ContactPhoneNumber("+44 7 8277 12345", "home");
+
+                await Then_contacts_are_available_by_key("+447827712345", "Billy Bonds", expected);
+            }
+
+            public async Task Then_contacts_are_available_by_normailized_local_PhoneNumber()
+            {
+                var expected = new ContactPhoneNumber("+44 7 8277 12345","home");
+
+                await Then_contacts_are_available_by_key("07827712345", "Billy Bonds", expected);
+            }
+
+            public async Task Then_contacts_are_available_by_key(string contactKey, string expectedTitle, ContactHandle expected)
             {
                 await WaitForContactsToBeLoaded();
 
-                var actual = await _userContactRepository.GetContactDetails(User, new[] { "alex.adams@mail.com" })
+                var actual = await _contactFeedRepository.LookupContactByKey(User, new[] { contactKey })
                     .Take(1)
-                    .Timeout(TimeSpan.FromSeconds(5))
+                    .Timeout(TimeSpan.FromSeconds(10))
                     .ToTask();
                 Trace.WriteLine(actual);
                 Assert.IsNotNull(actual);
-                Assert.AreEqual("Alex Adams", actual.Title);
+                Assert.AreEqual(expectedTitle, actual.Title);
                 Assert.AreEqual(actual.Handles.Count(), 1);
-                Assert.AreEqual(actual.Handles.Single().Handle, "alex.adams@mail.com");
-                Assert.AreEqual(actual.Handles.Single().HandleType, "Email");
-                Assert.AreEqual(actual.Handles.Single().Qualifier, "home");
+                Assert.AreEqual(expected.Handle, actual.Handles.Single().Handle);
+                Assert.AreEqual(expected.HandleType, actual.Handles.Single().HandleType);
+                Assert.AreEqual(expected.Qualifier, actual.Handles.Single().Qualifier);
             }
 
             private async Task WaitForContactsToBeLoaded()
@@ -121,7 +171,7 @@ namespace CallWall.Web.EventStore.Tests
                 var user = await _userRepository.Login(_account);
                 Trace.WriteLine("Account logged in");
 
-                var contacts = await _userContactRepository.GetContactSummariesFrom(user, 0)
+                var contacts = await _contactFeedRepository.GetContactUpdates(user, 0)
                     .Do(u => Trace.WriteLine("GetContactSummariesFrom(user).OnNext()"))
                     .Select(evt => evt.Value)
                     .Take(expected.Count)
@@ -211,6 +261,10 @@ namespace CallWall.Web.EventStore.Tests
                             Tags =
                             {
                                 "Family"
+                            },
+                            Handles =
+                            {
+                                new ContactPhoneNumber("+44 7 8277 12345", "home")
                             }
                         },
                         new StubContactSummary

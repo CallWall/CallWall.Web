@@ -87,7 +87,7 @@ namespace CallWall.Web.EventStore.Contacts
             IAccountContactSummary existingContact;
             if (_contactSummaries.TryGetValue(updatedContact.ProviderId, out existingContact))
             {
-                if (ContactComparer.Instance.Equals(existingContact, updatedContact))
+                if (AccountContactSummaryComparer.Instance.Equals(existingContact, updatedContact))
                     return;
             }
             //  mark as modified
@@ -196,10 +196,9 @@ namespace CallWall.Web.EventStore.Contacts
                 result.Title = contact.Title;
                 result.AvatarUris = contact.AvatarUris.ToArray();
                 result.Tags = contact.Tags.ToArray();
-                result.Handles = contact.Handles.ToArray();
+                result.Handles = contact.Handles.Select(h=>new ContactHandleRecord(h)).ToArray();
                 result.Organizations = contact.Organizations.Select(o => new ContactAssociationRecord { Association = o.Association, Name = o.Name }).ToArray();
                 result.Relationships = contact.Relationships.Select(r => new ContactAssociationRecord { Association = r.Association, Name = r.Name }).ToArray();
-
             }
             return result;
         }

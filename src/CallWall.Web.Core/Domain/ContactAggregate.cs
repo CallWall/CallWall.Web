@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CallWall.Web.Domain;
 
-namespace CallWall.Web.EventStore.Domain
+namespace CallWall.Web.Domain
 {
     //TODO: Remove all the safety checking once Unit/Component tests prove the safety (else we will take a massive unnecessary perf hit) -LC
     internal sealed class ContactAggregate : IContactAggregate
@@ -21,6 +20,18 @@ namespace CallWall.Web.EventStore.Domain
             Version = 0;
             Refresh();
             _isDirty = true;
+        }
+
+        private ContactAggregate(ContactAggregate source)
+        {
+            Id = source.Id;
+            foreach (var accountContactSummary in source._contacts)
+            {
+                _contacts.Add(accountContactSummary);
+            }
+            Refresh();
+            Version = source.Version;
+            _isDirty = source._isDirty;
         }
 
         public int Id { get; private set; }
@@ -68,7 +79,7 @@ namespace CallWall.Web.EventStore.Domain
                 || IsTitleMatch(contact)
                 || IsFuzzyTitleMatch(contact);
         }
-        
+
         public void Add(IAccountContactSummary contact)
         {
 #if DEBUG
@@ -136,11 +147,7 @@ namespace CallWall.Web.EventStore.Domain
 
         public IContactAggregate Snapshot()
         {
-            var copy = new ContactAggregate(_contacts[0]);
-            foreach (var contact in _contacts.Skip(1))
-            {
-                copy.Add(contact);
-            }
+            var copy = new ContactAggregate(this);
             _snapshot = copy;
             return copy;
         }
@@ -173,7 +180,7 @@ namespace CallWall.Web.EventStore.Domain
                     AddedAvatars = Avatars.Any() ? Avatars.ToArray() : null,
                     AddedProviders = Providers.Any() ? Providers.ToArray() : null,
                     AddedTags = Tags.Any() ? Tags.ToArray() : null,
-                    AddedHandles = Handles.Any() ? Handles.ToArray() : null,
+                    AddedHandles = Handles.Any() ? Handles.Select(h => new ContactHandleRecord(h)).ToArray() : null,
                     AddedOrganizations = Organizations.Any() ? Organizations.ToArray() : null,
                     AddedRelationships = Relationships.Any() ? Relationships.ToArray() : null,
                 };
@@ -205,7 +212,7 @@ namespace CallWall.Web.EventStore.Domain
                 RemovedProviders = providerDelta.RemovedItems,
                 AddedTags = tagDelta.AddedItems,
                 RemovedTags = tagDelta.RemovedItems,
-                AddedHandles = handleDelta.AddedItems,
+                AddedHandles = handleDelta.AddedItems == null ? null : handleDelta.AddedItems.Select(h => new ContactHandleRecord(h)).ToArray(),
                 RemovedHandles = handleDelta.RemovedItems,
                 AddedOrganizations = organizationsDelta.AddedItems,
                 RemovedOrganizations = organizationsDelta.RemovedItems,
