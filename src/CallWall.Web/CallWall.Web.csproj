@@ -386,6 +386,8 @@
     <Content Include="Views\Account\_OAuthProviderListPartial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ResourceScopeSelection.cshtml" />
     <Content Include="Views\Contact\Lookup.cshtml" />
+    <Content Include="Views\Contact\_ContactProfileListPartial.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ContactProfileListItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -24,13 +25,19 @@ namespace CallWall.Web.Controllers
             return View();
         }
 
-        public async Task<ActionResult> Lookup(string[] keys)
+        public async Task<ActionResult> Lookup(string[] phone, string[] email, string[] handle)
         {
             var userId = User.UserId();
             var user = await _loginProvider.GetUser(userId);
 
             //Perform lookup for Id
-            var contacts = await _contactRepository.LookupContactByKey(user, keys)
+
+            var handles = (phone ?? Enumerable.Empty<string>()).Select<string, ContactHandle>(ph => new ContactPhoneNumber(ph, null))
+                .Concat((email ?? Enumerable.Empty<string>()).Select(e => new ContactEmailAddress(e, null)))
+                //.Concat((handle ?? Enumerable.Empty<string>()).Select(h=>new ContactHandle(h)))
+                .ToArray();
+
+            var contacts = await _contactRepository.LookupContactByHandles(user, handles)
                 .ToList()
                 .ToTask();
 

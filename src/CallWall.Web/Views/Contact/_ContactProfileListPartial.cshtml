@@ -1,0 +1,6 @@
+﻿@model IEnumerable<CallWall.Web.Domain.IContactProfile>
+
+@foreach (var contactProfile in Model)
+{
+  @Html.DisplayFor(m => contactProfile, "ContactProfileListItem")
+} 

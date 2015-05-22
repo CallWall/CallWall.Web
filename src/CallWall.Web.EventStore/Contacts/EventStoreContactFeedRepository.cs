@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using CallWall.Web.Domain;
@@ -38,11 +39,13 @@ namespace CallWall.Web.EventStore.Contacts
             return GetContactLookupFor(user).Select(cl => cl.GetById(int.Parse(contactId)));
         }
 
-        public IObservable<IContactProfile> LookupContactByKey(User user, string[] contactKeys)
+        public IObservable<IContactProfile> LookupContactByHandles(User user, ContactHandle[] contactHandles)
         {
+            var keys = contactHandles.SelectMany(ch => ch.NormalizedHandle())
+                .ToArray();
             return GetContactLookupFor(user)
                 .Log(_logger, "GetContactDetails")
-                .Select(cl => cl.GetByContactKeys(contactKeys));
+                .SelectMany(cl => cl.GetByContactKeys(keys));
         }
 
         private IObservable<ContactLookup> GetContactLookupFor(User user)
