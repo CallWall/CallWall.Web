@@ -1,12 +1,28 @@
-﻿@{
+﻿@model IList<CallWall.Web.Domain.IContactProfile>
+@{
     ViewBag.Title = "Lookup Contact";
 }
 @section header{
     @Styles.Render("~/Content/contactdetails") @*if this is for overrides it should be last?!?!*@
     @Styles.Render("~/Content/themes/base/css")
 }
+    
+<section>
+    <h2>Select a contact to show</h2>
+    <p>
+        Multiple contacts have been matched. The matches are shown below.
+    </p>    
+</section>
 
+<hr />
 
-<div>
-    <h1>Lookup page</h1>              
-</div>
+<section>
+    @foreach (var contact in Model)
+    {
+        @Html.DisplayFor(_ => contact, "ContactProfileListItem")
+    } 
+</section>
+
+@section scripts{
+    @Scripts.Render("~/bundles/lookup")
+}

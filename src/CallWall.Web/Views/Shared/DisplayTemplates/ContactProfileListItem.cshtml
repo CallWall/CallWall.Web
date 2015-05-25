@@ -1,0 +1,73 @@
+﻿@using CallWall.Web.Domain
+@model IContactProfile
+
+<div class="contact-profile">
+    <table>
+        <tr>
+            <td class="avatar-cell">
+                <img alt="@Model.Title" src="@Model.AvatarUris.FirstOrDefault()" 
+                     class="avatar-img" 
+                     onload="OnImageLoad(event);" />
+            </td>
+            <td class="title-cell">
+                <a href="/Contact/Detail/?id=@Model.Id" >
+                    <h3>@Model.Title</h3>
+                </a>
+                <span>@Model.FullName</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div>
+                    @foreach (var tag in @Model.Tags)
+                    {
+                        <span class="tag">@tag</span>
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="data-cell">
+                @if (@Model.Organizations.Any())
+                {
+                    <h4>Organizations</h4>
+                    foreach (var org in @Model.Organizations)
+                    {
+                    <div class="kvp">
+                        <div class="key">@org.Association</div>
+                        <div>@org.Name</div>
+                    </div>
+                    }
+                }
+                @if (@Model.Relationships.Any())
+                {
+                    <h4>Relationships</h4>
+                    foreach (var rel in @Model.Relationships)
+                    {
+                    <div class="kvp">
+                        <div class="key">@rel.Association</div>
+                        <div>@rel.Name</div>
+                    </div>
+                    }
+                }
+                @if (@Model.Handles.Any())
+                {
+                    <h4>Contacts</h4>
+                    foreach (var handle in @Model.Handles)
+                    {
+                    <div>
+                        @if (handle.HandleType == ContactHandleTypes.Email)
+                        {
+                            <a href="mailto:@handle.Handle">@handle.Handle</a>
+                        }
+                        else if (handle.HandleType == ContactHandleTypes.Phone)
+                        {
+                            <a href="tel:@handle.Handle">@handle.Handle</a>
+                        }
+                    </div>
+                    }
+                }
+            </td>
+        </tr>
+    </table>
+</div>

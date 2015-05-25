@@ -40,16 +40,14 @@ namespace CallWall.Web.EventStore.Contacts
             return _contactsById[id];
         }
 
-        public IContactProfile GetByContactKeys(string[] contactKeys)
+        public IEnumerable<IContactProfile> GetByContactKeys(string[] contactKeys)
         {
             Trace.WriteLine("---GetByContactKeys([" + string.Join("], [", contactKeys) + "])");
-            var query = from key in contactKeys
-                        from contact in _contactsByKey[key]
-                        select contact;
-            return query.GroupBy(x => x)
-                .OrderByDescending(grp => grp.Count())
-                .Select(grp => grp.Key)
-                .FirstOrDefault();
+            return from key in contactKeys
+                   from contact in _contactsByKey[key]
+                   group contact by contact into distinctContacts
+                   orderby distinctContacts.Count()
+                   select distinctContacts.Key;
         }
 
         private static void ApplyUpdate(ContactAggregateUpdate update, ContactProfile contact)

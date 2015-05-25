@@ -32,6 +32,9 @@ namespace CallWall.Web
                        "~/Scripts/pouchdb-{version}.js",
                        "~/Scripts/Inhouse/ContactSummaryPersistence.js",
                        "~/Scripts/Inhouse/ContactSummariesSignalR.js"));
+            
+            bundles.Add(new ScriptBundle("~/bundles/lookup").Include(
+                       "~/Scripts/Inhouse/ImageScaling.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/dashboard").Include(
                        "~/Scripts/Inhouse/ImageScaling.js",

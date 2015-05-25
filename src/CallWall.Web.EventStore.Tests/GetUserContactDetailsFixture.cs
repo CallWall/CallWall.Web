@@ -128,28 +128,28 @@ namespace CallWall.Web.EventStore.Tests
             public async Task Then_contacts_are_available_by_email_address()
             {
                 var expected = new ContactEmailAddress("alex.adams@mail.com","home");
-                await Then_contacts_are_available_by_key("alex.adams@mail.com", "Alex Adams", expected);
+                await Then_contacts_are_available_by_key(new ContactEmailAddress("alex.adams@mail.com", null), "Alex Adams", expected);
             }
 
             public async Task Then_contacts_are_available_by_normailized_International_PhoneNumber()
             {
                 var expected = new ContactPhoneNumber("+44 7 8277 12345", "home");
 
-                await Then_contacts_are_available_by_key("+447827712345", "Billy Bonds", expected);
+                await Then_contacts_are_available_by_key(new ContactPhoneNumber("+447827712345", null), "Billy Bonds", expected);
             }
 
             public async Task Then_contacts_are_available_by_normailized_local_PhoneNumber()
             {
                 var expected = new ContactPhoneNumber("+44 7 8277 12345","home");
 
-                await Then_contacts_are_available_by_key("07827712345", "Billy Bonds", expected);
+                await Then_contacts_are_available_by_key(new ContactPhoneNumber("07827712345", null), "Billy Bonds", expected);
             }
 
-            public async Task Then_contacts_are_available_by_key(string contactKey, string expectedTitle, ContactHandle expected)
+            public async Task Then_contacts_are_available_by_key(ContactHandle key, string expectedTitle, ContactHandle expected)
             {
                 await WaitForContactsToBeLoaded();
 
-                var actual = await _contactFeedRepository.LookupContactByKey(User, new[] { contactKey })
+                var actual = await _contactFeedRepository.LookupContactByHandles(User, new[] { key })
                     .Take(1)
                     .Timeout(TimeSpan.FromSeconds(10))
                     .ToTask();

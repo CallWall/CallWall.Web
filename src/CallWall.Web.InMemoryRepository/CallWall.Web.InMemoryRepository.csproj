@@ -53,10 +53,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountContactRefreshRequest.cs" />
     <Compile Include="ContactFeedRepository.cs" />
     <Compile Include="ContactLookup.cs" />
     <Compile Include="ContactProfile.cs" />
     <Compile Include="ContactRepository.cs" />
+    <Compile Include="DictionaryEx.cs" />
     <Compile Include="InMemoryRepositoryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskEx.cs" />

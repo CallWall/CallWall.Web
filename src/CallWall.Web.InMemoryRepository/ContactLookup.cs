@@ -47,18 +47,16 @@ namespace CallWall.Web.InMemoryRepository
             return _contactsById[id];
         }
 
-        public IContactProfile GetByContactKeys(string[] contactKeys)
+        public IEnumerable<IContactProfile> GetByContactKeys(string[] contactKeys)
         {
             Trace.WriteLine("---GetByContactKeys([" + string.Join("], [", contactKeys) + "])");
-            var query = from key in contactKeys
-                        from contact in _contactsByKey[key]
-                        select contact;
-            return query.GroupBy(x => x)
-                .OrderByDescending(grp => grp.Count())
-                .Select(grp => grp.Key)
-                .FirstOrDefault();
+            return from key in contactKeys
+                   from contact in _contactsByKey.GetOrDefault(key, _=>new List<IContactProfile>())
+                   group contact by contact into distinctContacts
+                   orderby distinctContacts.Count()
+                   select distinctContacts.Key;
         }
-
+        
         private static void ApplyUpdate(ContactAggregateUpdate update, ContactProfile contact)
         {
             if (!string.IsNullOrEmpty(update.NewTitle))
@@ -110,7 +108,8 @@ namespace CallWall.Web.InMemoryRepository
         {
             var normalizedHandles = update.AddedHandles
                 .Select(h => h.ToContactHandle())
-                .SelectMany(h => h.NormalizedHandle());
+                .SelectMany(h => h.NormalizedHandle())
+                .Where(h=>!string.IsNullOrWhiteSpace(h));
             foreach (var handle in normalizedHandles)
             {
                 List<IContactProfile> lookup;
@@ -119,6 +118,10 @@ namespace CallWall.Web.InMemoryRepository
                     lookup = new List<IContactProfile>();
                     Trace.WriteLine("---Adding Key [" + handle + "]");
                     _contactsByKey[handle] = lookup;
+                }
+                else
+                {
+                    Trace.WriteLine(string.Format("Found duplicate key : '{0}'", handle));
                 }
                 lookup.Add(contact);
             }

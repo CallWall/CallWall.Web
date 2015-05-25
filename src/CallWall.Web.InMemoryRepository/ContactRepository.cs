@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -24,11 +25,13 @@ namespace CallWall.Web.InMemoryRepository
             return Observable.Return(contact);
         }
 
-        public IObservable<IContactProfile> LookupContactByKey(User user, string[] contactKeys)
+        public IObservable<IContactProfile> LookupContactByHandles(User user, ContactHandle[] contactHandles)
         {
-            var contact = _userContactMap[user.Id].GetByContactKeys(contactKeys);
+            var keys = contactHandles.SelectMany(ch => ch.NormalizedHandle())
+                .ToArray();
+            var matchedContacts = _userContactMap[user.Id].GetByContactKeys(keys);
             //HACK: This should be able to return multiple values. -LC
-            return Observable.Return(contact);
+            return matchedContacts.ToObservable();
         }
 
         public async Task Run()

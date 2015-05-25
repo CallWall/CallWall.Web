@@ -121,3 +121,52 @@ input[type=checkbox] {
     -moz-border-radius: 3px;
     border-radius: 3px;
 }
+
+
+/*----------------------------*/
+
+div.contact-profile {
+    display: inline-block; 
+    margin: 10px; 
+    width: 450px; 
+    height: 250px; 
+    overflow: hidden;
+    background: #E0E0E0;
+}
+div.contact-profile h1, div.contact-profile h2, div.contact-profile h3, div.contact-profile h4 {
+    color: black;
+}
+
+div.contact-profile td.avatar-cell {
+    overflow: hidden;
+    width: 100px; 
+    height: 100px;
+    position: relative;
+}
+div.contact-profile img.avatar-img {
+    position: absolute;
+}
+div.contact-profile td.title-cell {
+    width: 200px;
+    vertical-align: top;
+    padding: 5px;
+}
+div.contact-profile td.title-cell h3 {
+    text-overflow: ellipsis; 
+    max-width: 200px; 
+    overflow: hidden;
+    line-height: normal;
+}
+div.contact-profile td.title-cell a {
+    color: black;
+    text-decoration: none;
+}
+div.contact-profile td.title-cell a:hover {
+    color: black;
+    text-decoration: underline;
+}
+div.contact-profile td.data-cell {
+     vertical-align: top;
+     padding: 0px 10px;
+}
+
