@@ -11,7 +11,8 @@ namespace CallWall.Web.Domain
 
         public override string[] NormalizedHandle()
         {
+            //TODO: add gmail normalization rules
             return new[] { Handle.ToLowerInvariant() };
-        }
+        }        
     }
 }

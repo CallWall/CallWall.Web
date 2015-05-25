@@ -51,12 +51,12 @@ namespace CallWall.Web.InMemoryRepository
         {
             Trace.WriteLine("---GetByContactKeys([" + string.Join("], [", contactKeys) + "])");
             return from key in contactKeys
-                from contact in _contactsByKey[key]
-                group contact by contact into distinctContacts
-                orderby distinctContacts.Count()
-                select distinctContacts.Key;
+                   from contact in _contactsByKey.GetOrDefault(key, _=>new List<IContactProfile>())
+                   group contact by contact into distinctContacts
+                   orderby distinctContacts.Count()
+                   select distinctContacts.Key;
         }
-
+        
         private static void ApplyUpdate(ContactAggregateUpdate update, ContactProfile contact)
         {
             if (!string.IsNullOrEmpty(update.NewTitle))

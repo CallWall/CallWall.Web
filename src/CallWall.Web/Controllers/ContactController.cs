@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Services.Protocols;
 using CallWall.Web.Domain;
 using CallWall.Web.Providers;
+using Microsoft.Ajax.Utilities;
 
 namespace CallWall.Web.Controllers
 {
@@ -41,10 +44,22 @@ namespace CallWall.Web.Controllers
                 .ToList()
                 .ToTask();
 
+            if (contacts.Count == 0)
+                return View("NoMatches", (object)GenerateSearchUrl(handles.Select(h=>h.Handle)));
             if (contacts.Count == 1)
                 return new RedirectResult("../Detail/?id=" + contacts[0].Id);
-            else
-                return View(contacts);
+            return View(contacts);
+        }
+
+        private string GenerateSearchUrl(IEnumerable<string> terms)
+        {
+            var tokenisedTerms = terms.Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .Select(t => t.Replace("\"", string.Empty))
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => string.Format("\"{0}\"", t));
+            var queryString = Server.UrlEncode(string.Join(" OR ", tokenisedTerms));
+            return "https://www.google.com/search?q=" + queryString;
         }
     }
 }
