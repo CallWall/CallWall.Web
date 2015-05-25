@@ -134,6 +134,7 @@
     <Compile Include="Domain\ContactPhoneNumber.cs" />
     <Compile Include="Domain\IContactAggregate.cs" />
     <Compile Include="Domain\IContactRepository.cs" />
+    <Compile Include="Domain\Normalizers\GmailHandleNormalizer.cs" />
     <Compile Include="Domain\PhoneNumber.cs" />
     <Compile Include="Domain\UserContacts.cs" />
     <Compile Include="EnumerableEx.cs" />
